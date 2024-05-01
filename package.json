@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.7.5"
+  },
+  "name": "2800-202410-dtc04",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
