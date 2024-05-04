@@ -3,6 +3,7 @@
 // first names here
 const firstNamesPool = [
     'poopy', 'butt', 'mature', 'epic', 'shitake',
+    'goofy', 'strange', 'nice', 'cringe', 'sad',
     // NAMES HERE
 ];
 
@@ -10,5 +11,6 @@ const firstNamesPool = [
 // last names
 const lastNamesPool = [
     'mushroom', 'smear', 'monkey', 'kappa', 'popo',
+    'loser', 'unicorn', 'fairy', 'robot', 'human',
     // NAMES HERE
 ];
