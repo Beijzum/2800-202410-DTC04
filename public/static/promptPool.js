@@ -63,7 +63,7 @@ const prompts = [
     "Write a story about a group of hikers who stumble upon an ancient burial ground and unwittingly awaken an ancient evil.",
     "Create a psychological horror story where the protagonist begins to question their own sanity as they experience increasingly bizarre phenomena.",
     "Craft a series of journal entries detailing the investigation of a string of mysterious disappearances in a small town.",
-    "Imagine a haunted hotel where the guests are trapped for eternity, forced to relive their worst nightmares.",
+    "Imagine a haunted hotel where the guests are trapped for eternity, forced to relive their worst nightmares, write a story about said hotel",
     "Write a screenplay for a horror movie set in a remote village where the residents worship a malevolent deity.",
     "Describe a cursed video game that sucks players into its digital world, where they must fight to survive against nightmarish creatures.",
 
