@@ -19,4 +19,9 @@ const avatarPool = [
     '/images/avatar17.jpg',
     '/images/avatar18.jpg',
     '/images/avatar19.jpg',
+    '/images/avatar20.jpg',
+    '/images/avatar21.jpg',
+    '/images/avatar22.jpg',
+    '/images/avatar23.jpg',
+    '/images/avatar24.jpg',
 ];
