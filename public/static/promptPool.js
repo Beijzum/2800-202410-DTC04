@@ -1,6 +1,7 @@
 // Prompts generated with ChatGPT 3.5
 
 const prompts = [
+    // RANDOM PROMPTS
     "Write a short story that begins with the line: 'The clock struck midnight, and everything changed.'",
     "Describe a scene set in a bustling marketplace, focusing on the sounds and smells.",
     "Create a character profile for an eccentric inventor who communicates primarily through riddles.",
@@ -21,6 +22,8 @@ const prompts = [
     "Invent a new sport played on flying carpets, and describe the rules and strategies involved.",
     "Write a poem inspired by the beauty and mystery of the ocean depths.",
     "Create a character who can communicate with animals and describe their first encounter with a wise old owl.",
+
+    // INTERNET THEMED PROMPTS
     "Write a tweet-length horror story in 280 characters or less.",
     "Compose a blog post reviewing a fictional technology that allows people to relive their dreams.",
     "Craft a meme that perfectly encapsulates the feeling of procrastination.",
@@ -41,6 +44,8 @@ const prompts = [
     "Compose a forum post seeking advice on how to deal with a glitch in the matrix.",
     "Design a Snapchat filter that transforms users into their favorite movie characters.",
     "Write a Buzzfeed-style listicle titled '10 Signs You're Addicted to Virtual Reality.'",
+
+    // HORROR THEMED PROMPTS
     "Describe a nightmare where the protagonist is chased by a shadowy figure through an abandoned carnival.",
     "Write a short story about a cursed painting that brings misfortune to anyone who gazes upon it.",
     "Craft a scene where a group of friends discovers a mysterious journal filled with ominous warnings about an ancient evil.",
@@ -61,6 +66,8 @@ const prompts = [
     "Imagine a haunted hotel where the guests are trapped for eternity, forced to relive their worst nightmares.",
     "Write a screenplay for a horror movie set in a remote village where the residents worship a malevolent deity.",
     "Describe a cursed video game that sucks players into its digital world, where they must fight to survive against nightmarish creatures.",
+
+    // PROGRAMMING THEMED PROMPTS
     "Write a short story about a programmer who accidentally creates an AI that takes over the world.",
     "Create a dialogue between two computer programs discussing the merits of object-oriented programming versus functional programming.",
     "Imagine a world where bugs in code manifest as physical creatures. Write a journal entry from a programmer tasked with exterminating them.",
@@ -81,6 +88,8 @@ const prompts = [
     "Write a scene from a futuristic courtroom drama where a programmer is on trial for creating a malicious virus.",
     "Imagine a world where bugs in code have real-world consequences. Write a news article reporting on a major bug that caused chaos in a city.",
     "Create a choose-your-own-adventure story where the reader must navigate through a series of coding challenges to save the world from a digital apocalypse.",
+
+    // CREEPYPASTA THEMED PROMPTS
     "Write a chilling tale about a cursed video game that drives players to madness.",
     "Craft a story about a mysterious figure that haunts an abandoned amusement park at night.",
     "Imagine a haunted house where each room holds a different horrifying secret. Write about the experiences of those who dare to enter.",
@@ -101,6 +110,8 @@ const prompts = [
     "Write about a haunted dollhouse where the miniature inhabitants seem to move on their own when no one is watching.",
     "Create a tale about a haunted hotel where the guests never check out, doomed to repeat their final moments for eternity.",
     "Imagine a series of mysterious disappearances in a small town, each one linked to a sinister urban legend. Write about the truth behind the myths.",
+
+    // FOOD THEMED PROMPTS
     "Write a descriptive passage about your favorite comfort food, capturing its aroma, texture, and taste.",
     "Craft a short story set in a bustling food market, where the protagonist discovers a rare ingredient that changes their life.",
     "Imagine a world where food has magical properties. Write about a character who discovers they have the ability to cook up spells with their culinary creations.",
