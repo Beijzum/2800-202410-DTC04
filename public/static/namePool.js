@@ -6,7 +6,7 @@ const firstNamesPool = [
     'goofy', 'strange', 'nice', 'cringe', 'sad',
     'high', 'stoned', 'hammered', 'drunk', 'zoned',
     'dank', 'kris', 'bulma', 'goku', 'cold', 'zeek',
-    // NAMES HERE
+    'elusive', 'vintage', 'tacky', 'rancid', 'greasy'
 ];
 
 
@@ -16,5 +16,5 @@ const lastNamesPool = [
     'loser', 'unicorn', 'fairy', 'robot', 'human',
     'cat', 'demon', 'angel', 'dog', 'cowboy',
     'dragon', 'wizard', 'bisnix', 'connor', 'saiyan',
-    // NAMES HERE
+    'lizard', 'turtle', 'goblin', 'knight', 'vampire'
 ];
