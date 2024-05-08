@@ -251,3 +251,5 @@ Due to the tight time constraints, there will likely be many features that will 
 **Matchmaking** - Implement automatic matchmaking so that the ease of play is improve.
 
 **Unlockables** - Add unlockables such as new random pseudonyms, random icons, and pre-game titles/achievements that is unlocked based on account win/loss rates.
+
+**Most Funny Answers** - Add a counter for people who write the funniest prompt into database, show it on the leader board.
