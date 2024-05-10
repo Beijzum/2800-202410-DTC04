@@ -1,0 +1,14 @@
+<tr>
+    <td>
+        <div class="flex justify-between">
+            <img src="defaultProfilePicture.webp">
+            <p class=""><% userEntry.username %></p>
+        </div>
+    </td>
+    <td>
+        <p class=""><% userEntry.winCount / (userEntry.winCount + userEntry.loseCount) * 100 %></p>
+    </td>
+    <td>
+        <p class=""><% userEntry.winCount + userEntry.loseCount %></p>
+    </td>
+</tr>

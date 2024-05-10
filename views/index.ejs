@@ -1,3 +1,28 @@
 <%- include("./templates/header", {pageName: "Home"}) %>
 <%- include("./templates/navbar", {currentPage: "/"}) %>
+<% if (authenticated) { %>
+    <a href="lobby" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 px-20">Play</a>
+<% } else { %>
+    <div class="flex flex-col">
+        <a href="login" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Login</a>
+        <a href="signUp" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Sign Up</a>
+    </div>
+<% } %>
+<!-- <div id="leaderboard" class="bg-gray-900">
+    <p class="">Top Players</p>
+    <table class="table-auto">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Win Rate</th>
+                <th>Games Played</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%# for(int i = 0; i < topUsers.length; i++) { %>
+                <%#- include("./templates/leaderboardEntry", {userEntry: topUsers[i]}) %>
+            <%# } %>
+        </tbody>
+    </table>
+</div> -->
 <%- include("./templates/footer", {pageScript: "index.js"}) %>
