@@ -1,3 +1,9 @@
 <%- include("./templates/header", {pageName: "Login"}) %>
 <%- include("./templates/navbar", {currentPage: "login"}) %>
+<form id="loginForm" class="flex flex-col items-center">
+    <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
+    <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
+    <%- include("./templates/formSubmitButton", {buttonText: "Login"}) %>
+</form>
+<p class="text-center mb-5">Don't have an account yet? <a href="signUp" class="underline text-blue-500">Sign Up</a></p>
 <%- include("./templates/footer", {pageScript: "login.js"}) %>
