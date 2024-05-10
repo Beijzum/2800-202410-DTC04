@@ -32,11 +32,13 @@ router.get("/profile", (req, res) => {
 })
 
 router.get("/logout", (req, res) => {
-    res.render("logout");
+    req.session.destroy();
+    req.session = null;
+    res.redirect("/");
 })
 
 router.get("*", (req, res) => {
-    res.status(404).render("error", {authenticated: req.session.username !== undefined});
+    res.status(404).render("404", {authenticated: req.session.username !== undefined});
 })
 
 module.exports = router;
