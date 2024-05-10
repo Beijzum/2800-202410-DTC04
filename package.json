@@ -4,7 +4,9 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "express-session": "^1.18.0",
     "http": "^0.0.1-security",
+    "mongodb": "^6.6.1",
     "nodemon": "^3.1.0",
     "socket.io": "^4.7.5"
   },
