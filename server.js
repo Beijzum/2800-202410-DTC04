@@ -70,14 +70,13 @@ app.post("/createAccount", async (req, res) => {
             res.redirect("/");
             return;
         }
-        
     }
+    res.redirect("/signUp");
 })
 
 app.post("/loginAccount", async (req, res) => {
     let validationResult = schemas.loginSchema.validate(req.body);
     if (validationResult.error) {
-        console.log("asdf");
         console.log(validationResult.error.message);
     } else { 
         let loginResult = await database.loginUser(req.body);
@@ -86,7 +85,7 @@ app.post("/loginAccount", async (req, res) => {
             res.redirect("/");
             return;
         }
-        res.send(200)
+        res.redirect("/login");
     }
 })
 
