@@ -28,7 +28,7 @@ router.get("/signup", (req, res) => {
 
 router.get("/profile", (req, res) => {
     if (req.session.username) res.render("profile", {authenticated: true});
-    else redirect("/login");
+    else res.redirect("/login");
 })
 
 router.get("/logout", (req, res) => {
