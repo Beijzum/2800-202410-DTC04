@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const session = require("express-session");
 const app = express();
 const PORT = 3000;
 
@@ -14,7 +15,20 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-app.use(express.static(__dirname + 'public'));
+// requirements for sessions
+app.use(session({
+    secret: process.env.NODE_SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}))
+
+// set up ejs
+app.set("view engine", "ejs");
+
+// set up routes
+app.use(express.static(__dirname + "/public"));
+app.use(require("./pageRoutes"));
 
 app.listen(PORT, () => {
     console.log(`Now listening to port ${PORT}`);
