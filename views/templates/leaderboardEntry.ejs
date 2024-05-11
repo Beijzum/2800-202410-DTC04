@@ -1,14 +1,14 @@
-<tr>
-    <td>
-        <div class="flex justify-between">
-            <img src="defaultProfilePicture.webp">
-            <p class=""><% userEntry.username %></p>
+<tr class="border-b hover:bg-zinc-800 border-zinc-700 text-center">
+    <th scope="row" class="px-3 py-2 font-semibold text-zinc-100 whitespace-nowrap" >
+        <div class="flex">
+            <img src="images/defaultProfilePicture.webp" class="w-6 rounded-full">
+            <p class="ml-2"><%= userEntry.username %></p>
         </div>
+    </th>
+    <td class="px-3 py-2">
+        <p><%= parseFloat(userEntry.winCount / (userEntry.winCount + userEntry.loseCount) * 100).toFixed(1) %>%</p>
     </td>
-    <td>
-        <p class=""><% userEntry.winCount / (userEntry.winCount + userEntry.loseCount) * 100 %></p>
-    </td>
-    <td>
-        <p class=""><% userEntry.winCount + userEntry.loseCount %></p>
+    <td class="px-3 py-2">
+        <p><%= userEntry.winCount + userEntry.loseCount %></p>
     </td>
 </tr>
