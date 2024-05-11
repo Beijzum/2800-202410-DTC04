@@ -4,7 +4,6 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
-const { search } = require("./pageRoutes");
 
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
@@ -96,16 +95,36 @@ async function findUser(searchParams) {
     });
 }
 
-async function findLeaderboard() {
+async function getLeaderboard() {
+    return new Promise(async (res, rej) => {
+        try {
+            let database = client.db(process.env.MONGODB_DATABASE);
+            let users = database.collection("users");
 
+            let result = await users.find().limit(10).sort({winCount: -1}).toArray();
+            res(result);
+        } catch (e) {
+            rej(e);
+        }
+    });
 }
 
-async function updateUserStats() {
+// not done yet (DONT USE) prototype version of what it should look like, iron it out once actually done game
+async function updateUserStats(playerSession, gameOutcome) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
 
-}
+        if (gameOutcome === "win") 
+            await users.updateOne({email: playerSession.email}, {$inc: {winCount: 1}});
+        else
+            await users.updateOne({email: playerSession.email}, {$inc: {loseCount: 1}});
+    
+        console.log(`${playerSession.username} stats page has been updated`);
 
-function createErrorObjectBase() {
-    return {error: {}};
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 module.exports = {
@@ -114,6 +133,6 @@ module.exports = {
     signUpUser: signUpUser,
     loginUser: loginUser,
     findUser: findUser,
-    findLeaderboard: findLeaderboard,
+    getLeaderboard: getLeaderboard,
     updateUserStats: updateUserStats
 }
