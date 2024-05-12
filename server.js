@@ -5,7 +5,7 @@ const express = require('express');
 const session = require("express-session");
 const cors = require("cors");
 const app = express();
-
+const socketManager = require("./websocket.js");
 const database = require("./database");
 const schemas = require("./joiValidation");
 
@@ -13,13 +13,12 @@ const schemas = require("./joiValidation");
 const PORT = 3000;
 
 // requirements for websocket
-const http = require('http');
+const http = require("http");
 const server = http.createServer(app);
-const { Server } = require('socket.io');
+const { Server } = require("socket.io");
 
 // requirements for geminiAI
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { secureHeapUsed } = require('crypto');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -93,9 +92,14 @@ startServer();
 
 async function startServer() {
     let connection = await database.client.connect();
-    if (connection.topology.isConnected()) 
-        app.listen(PORT, () => { 
+    if (connection.topology.isConnected()) {
+        const server = app.listen(PORT, () => { 
             console.log(`Database succesfully connected, now listening to port ${PORT}`);
         });
+
+        // connect to websocket server
+        const io = new Server(server);
+        socketManager.runSocket(io);
+    }
     else console.log("Error, could not connect to database, to try again, restart the server.");
 }
