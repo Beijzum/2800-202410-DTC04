@@ -1,3 +1,11 @@
 .w-9\/10 {
     width: 90%;
 }
+
+.offset-gameNav {
+    padding-top: 144px;
+}
+
+.offset-nav {
+    padding-top: 80px;
+}
