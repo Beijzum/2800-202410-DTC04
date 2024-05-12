@@ -1,4 +1,13 @@
 <%- include("./templates/header", {pageName: "Pre-Game"}) %>
 <%- include("./templates/navbar", {currentPage: "lobby"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "lobby"}) %>
+<ul id="chatroom" class="">
+
+</ul>
+<div id="chatBar" class="w-auto bg-gray-700 rounded-lg p-2 m-1 text-sm flex justify-between">
+    <textarea id="textBar" type="text" rows="2" placeholder="Type a message..." class="outline-none align-middle w-9/10 text-wrap resize-none text-wrap rounded-lg p-2 bg-zinc-200"></textarea>
+    <button id="sendMessageButton" class="text-gray-300 hover:text-gray-200">
+        <i class="material-symbols-outlined align-middle">send</i>
+    </button>
+</div>
 <%- include("./templates/footer", {pageScript: "lobby.js"}) %>
