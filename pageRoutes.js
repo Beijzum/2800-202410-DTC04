@@ -28,9 +28,14 @@ router.get("/signup", (req, res) => {
     else res.render("signup", {authenticated: false});
 })
 
-router.get("/profile", (req, res) => {
-    if (req.session.username) res.render("profile", {authenticated: true});
-    else res.redirect("/login");
+router.get("/profile", async (req, res) => {
+    if (!req.session.username) {
+        res.redirect("/login");
+        return;
+    }
+    let userData = await database.findUser({username: req.session.username});
+    res.render("profile", {authenticated: true, session: req.session, data: {winCount: userData.winCount, loseCount: userData.loseCount}});
+
 })
 
 router.get("/logout", (req, res) => {
