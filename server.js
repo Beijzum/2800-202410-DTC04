@@ -88,6 +88,31 @@ app.post("/loginAccount", async (req, res) => {
     }
 })
 
+app.post("/forgotpass", async (req, res) => {
+    if (req.session.username) {
+        res.redirect("/index");
+        return;
+    }
+    
+    const { email } = req.body;
+
+    let validationResult = schemas.emailSchema.validate(email);
+    if (validationResult.error) {
+        console.log(validationResult.error.message);
+        res.status(400).send({"error": validationResult.error.message.replace(/"/g, "")});
+        return;
+    }
+
+    let user = await database.findUser({ "email": email });
+
+    if (user) {
+        // TODO: Handle emailing the specified user a link to reset pass (or login without pass?)
+        res.status(200).send();
+    } else {
+        res.status(404).send({"error": "No account with specified email"});
+    }
+});
+
 startServer();
 
 async function startServer() {
