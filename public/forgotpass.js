@@ -19,5 +19,8 @@ document.getElementById("forgotForm").addEventListener("submit", async (e) => {
         })
     });
 
-    // TODO: handle response; check status, add error to main element, replace main content with resp HTML
+    if (response.ok) {
+        document.querySelector("main").innerHTML = await response.text();
+    }
+    // TODO: handle response; check status, add error to main element
 });
