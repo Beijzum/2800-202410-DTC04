@@ -22,5 +22,13 @@ document.getElementById("forgotForm").addEventListener("submit", async (e) => {
     if (response.ok) {
         document.querySelector("main").innerHTML = await response.text();
     }
-    // TODO: handle response; check status, add error to main element
+    else if (response.status >= 400 && response.status < 500) { // TODO: handle response; check status, add error to main element
+        const label = document.querySelector("label");
+        label.textContent = (await response.json()).error;
+
+        const emailField = document.querySelector("#emailField");
+
+        label.classList.add("text-red-500");
+        emailField.classList.add("border-red-500");
+    }
 });
