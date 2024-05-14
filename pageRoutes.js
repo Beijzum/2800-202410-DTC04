@@ -23,6 +23,11 @@ router.get("/login", (req, res) => {
     else res.render("login", {authenticated: false});
 })
 
+router.get("/forgotpass", (req, res) => {
+    if (req.session.username) res.redirect("/index");
+    else res.render("forgotpass", {authenticated: false})
+});
+
 router.get("/signup", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("signup", {authenticated: false});
