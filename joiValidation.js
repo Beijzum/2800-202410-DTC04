@@ -17,5 +17,6 @@ const loginSchema = joi.object({
 
 module.exports = {
     signUpSchema: signUpSchema,
-    loginSchema: loginSchema
+    loginSchema: loginSchema,
+    emailSchema: joi.string().required().email({ tlds: { allow: false }})
 }
