@@ -8,6 +8,7 @@ const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
 const schemas = require("./joiValidation");
+const email = require("./emailNotification.js");
 
 // set port
 const PORT = 3000;
@@ -94,22 +95,30 @@ app.post("/forgotpass", async (req, res) => {
         return;
     }
     
-    const { email } = req.body;
+    const user_email = req.body.email;
 
-    let validationResult = schemas.emailSchema.validate(email);
+    let validationResult = schemas.emailSchema.validate(user_email);
     if (validationResult.error) {
         console.log(validationResult.error.message);
         res.status(400).send({"error": "Error with email entry"});
         return;
     }
 
-    let user = await database.findUser({ "email": email });
+    let user = await database.findUser({ "email": user_email });
 
-    if (user) {
-        // TODO: Handle emailing the specified user a link to reset pass (or login without pass?)
-        res.status(200).render("forgotPassSuccess.ejs", { email: email });
-    } else {
+    if (!user) {
         res.status(404).send({"error": "No account with specified email"});
+        return;
+    }
+
+    const hash = require("crypto").randomBytes(32).toString('hex');
+    const link = req.get("host") + "/reset?id=" + hash;
+
+    if (email.sendResetLink(user_email, user.username, link)) {
+       database.updateUser(user, {"resetHash": hash})
+       res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
+    } else {
+       res.status(500).send({"error": "Error with sending email"})
     }
 });
 
