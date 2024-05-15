@@ -8,7 +8,7 @@ const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
 const schemas = require("./joiValidation");
-const middlewares = require("./middlewares");
+const middleware = require("./middleware.js");
 
 // set port
 const port = process.env.PORT || 3000;
@@ -42,8 +42,8 @@ app.set("view engine", "ejs");
 // set up middleware
 app.use(express.json());
 app.use(cors());
-app.use(middlewares.requestTime);
-app.use(middlewares.originUrl);
+app.use(middleware.requestTime);
+app.use(middleware.originUrl);
 
 // set up routes
 app.use(express.static(__dirname + "/public"));
