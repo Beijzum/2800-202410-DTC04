@@ -36,7 +36,7 @@ router.get("/reset", async (req, res) => {
         return;
     }
 
-    res.render("reset", {authenticated: false});
+    res.render("reset", {authenticated: false, hash: req.query.id});
 });
 
 router.get("/signup", (req, res) => {
