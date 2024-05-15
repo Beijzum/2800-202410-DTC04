@@ -1,6 +1,6 @@
 <%- include("./templates/header", {pageName: "Login"}) %>
 <%- include("./templates/navbar", {currentPage: "login"}) %>
-<form id="loginForm" class="flex flex-col items-center">
+<form id="loginForm" class="flex flex-col items-center" action="/loginAccount">
     <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
     <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
     <%- include("./templates/formSubmitButton", {buttonText: "Login"}) %>
