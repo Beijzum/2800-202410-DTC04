@@ -129,20 +129,17 @@ async function updateUserStats(playerSession, gameOutcome) {
 }
 
 /**
- * Updates the specified user with the specified value.
+ * Updates the specified users password.
  * 
  * @param {Object} user user document to update
- * @param {Object} val field / value to set
+ * @param {String} password password to set
  */
-async function updateUser(user, val) {
+async function updateUserPass(user, password) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
         let users = database.collection("users");
 
-        await users.updateOne({ _id: user._id }, { $set: val });
-
-        console.log(`${user.username} has been updated with ${JSON.stringify(val)}`);
-
+        await users.updateOne({ _id: user._id }, { $set: {password: await bcrypt.hash(password, 10)} });
     } catch (e) {
         console.error(e);
     }
@@ -188,6 +185,24 @@ async function getResetDoc(hash) {
     }
 }
 
+/**
+ * Deletes the specified reset doc.
+ * 
+ * For security, this should always be called after reading and using the doc.
+ * 
+ * @param {String} hash hash to index collection
+ */
+async function deleteResetDoc(hash) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let reset = database.collection(("reset"));
+
+        await reset.deleteOne({_id: new ObjectId(hash)});
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     client: client,
     mongoSessionStorage: storage,
@@ -196,7 +211,8 @@ module.exports = {
     findUser: findUser,
     getLeaderboard: getLeaderboard,
     updateUserStats: updateUserStats,
-    updateUser: updateUser,
+    updateUserPass: updateUserPass,
     writeResetDoc: writeResetDoc,
-    getResetDoc: getResetDoc
+    getResetDoc: getResetDoc,
+    deleteResetDoc: deleteResetDoc
 }
