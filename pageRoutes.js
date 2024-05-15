@@ -27,6 +27,38 @@ router.get("/login", (req, res) => {
     else res.render("login", { authenticated: false });
 })
 
+router.get("/forgotpass", (req, res) => {
+    if (req.session.username) res.redirect("/index");
+    else res.render("forgotpass", {authenticated: false})
+});
+
+router.get("/reset", async (req, res) => {
+    const user = await database.getResetDoc(req.query.id);
+
+    if (!user) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("reset", {authenticated: false, hash: req.query.id});
+});
+
+router.get("/forgotpass", (req, res) => {
+    if (req.session.username) res.redirect("/index");
+    else res.render("forgotpass", {authenticated: false})
+});
+
+router.get("/reset", async (req, res) => {
+    const user = await database.getResetDoc(req.query.id);
+
+    if (!user) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("reset", {authenticated: false, hash: req.query.id});
+});
+
 router.get("/signUp", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("signUp", { authenticated: false });
