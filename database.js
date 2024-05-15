@@ -127,6 +127,26 @@ async function updateUserStats(playerSession, gameOutcome) {
     }
 }
 
+/**
+ * Updates the specified user with the specified value.
+ * 
+ * @param {Object} user user document to update
+ * @param {Object} val field / value to set
+ */
+async function updateUser(user, val) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
+
+        await users.updateOne({ _id: user._id }, { $set: val });
+
+        console.log(`${user.username} has been updated with ${JSON.stringify(val)}`);
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     client: client,
     mongoSessionStorage: storage,
@@ -134,5 +154,6 @@ module.exports = {
     loginUser: loginUser,
     findUser: findUser,
     getLeaderboard: getLeaderboard,
-    updateUserStats: updateUserStats
+    updateUserStats: updateUserStats,
+    updateUser: updateUser
 }
