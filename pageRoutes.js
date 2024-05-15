@@ -48,6 +48,12 @@ router.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
+// Temporary Router I added for Voting Screen Sample
+router.get("/votingScreenSample", async (req, res) => {
+    let top10Players = await database.getLeaderboard();
+    res.render("votingScreenSample", { authenticated: req.session.username !== undefined, topUsers: top10Players });
+})
+
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
 })
