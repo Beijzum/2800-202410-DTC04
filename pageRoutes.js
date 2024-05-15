@@ -27,9 +27,9 @@ router.get("/login", (req, res) => {
     else res.render("login", { authenticated: false });
 })
 
-router.get("/signup", (req, res) => {
+router.get("/signUp", (req, res) => {
     if (req.session.username) res.redirect("/index");
-    else res.render("signup", { authenticated: false });
+    else res.render("signUp", { authenticated: false });
 })
 
 router.get("/profile", async (req, res) => {
