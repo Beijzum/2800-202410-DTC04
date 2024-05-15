@@ -3,7 +3,7 @@ document.querySelector("#resetForm").addEventListener("submit", async (e) => {
 
     const { action, method } = e.target;
 
-    const newPass = new FormData(e.target).get("passwordField");
+    const form = new FormData(e.target);
 
     let response = await fetch(action, {
         method: method,
@@ -12,9 +12,10 @@ document.querySelector("#resetForm").addEventListener("submit", async (e) => {
             "Content-Type": "application/json" 
         },
         body: JSON.stringify({
-            password: newPass,
+            hash: form.get("hash"),
+            password: form.get("passwordField"),
         })
     });
 
-    // TODO: Actually handle the response
+    window.location.href = response.url;
 });
