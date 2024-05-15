@@ -30,3 +30,7 @@ chatBar.addEventListener("submit", (e) => {
         input.value = "";
     }
 })
+
+readyButton.addEventListener("click", () => {
+    console.log("Ready button clicked");
+});
