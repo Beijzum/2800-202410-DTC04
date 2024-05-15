@@ -10,7 +10,7 @@ const database = require("./database");
 const schemas = require("./joiValidation");
 
 // set port
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // requirements for websocket
 const http = require("http");
@@ -27,7 +27,7 @@ app.use(session({
     secret: process.env.NODE_SESSION_SECRET,
     resave: true,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: false,
         maxAge: 3 * 60 * 60 * 1000
     },
@@ -62,7 +62,7 @@ app.post("/createAccount", async (req, res) => {
     let validationResult = schemas.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-    } else { 
+    } else {
         let errorList = await database.signUpUser(req.body);
         if (errorList.length === 0) {
             req.session.username = req.body.username;
@@ -77,7 +77,7 @@ app.post("/loginAccount", async (req, res) => {
     let validationResult = schemas.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-    } else { 
+    } else {
         let loginResult = await database.loginUser(req.body);
         if (loginResult) {
             req.session.username = loginResult.username;
@@ -93,7 +93,7 @@ startServer();
 async function startServer() {
     let connection = await database.client.connect();
     if (connection.topology.isConnected()) {
-        const server = app.listen(PORT, () => { 
+        const server = app.listen(PORT, () => {
             console.log(`Database succesfully connected, now listening to port ${PORT}`);
         });
 
