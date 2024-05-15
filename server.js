@@ -8,6 +8,7 @@ const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
 const schemas = require("./joiValidation");
+const middlewares = require("./middlewares");
 
 // set port
 const port = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ const { Server } = require("socket.io");
 
 // requirements for geminiAI
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { originUrl } = require('./middlewares.js');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -41,6 +43,8 @@ app.set("view engine", "ejs");
 // set up middleware
 app.use(express.json());
 app.use(cors());
+app.use(middlewares.requestTime);
+app.use(middlewares.originUrl);
 
 // set up routes
 app.use(express.static(__dirname + "/public"));
