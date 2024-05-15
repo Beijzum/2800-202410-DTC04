@@ -4,6 +4,7 @@ const router = express.Router();
 const database = require("./database");
 const port = process.env.PORT || 3000;
 
+
 router.get("/", async (req, res) => {
     let top10Players = await database.getLeaderboard();
     res.render("index", { authenticated: req.session.username !== undefined, topUsers: top10Players });
@@ -16,9 +17,14 @@ router.get("/game", (req, res) => {
 });
 
 router.get("/lobby", (req, res) => {
-    if (req.session.username) res.render("lobby", { authenticated: true, port });
-    else res.redirect("/login");
+    if (req.session.username) {
+        console.log(req.origin)
+        res.render("lobby", { authenticated: true, port, url: req.origin }); // Pass the origin to the lobby view
+    } else {
+        res.redirect("/login");
+    }
 });
+
 
 router.get("/login", (req, res) => {
     if (req.session.username) res.redirect("/index");
