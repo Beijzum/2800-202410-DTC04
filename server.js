@@ -78,7 +78,7 @@ app.post("/loginAccount", async (req, res) => {
     let validationResult = schemas.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-    } else { 
+    } else {
         let loginResult = await database.loginUser(req.body);
         if (loginResult) {
             req.session.username = loginResult.username;
@@ -119,6 +119,21 @@ app.post("/forgotpass", async (req, res) => {
        res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
     } else {
        res.status(500).send({"error": "Error with sending email"})
+    }
+});
+
+app.post("/reset", async (req, res) => {
+    const { password, hash } = req.body;
+
+    try {
+        const resetDoc = await database.getResetDoc(hash);
+        const user = await database.findUser({"_id": resetDoc.user_id});
+        await database.updateUserPass(user, password);
+        await database.deleteResetDoc(hash);
+        res.redirect("/login");
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({"error": "Error accessing database"})
     }
 });
 
