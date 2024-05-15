@@ -8,9 +8,10 @@ const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
 const schemas = require("./joiValidation");
+const middleware = require("./middleware.js");
 
 // set port
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
 // requirements for websocket
 const http = require("http");
@@ -27,7 +28,7 @@ app.use(session({
     secret: process.env.NODE_SESSION_SECRET,
     resave: true,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: false,
         maxAge: 3 * 60 * 60 * 1000
     },
@@ -41,6 +42,8 @@ app.set("view engine", "ejs");
 // set up middleware
 app.use(express.json());
 app.use(cors());
+app.use(middleware.requestTime);
+app.use(middleware.originUrl);
 
 // set up routes
 app.use(express.static(__dirname + "/public"));
@@ -62,7 +65,7 @@ app.post("/createAccount", async (req, res) => {
     let validationResult = schemas.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-    } else { 
+    } else {
         let errorList = await database.signUpUser(req.body);
         if (errorList.length === 0) {
             req.session.username = req.body.username;
@@ -77,7 +80,7 @@ app.post("/loginAccount", async (req, res) => {
     let validationResult = schemas.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-    } else { 
+    } else {
         let loginResult = await database.loginUser(req.body);
         if (loginResult) {
             req.session.username = loginResult.username;
@@ -93,8 +96,8 @@ startServer();
 async function startServer() {
     let connection = await database.client.connect();
     if (connection.topology.isConnected()) {
-        const server = app.listen(PORT, () => { 
-            console.log(`Database succesfully connected, now listening to port ${PORT}`);
+        const server = app.listen(port, () => {
+            console.log(`Database succesfully connected, now listening to port ${port}`);
         });
 
         // connect to websocket server
