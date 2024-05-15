@@ -28,6 +28,16 @@ router.get("/forgotpass", (req, res) => {
     else res.render("forgotpass", {authenticated: false})
 });
 
+router.get("/reset", async (req, res) => {
+    const user = await database.findUser({"resetHash": req.query.id});
+
+    if (!user) {
+        res.redirect("/");
+    }
+
+    res.render("reset", {email: user.email, name: user.username});
+});
+
 router.get("/signup", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("signup", {authenticated: false});
