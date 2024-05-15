@@ -29,13 +29,14 @@ router.get("/forgotpass", (req, res) => {
 });
 
 router.get("/reset", async (req, res) => {
-    const user = await database.findUser({"resetHash": req.query.id});
+    const user = await database.getResetDoc(req.query.id);
 
     if (!user) {
         res.redirect("/");
+        return;
     }
 
-    res.render("reset", {email: user.email, name: user.username, authenticated: false});
+    res.render("reset", {authenticated: false});
 });
 
 router.get("/signup", (req, res) => {

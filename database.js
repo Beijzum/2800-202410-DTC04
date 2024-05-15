@@ -1,9 +1,10 @@
 const databaseLink = `${process.env.MONGODB_PROTOCOL}://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/${process.env.MONGODB_DATABASE}`;
 
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
+const { date } = require("joi");
 
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
@@ -147,6 +148,46 @@ async function updateUser(user, val) {
     }
 }
 
+/**
+ * Creates a reset document in the reset collection.
+ * 
+ * Documents in the reset collection expire after 1 hour, improving safety.
+ * 
+ * @param {Object} user user document to reference
+ * @param {String} hash hash used in the reset link
+ */
+async function writeResetDoc(user, hash) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let reset = database.collection(("reset"));
+
+        await reset.insertOne({
+            _id: new ObjectId(hash),
+            user_id: user._id,
+            createdAt: new Date()
+        });
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Reads the specified doc from database using the hash.
+ * 
+ * @param {String} hash hash to index collection
+ */
+async function getResetDoc(hash) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let reset = database.collection(("reset"));
+
+        return await reset.findOne({_id: new ObjectId(hash)});
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     client: client,
     mongoSessionStorage: storage,
@@ -155,5 +196,7 @@ module.exports = {
     findUser: findUser,
     getLeaderboard: getLeaderboard,
     updateUserStats: updateUserStats,
-    updateUser: updateUser
+    updateUser: updateUser,
+    writeResetDoc: writeResetDoc,
+    getResetDoc: getResetDoc
 }
