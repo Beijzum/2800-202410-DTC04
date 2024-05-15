@@ -1,0 +1,7 @@
+<nav class="bg-blue-800">
+    <% if (currentPage === "lobby") { %>
+        <%- include("lobbyGameNavbarElements") %>
+    <% } else { %>
+        <%# include("inGameNavbarElements") %>
+    <% } %>
+</nav>

@@ -1,0 +1,12 @@
+<%- include("./templates/header", {pageName: "Pre-Game"}) %>
+<div class="fixed w-screen">
+    <%- include("./templates/navbar", {currentPage: "lobby"}) %>
+    <%- include("./templates/gameNavbar", {currentPage: "lobby"}) %>
+</div>
+<ul id="messageSection" class="offset-gameNav">
+    
+</ul>
+<%- include("./templates/websocketImport") %>
+<%- include("./templates/chatBar", {rows: 2, placeholderText: "Type a message..."}) %>
+<script src="chatroom.js"></script>
+<%- include("./templates/footer", {pageScript: "lobby.js"}) %>
