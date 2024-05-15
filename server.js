@@ -20,6 +20,7 @@ const { Server } = require("socket.io");
 
 // requirements for geminiAI
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const joiValidation = require('./joiValidation');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -124,6 +125,11 @@ app.post("/forgotpass", async (req, res) => {
 
 app.post("/reset", async (req, res) => {
     const { password, hash } = req.body;
+    
+    if (joiValidation.passwordSchema.validate(password).error) {
+        res.status(400).send({"error": "Invalid password"});
+        return;
+    }
 
     try {
         const resetDoc = await database.getResetDoc(hash);
