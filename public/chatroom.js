@@ -12,8 +12,9 @@ socket.on("message", (messageContent) => {
 })
 
 // handle enter press
-input.addEventListener("keyup", (e) => {
+input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
+        e.preventDefault();
         if (input.value) {
             socket.emit("message", input.value);
             input.value = "";

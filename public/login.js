@@ -6,7 +6,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     let email = document.getElementById("emailField").value;
     let password = document.getElementById("passwordField").value;
 
-    let response = await fetch(backendLink + "/loginAccount", {
+    let response = await fetch(window.location.origin + "/loginAccount", {
         method: "POST",
         headers: {
             "Accept": "application/json",

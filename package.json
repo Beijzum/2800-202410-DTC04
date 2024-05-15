@@ -1,26 +1,26 @@
 {
-  "dependencies": {
-    "@google/generative-ai": "^0.9.0",
-    "bcrypt": "^5.1.1",
-    "connect-mongo": "^5.1.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "ejs": "^3.1.10",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "http": "^0.0.1-security",
-    "joi": "^17.13.1",
-    "mongodb": "^6.6.1",
-    "nodemon": "^3.1.0",
-    "socket.io": "^4.7.5"
-  },
-  "name": "2800-202410-dtc04",
-  "description": "",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+    "dependencies": {
+        "@google/generative-ai": "^0.9.0",
+        "bcrypt": "^5.1.1",
+        "connect-mongo": "^5.1.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "ejs": "^3.1.10",
+        "express": "^4.19.2",
+        "express-session": "^1.18.0",
+        "http": "^0.0.1-security",
+        "joi": "^17.13.1",
+        "mongodb": "^6.6.1",
+        "nodemon": "^3.1.0",
+        "socket.io": "^4.7.5"
+    },
+    "name": "2800-202410-dtc04",
+    "description": "",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.js"
+    },
+    "author": "",
+    "license": "ISC"
 }
