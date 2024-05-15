@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require("express");
 const router = express.Router();
 const database = require("./database");
-const port = process.env.PORT || 3000;
-
 
 router.get("/", async (req, res) => {
     let top10Players = await database.getLeaderboard();
