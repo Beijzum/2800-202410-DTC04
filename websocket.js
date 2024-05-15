@@ -1,3 +1,5 @@
+/* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
+
 function runSocket(io) {
     io.on("connection", (socket) => {
         // When current user joins the chat
