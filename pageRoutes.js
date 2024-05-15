@@ -12,17 +12,15 @@ router.get("/", async (req, res) => {
 
 router.get("/game", (req, res) => {
     // redirect to login if unauthenticated
-    if (req.session.username) res.render("game", { authenticated: true, port })
+    console.log(req.origin)
+    if (req.session.username) res.render("game", { authenticated: true, url: req.origin })
     else res.redirect("/login");
 });
 
 router.get("/lobby", (req, res) => {
-    if (req.session.username) {
-        console.log(req.origin)
-        res.render("lobby", { authenticated: true, port, url: req.origin }); // Pass the origin to the lobby view
-    } else {
-        res.redirect("/login");
-    }
+    console.log(req.origin)
+    if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin });
+    else res.redirect("/login");
 });
 
 
