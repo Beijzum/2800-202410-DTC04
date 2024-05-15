@@ -1,3 +1,5 @@
+const playersReady = () => players.every(player => player.ready);
+
 let readyButton = document.getElementById("readyButton");
 
 readyButton.addEventListener("click", () => {
@@ -7,5 +9,8 @@ readyButton.addEventListener("click", () => {
     } else {
         readyButton.className = readyButton.className.replace(/green-500/g, "red-500");
         readyButton.className = readyButton.className.replace(/green-600/g, "red-600");
+    }
+    if (playersReady()) {
+        window.location.href = "/game";
     }
 })
