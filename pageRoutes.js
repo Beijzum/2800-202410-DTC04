@@ -35,7 +35,7 @@ router.get("/reset", async (req, res) => {
         res.redirect("/");
     }
 
-    res.render("reset", {email: user.email, name: user.username});
+    res.render("reset", {email: user.email, name: user.username, authenticated: false});
 });
 
 router.get("/signup", (req, res) => {
