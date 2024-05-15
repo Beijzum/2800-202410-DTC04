@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
-const schemas = require("./joiValidation");
+const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
 
@@ -21,7 +21,6 @@ const { Server } = require("socket.io");
 
 // requirements for geminiAI
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const joiValidation = require('./joiValidation');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -64,7 +63,7 @@ app.get("/logout", (req, res) => {
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
-    let validationResult = schemas.signUpSchema.validate(req.body);
+    let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
     } else {
@@ -79,7 +78,7 @@ app.post("/createAccount", async (req, res) => {
 })
 
 app.post("/loginAccount", async (req, res) => {
-    let validationResult = schemas.loginSchema.validate(req.body);
+    let validationResult = joiValidation.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
     } else {
@@ -98,20 +97,20 @@ app.post("/forgotpass", async (req, res) => {
         res.redirect("/index");
         return;
     }
-    
+
     const user_email = req.body.email;
 
-    let validationResult = schemas.emailSchema.validate(user_email);
+    let validationResult = joiValidation.emailSchema.validate(user_email);
     if (validationResult.error) {
         console.log(validationResult.error.message);
-        res.status(400).send({"error": "Error with email entry"});
+        res.status(400).send({ "error": "Error with email entry" });
         return;
     }
 
     let user = await database.findUser({ "email": user_email });
 
     if (!user) {
-        res.status(404).send({"error": "No account with specified email"});
+        res.status(404).send({ "error": "No account with specified email" });
         return;
     }
 
@@ -120,29 +119,29 @@ app.post("/forgotpass", async (req, res) => {
 
     if (email.sendResetLink(user_email, user.username, link)) {
         await database.writeResetDoc(user, hash)
-       res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
+        res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
     } else {
-       res.status(500).send({"error": "Error with sending email"})
+        res.status(500).send({ "error": "Error with sending email" })
     }
 });
 
 app.post("/reset", async (req, res) => {
     const { password, hash } = req.body;
-    
+
     if (joiValidation.passwordSchema.validate(password).error) {
-        res.status(400).send({"error": "Invalid password"});
+        res.status(400).send({ "error": "Invalid password" });
         return;
     }
 
     try {
         const resetDoc = await database.getResetDoc(hash);
-        const user = await database.findUser({"_id": resetDoc.user_id});
+        const user = await database.findUser({ "_id": resetDoc.user_id });
         await database.updateUserPass(user, password);
         await database.deleteResetDoc(hash);
         res.redirect("/login");
     } catch (e) {
         console.error(e);
-        res.status(500).send({"error": "Error accessing database"})
+        res.status(500).send({ "error": "Error accessing database" })
     }
 });
 
