@@ -10,7 +10,7 @@ const database = require("./database");
 const schemas = require("./joiValidation");
 
 // set port
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 // requirements for websocket
 const http = require("http");
@@ -93,8 +93,8 @@ startServer();
 async function startServer() {
     let connection = await database.client.connect();
     if (connection.topology.isConnected()) {
-        const server = app.listen(PORT, () => {
-            console.log(`Database succesfully connected, now listening to port ${PORT}`);
+        const server = app.listen(port, () => {
+            console.log(`Database succesfully connected, now listening to port ${port}`);
         });
 
         // connect to websocket server
