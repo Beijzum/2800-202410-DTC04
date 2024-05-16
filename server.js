@@ -146,6 +146,29 @@ app.post("/reset", async (req, res) => {
     }
 });
 
+app.post("/changePass", async (req, res) => {
+    if (!req.session.username) {
+        res.redirect("/");
+        return;
+    }
+
+    let validPass = schemas.passwordSchema.validate(req.body.password);
+
+    if (validPass.error) {
+        console.log(validPass.error.message);
+        res.status(400).send({"error": validPass.error.message.replace("", "")});
+        return;
+    }   
+    
+    try {
+        database.updateUserPass(await database.findUser({"username": req.session.username}), req.body.password);
+        res.status(200).send();
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({"error": "Internal server error"});
+    }
+});
+
 startServer();
 
 async function startServer() {
