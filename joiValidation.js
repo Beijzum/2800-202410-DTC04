@@ -1,24 +1,30 @@
 let joi = require("joi");
 
-// this thing refuses to work despite resources saying otherwise, someone else figure this out
-// const regex = new RegExp("/(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+!.=])(?=.*\d).*/g");
-// console.log(regex.test("Aa43.5"));
-const passwordSchema = joi.string().required().min(5).alphanum();
+/* Checks that the password has atealse one of each of the following:
+ * a lowercase letter
+ * an uppercase letter
+ * one of the following characters: @#$%^&+!.=
+ * a number
+*/
+const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+!.=])(?=.*\d).*/;
+
+const passwordSchema = joi.string().required().min(5).pattern(regex);
+const emailSchema = joi.string().required().email({ tlds: { allow: false }});
 
 const signUpSchema = joi.object({
     username: joi.string().required().alphanum().min(5).max(20),
-    email: joi.string().required().email({ tlds: { allow: false }}),
+    email: emailSchema,
     password: passwordSchema
 });
 
 const loginSchema = joi.object({
-    email: joi.string().required().email({ tlds: { allow: false }}),
-    password: passwordSchema
+    email: emailSchema,
+    password: joi.string().required()
 })
 
 module.exports = {
     signUpSchema: signUpSchema,
     loginSchema: loginSchema,
-    emailSchema: joi.string().required().email({ tlds: { allow: false }}),
+    emailSchema: emailSchema,
     passwordSchema: passwordSchema
 }
