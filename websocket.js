@@ -1,8 +1,15 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
+const { Server } = require("socket.io");
 const gameHandler = require("./gameHandler");
 
+/**
+ * Handles the socket server.
+ * 
+ * @param {Server} io the server for handling socketing
+ */
 function runSocket(io) {
+    const userList = new Set(); // used to keep track of connected users
     io.on("connection", (socket) => {
 
 
@@ -13,6 +20,8 @@ function runSocket(io) {
             socket.emit("message", "You have joined the room");
             socket.broadcast.emit("message", `${socket.request.session.username} has joined the room`);
             updateReadyMessage(socket);
+            userList.add({id: socket.id, username: socket.request.session.username}); // update user list
+            io.emit("updateUserList", Array.from(userList)); // notify client
         });
 
         // when users message
@@ -24,6 +33,8 @@ function runSocket(io) {
         socket.on("disconnect", () => {
             socket.emit("message", `${socket.request.session.username} has disconnected`);
             updateReadyMessage(socket);
+            userList.delete({id: socket.id, username: socket.request.session.username}); // update user list
+            io.emit("updateUserList", Array.from(userList)); // notify client
         })
 
         socket.on("ready", () => {
