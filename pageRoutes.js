@@ -10,13 +10,11 @@ router.get("/", async (req, res) => {
 
 router.get("/game", (req, res) => {
     // redirect to login if unauthenticated
-    console.log(req.origin)
     if (req.session.username) res.render("game", { authenticated: true, url: req.origin }) // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/lobby", (req, res) => {
-    console.log(req.origin)
     if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin }); // Pass authentication and url to view
     else res.redirect("/login");
 });
