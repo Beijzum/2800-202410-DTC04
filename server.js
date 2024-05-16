@@ -68,7 +68,7 @@ app.post("/createAccount", async (req, res) => {
         console.log(validationResult.error.message);
     } else {
         let errorList = await database.signUpUser(req.body);
-        if (errorList.length === 0) {
+        if (!errorList?.length) {
             req.session.username = req.body.username;
             res.redirect("/");
             return;
