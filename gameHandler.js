@@ -36,7 +36,7 @@ function runGame(io, socket) {
 
         // user has joined, and is part of the game
         if (socket.rooms.has("game")) {
-            event.emit("runWrite");
+            ee.emit("runWrite");
         } else {
             // user has joined, but is not part of the game
             switch(currentPhase) {
