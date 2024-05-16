@@ -31,7 +31,7 @@ const sessionConfig = session({
     saveUninitialized: false,
     cookie: {
         secure: false,
-        maxAge: 3 * 60 * 60 * 1000
+        maxAge: 12 * 60 * 60 * 1000
     },
     store: database.mongoSessionStorage,
     unset: "destroy"
