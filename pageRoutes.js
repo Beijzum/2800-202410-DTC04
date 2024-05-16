@@ -54,7 +54,7 @@ router.get("/profile", async (req, res) => {
         return;
     }
     let userData = await database.findUser({ username: req.session.username });
-    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount } });
+    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl } });
 
 })
 
