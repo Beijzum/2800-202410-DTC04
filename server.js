@@ -24,6 +24,22 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+// requirements for cloudinary
+const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+
+const cloudinary = require('cloudinary');
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_CLOUD_KEY,
+  api_secret: process.env.CLOUDINARY_CLOUD_SECRET
+});
+
+const multer  = require('multer')
+const multerStorage = multer.memoryStorage()
+const upload = multer({ storage: multerStorage })
+
+
+
 // session configuration
 app.use(session({
     secret: process.env.NODE_SESSION_SECRET,
@@ -144,6 +160,37 @@ app.post("/reset", async (req, res) => {
         res.status(500).send({ "error": "Error accessing database" })
     }
 });
+
+// post routes for uploading images
+app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
+    if (!req.session.username) {
+        res.redirect('/login');
+        return;
+    }
+
+    const file = req.file;
+    const databaseServer = database.client.db(process.env.MONGODB_DATABASE);
+    const userCollection = databaseServer.collection('users');
+    
+    try {
+        // Await the result of findOne method
+
+        const result = await cloudinary.uploader.upload(file.originalname, { resource_type: 'image' });
+
+
+        await userCollection.updateOne(
+            { username: req.session.username },
+            { $set: { profilePictureUrl: result.secure_url } }
+        );
+        console.log('updated mongodb');
+        res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
+    } catch (error) {
+        console.error('Error updating profile picture:', error);
+        res.status(500).send({ error: 'Failed to update profile picture' });
+    }
+});
+
+
 
 startServer();
 
