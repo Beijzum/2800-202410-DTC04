@@ -1,22 +1,22 @@
-document.getElementById("uploadFile").addEventListener("submit", async (e) => {
-    // stop page from refreshing before handle is done
+document.getElementById('uploadProfilePicForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // get field entries
-    let file = document.getElementById("fileField").files[0];
-    let formData = new FormData();
+    const form = e.target;
+    const formData = new FormData(form);
 
-    formData.append("file", file);
-
-    let response = await fetch(backendLink + "/uploadFile", {
-        method: "POST",
-        body: formData
+    const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
     });
-    
-    let responseText = await response.text();
-    console.log(responseText);
-    window
-    .location
 
-    .href = response.url;
+    const result = await response.json();
+
+    if (response.ok) {
+        alert(result.message);
+        // Optionally, refresh the page or update the image URL dynamically
+        location.reload();
+    } else {
+        alert(result.error);
+    }
 });
