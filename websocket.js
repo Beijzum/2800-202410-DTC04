@@ -5,6 +5,8 @@ const gameHandler = require("./gameHandler");
 function runSocket(io) {
     io.on("connection", (socket) => {
 
+
+
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
@@ -36,8 +38,9 @@ function runSocket(io) {
             }
             
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
-            console.log("asdfasd")
+
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
+                moveClients("lobby", "game");
                 io.emit("startGame");
             }
         })
@@ -58,6 +61,15 @@ function runSocket(io) {
             socket.broadcast.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
         else 
             socket.broadcast.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
+    }
+
+    function moveClients(source, destination) {
+        let clients = io.sockets.adapter.rooms.get(source);
+        for (let client of clients) {
+            let clientSocket = io.sockets.sockets.get(client);
+            clientSocket.leave(source);
+            clientSocket.join(destination);
+        }
     }
 }
 
