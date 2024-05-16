@@ -1,6 +1,8 @@
 const fs = require("fs");
 const ejs = require("ejs");
 const pool = require("./socketConstants");
+const EventEmitter = require("events").EventEmitter;
+const ee = new EventEmitter(); // used for passing control from server to self
 
 // PHASES: WRITE, VOTE, RESULT, WAIT
 var currentPhase, gameRunning = false, promptIndex, timerValue, timer, round;
@@ -34,7 +36,7 @@ function runGame(io, socket) {
 
         // user has joined, and is part of the game
         if (socket.rooms.has("game")) {
-            socket.emit("writePhase");
+            event.emit("runWrite");
         } else {
             // user has joined, but is not part of the game
             switch(currentPhase) {
@@ -62,7 +64,7 @@ function runGame(io, socket) {
         }
     });
 
-    socket.on("runWrite", () => {
+    ee.on("runWrite", () => {
         if (!promptIndex) promptIndex = Math.floor(Math.random() * pool.prompts.length);
         let renderedWriteTemplate = ejs.render(writeTemplate, {prompt: pool.prompts[promptIndex]});
         io.emit("changeView", renderedWriteTemplate);
@@ -74,15 +76,15 @@ function runGame(io, socket) {
         }
     });
 
-    socket.on("runVote", () => {
+    ee.on("runVote", () => {
         
     });
 
-    socket.on("runResult", () => {
+    ee.on("runResult", () => {
 
     })
 
-    socket.on("runWait", () => {
+    ee.on("runWait", () => {
         if (!io.sockets.adapter.rooms.get("game") || io.sockets.adapter.rooms.get("game").size === 0)
             stopGame();
     })

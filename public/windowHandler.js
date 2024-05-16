@@ -7,25 +7,6 @@ let timeDisplay = document.getElementById("timeDisplay");
 
 document.addEventListener("DOMContentLoaded", () => { socket.emit("joinGame"); });
 
-
-// game phase handlers
-socket.on("writePhase", () => {
-    socket.emit("runWrite");
-});
-
-socket.on("votePhase", () => {
-    socket.emit("runVote");
-});
-
-socket.on("resultPhase", () => {
-    socket.emit("runResult");
-});
-
-socket.on("waitPhase", () => {
-    socket.emit("runWait");
-});
-
-
 // handlers for changing screen
 socket.on("noGameRunning", (newHTML) => {
     timeDisplay.innerHTML = "No Game Found";
