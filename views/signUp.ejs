@@ -1,10 +1,13 @@
 <%- include("./templates/header", {pageName: "Sign Up"}) %>
 <%- include("./templates/navbar", {currentPage: "signUp"}) %>
-<form id="signUpForm" class="flex flex-col items-center" action="/createAccount">
-    <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username"}) %>
-    <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
-    <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
-    <%- include("./templates/formSubmitButton", {buttonText: "Create Account"}) %>
-</form>
-<p class="text-center mb-5">Already have an account? <a href="login" class="underline text-blue-500">Login</a></p>
+<div class="max-w-lg flex flex-col justify-center mx-auto " 
+    style="margin-top: 5rem;"> 
+    <form id="signUpForm" class="flex flex-col items-center m-3" action="/createAccount">
+        <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username"}) %>
+        <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
+        <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
+        <%- include("./templates/formSubmitButton", {buttonText: "Create Account"}) %>
+    </form>
+</div>
+<p class="text-center mb-5 max-w-lg">Already have an account? <a href="login" class="underline text-blue-500">Login</a></p>
 <%- include("./templates/footer", {pageScript: "signUp.js"}) %>
