@@ -1,6 +1,6 @@
 <%- include("./templates/header", {pageName: "Sign Up"}) %>
 <%- include("./templates/navbar", {currentPage: "signUp"}) %>
-<form id="signUpForm" class="flex flex-col items-center">
+<form id="signUpForm" class="flex flex-col items-center" action="/createAccount">
     <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username"}) %>
     <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
     <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>

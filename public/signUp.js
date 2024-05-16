@@ -7,7 +7,7 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
     let email = document.getElementById("emailField").value;
     let password = document.getElementById("passwordField").value;
 
-    let response = await fetch(window.location.origin + "/createAccount", {
+    let response = await fetch(e.target.action, {
         method: "POST",
         headers: {
             "Accept": "application/json",

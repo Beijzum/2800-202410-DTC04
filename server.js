@@ -7,7 +7,8 @@ const cors = require("cors");
 const app = express();
 const socketManager = require("./websocket.js");
 const database = require("./database");
-const schemas = require("./joiValidation");
+const joiValidation = require("./joiValidation");
+const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
 
 // set port
@@ -22,6 +23,22 @@ const { Server } = require("socket.io");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+// requirements for cloudinary
+const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+
+const cloudinary = require('cloudinary');
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_CLOUD_KEY,
+    api_secret: process.env.CLOUDINARY_CLOUD_SECRET
+});
+
+const multer = require('multer')
+const multerStorage = multer.memoryStorage()
+const upload = multer({ storage: multerStorage })
+
+
 
 // session configuration
 app.use(session({
@@ -62,12 +79,12 @@ app.get("/logout", (req, res) => {
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
-    let validationResult = schemas.signUpSchema.validate(req.body);
+    let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
     } else {
         let errorList = await database.signUpUser(req.body);
-        if (errorList.length === 0) {
+        if (!errorList?.length) {
             req.session.username = req.body.username;
             res.redirect("/");
             return;
@@ -77,7 +94,7 @@ app.post("/createAccount", async (req, res) => {
 })
 
 app.post("/loginAccount", async (req, res) => {
-    let validationResult = schemas.loginSchema.validate(req.body);
+    let validationResult = joiValidation.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
     } else {
@@ -90,6 +107,112 @@ app.post("/loginAccount", async (req, res) => {
         res.redirect("/login");
     }
 })
+
+app.post("/forgotpass", async (req, res) => {
+    if (req.session.username) {
+        res.redirect("/index");
+        return;
+    }
+
+    const user_email = req.body.email;
+
+    let validationResult = joiValidation.emailSchema.validate(user_email);
+    if (validationResult.error) {
+        console.log(validationResult.error.message);
+        res.status(400).send({ "error": "Error with email entry" });
+        return;
+    }
+
+    let user = await database.findUser({ "email": user_email });
+
+    if (!user) {
+        res.status(404).send({ "error": "No account with specified email" });
+        return;
+    }
+
+    const hash = require("crypto").randomBytes(12).toString('hex');
+    const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
+
+    if (email.sendResetLink(user_email, user.username, link)) {
+        await database.writeResetDoc(user, hash)
+        res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
+    } else {
+        res.status(500).send({ "error": "Error with sending email" })
+    }
+});
+
+app.post("/reset", async (req, res) => {
+    const { password, hash } = req.body;
+
+    if (joiValidation.passwordSchema.validate(password).error) {
+        res.status(400).send({ "error": "Invalid password" });
+        return;
+    }
+
+    try {
+        const resetDoc = await database.getResetDoc(hash);
+        const user = await database.findUser({ "_id": resetDoc.user_id });
+        await database.updateUserPass(user, password);
+        await database.deleteResetDoc(hash);
+        res.redirect("/login");
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ "error": "Error accessing database" })
+    }
+});
+
+app.post("/changePass", async (req, res) => {
+    if (!req.session.username) {
+        res.redirect("/");
+        return;
+    }
+
+    let validPass = schemas.passwordSchema.validate(req.body.password);
+
+    if (validPass.error) {
+        console.log(validPass.error.message);
+        res.status(400).send({"error": validPass.error.message.replace("", "")});
+        return;
+    }   
+    
+    try {
+        database.updateUserPass(await database.findUser({"username": req.session.username}), req.body.password);
+        res.status(200).send();
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({"error": "Internal server error"});
+    }
+});
+
+// post routes for uploading images
+app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
+    if (!req.session.username) {
+        res.redirect('/login');
+        return;
+    }
+
+    const databaseServer = database.client.db(process.env.MONGODB_DATABASE);
+    const userCollection = databaseServer.collection('users');
+
+    let buf64 = req.file.buffer.toString('base64');
+    stream = cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
+        console.log(result)
+        try {
+            await userCollection.updateOne(
+                { username: req.session.username },
+                { $set: { profilePictureUrl: result.secure_url } }
+            );
+            console.log('updated mongodb');
+            res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
+        } catch (error) {
+            console.error('Error updating profile picture:', error);
+            res.status(500).send({ error: 'Failed to update profile picture' });
+        }
+    });
+
+});
+
+
 
 startServer();
 

@@ -27,9 +27,25 @@ router.get("/login", (req, res) => {
     else res.render("login", { authenticated: false });
 })
 
-router.get("/signup", (req, res) => {
+router.get("/forgotpass", (req, res) => {
     if (req.session.username) res.redirect("/index");
-    else res.render("signup", { authenticated: false });
+    else res.render("forgotpass", {authenticated: false})
+});
+
+router.get("/reset", async (req, res) => {
+    const user = await database.getResetDoc(req.query.id);
+
+    if (!user) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("reset", {authenticated: false, hash: req.query.id});
+});
+
+router.get("/signUp", (req, res) => {
+    if (req.session.username) res.redirect("/index");
+    else res.render("signUp", { authenticated: false });
 })
 
 router.get("/profile", async (req, res) => {
@@ -38,7 +54,7 @@ router.get("/profile", async (req, res) => {
         return;
     }
     let userData = await database.findUser({ username: req.session.username });
-    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount } });
+    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl } });
 
 })
 
@@ -46,12 +62,6 @@ router.get("/logout", (req, res) => {
     req.session.destroy();
     req.session = null;
     res.redirect("/");
-})
-
-// Temporary Router I added for Voting Screen Sample
-router.get("/votingScreenSample", async (req, res) => {
-    let top10Players = await database.getLeaderboard();
-    res.render("votingScreenSample", { authenticated: req.session.username !== undefined, topUsers: top10Players });
 })
 
 router.get("*", (req, res) => {
