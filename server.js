@@ -24,7 +24,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 // session configuration
-app.use(session({
+
+const sessionConfig = session({
     secret: process.env.NODE_SESSION_SECRET,
     resave: true,
     saveUninitialized: false,
@@ -34,7 +35,9 @@ app.use(session({
     },
     store: database.mongoSessionStorage,
     unset: "destroy"
-}))
+});
+
+app.use(sessionConfig);
 
 // set up ejs
 app.set("view engine", "ejs");
@@ -102,6 +105,7 @@ async function startServer() {
 
         // connect to websocket server
         const io = new Server(server);
+        io.engine.use(sessionConfig);
         socketManager.runSocket(io);
     }
     else console.log("Error, could not connect to database, to try again, restart the server.");
