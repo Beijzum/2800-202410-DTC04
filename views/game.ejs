@@ -1,9 +1,7 @@
 <%- include("./templates/header", {pageName: "Game Lobby"}) %>
 <%- include("./templates/navbar", {currentPage: "game"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "game" }) %>
-<div id="gameMenu">
-<!-- ADD IF/ELSE CLAUSES DEPENDING ON WHAT SCREEN IT IS ON NOW -->
-</div>
+<div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
 <script src="windowHandler.js"></script>
 <%- include("./templates/footer", {pageScript: "game.js"}) %>
