@@ -5,5 +5,6 @@
     <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
     <%- include("./templates/formSubmitButton", {buttonText: "Login"}) %>
 </form>
+<p class="text-center mb-5"><a href="forgotPass" class ="underline text-blue-500">Forgot your password?</a></p>
 <p class="text-center mb-5">Don't have an account yet? <a href="signUp" class="underline text-blue-500">Sign Up</a></p>
 <%- include("./templates/footer", {pageScript: "login.js"}) %>
