@@ -3,6 +3,7 @@
         "@google/generative-ai": "^0.9.0",
         "@trycourier/courier": "^6.1.1",
         "bcrypt": "^5.1.1",
+        "cloudinary": "^2.2.0",
         "connect-mongo": "^5.1.0",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
@@ -12,6 +13,7 @@
         "http": "^0.0.1-security",
         "joi": "^17.13.1",
         "mongodb": "^6.6.1",
+        "multer": "^1.4.5-lts.1",
         "nodemon": "^3.1.0",
         "socket.io": "^4.7.5"
     },
