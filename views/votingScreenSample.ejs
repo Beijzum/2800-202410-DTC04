@@ -1,0 +1,103 @@
+<%- include("./templates/header", {pageName: "123" }) %>
+<%- include("./templates/navbar", {currentPage: "123" }) %>
+
+<p class="text-2xl p-4 text-center font-bold bg-gray-800 m-2 text-white rounded-lg">Who is The AI?</p>
+<label for="prompt" class="text-sm p-2 font-semibold">Prompt</label>
+<p id="prompt" class="p-4 bg-zinc-300 font-semibold m-2 rounded-lg">Describe a futuristic cityscape where technology and
+    nature coexist in harmony.</p>
+
+<label for="responses" class="text-sm p-2 font-semibold ">Responses</label>
+
+<div id="responses" class="m-2">
+    <ul class="">
+        <ol>
+            <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+                <div class="flex">
+                    <img src="images/avatar0.jpg" class="w-16 h-16 p-2 rounded-full">
+                    <div class="p-1">
+                        <p class="text-md font-semibold font-quicksand">dankmonkey69</p>
+                        <p class="text-sm font-danfo" >idk man, ima just take the L on this one xd</p>
+                    </div>
+                </div>
+                <button class="bg-blue-600 text-white font-semibold text-sm rounded-full mr-2 w-11 h-11 p-2">Vote</button>
+            </div>
+        </ol>
+        <ol>
+            <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+                <div class="flex">
+                    <img src="images/avatar5.jpg" class="w-16 h-16 p-2 rounded-full">
+                    <div class="p-1">
+                        <p class="text-sm font-semibold">buttsmear54</p>
+                        <p class="text-sm">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tenetur ullam fugiat quod.
+                            Totam distinctio repellat quas labore fugiat! Harum, iusto.</p>
+                    </div>
+                </div>
+                <button class="bg-green-600 text-white font-semibold text-sm rounded-full mr-2 min-w-12 min-h-12 p-2">✓</button>
+            </div>
+        </ol>
+        <ol>
+            <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+                <div class="flex">
+                    <img src="images/avatar18.jpg" class="w-16 h-16 p-2 rounded-full">
+                    <div class="p-1">
+                        <p class="text-sm font-semibold">greasyloser96</p>
+                        <p class="text-sm">The guy above me is stupid</p>
+                    </div>
+                </div>
+                <button
+                    class="bg-blue-600 text-white font-semibold text-sm rounded-full mr-2 w-11 h-11 p-2 opacity-50">Vote</button>
+            </div>
+        </ol>
+        <ol>
+            <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+                <div class="flex">
+                    <img src="images/avatar9.jpg" class="w-16 h-16 p-2 rounded-full">
+                    <div class="p-1">
+                        <p class="text-sm font-semibold">cringedemon420</p>
+                        <p class="text-sm">Insert funny response here</p>
+                    </div>
+                </div>
+                <button class="bg-blue-600 text-white font-semibold text-sm rounded-full mr-2 w-11 h-11 p-2">Vote</button>
+            </div>
+        </ol>        
+        <ol>
+            <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+                <div class="flex">
+                    <img src="images/avatar9.jpg" class="w-16 h-16 p-2 rounded-full">
+                    <div class="p-1">
+                        <p class="text-sm font-semibold">cringedemon420</p>
+                        <p class="text-sm">Insert funny response here</p>
+                    </div>
+                </div>
+                <button class="bg-blue-600 text-white font-semibold text-sm rounded-full mr-2 w-11 h-11 p-2">Vote</button>
+            </div>
+        </ol>
+    </ul>
+</div>
+
+<script>
+    function addNewPost(username, message) {
+        const responsesList = document.getElementById('responses');
+        // Create new post element
+        const newPost = document.createElement('ol');
+        newPost.innerHTML = `
+        <div class="bg-gray-300 rounded-lg flex mt-2 justify-between items-center">
+            <div class="flex">
+            <img src="images/avatar1.jpg" class="w-16 h-16 p-2 rounded-full">
+            <div class="p-1">
+                <p class="text-sm font-semibold">${"Richard"}</p>
+                <p class="text-sm">${"Richard"}</p>
+            </div>
+            </div>
+            <button class="bg-blue-600 text-white font-semibold text-sm rounded-full mr-2 w-11 h-11 p-2">Vote</button>
+        </div>
+        `;
+        // Append new post to the list
+        responsesList.appendChild(newPost);
+    }
+
+    // Example usage
+    addNewPost("newUser123", "This is a new post added dynamically.");
+</script>
+
+<%- include("./templates/footer", {pageScript: "index.js" }) %>

@@ -6,11 +6,11 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     let email = document.getElementById("emailField").value;
     let password = document.getElementById("passwordField").value;
 
-    let response = await fetch(backendLink + "/loginAccount", {
+    let response = await fetch(e.target.action, {
         method: "POST",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json" 
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             email: email,

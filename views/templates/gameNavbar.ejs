@@ -1,7 +1,7 @@
-<nav class="bg-blue-800">
+<nav class="bg-blue-800 w-full shadow-lg" id="gameNavbar">
     <% if (currentPage === "lobby") { %>
         <%- include("lobbyGameNavbarElements") %>
     <% } else { %>
-        <%# include("inGameNavbarElements") %>
+        <%- include("inGameNavbarElements"); %>
     <% } %>
 </nav>

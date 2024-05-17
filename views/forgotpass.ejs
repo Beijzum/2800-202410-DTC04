@@ -1,0 +1,14 @@
+<%- include("./templates/header", {pageName: "Reset Password"}) %>
+<%- include("./templates/navbar", {currentPage: "N/a"}) %>
+
+<main class="my-6">
+    <h1 class="text-center font-bold text-2xl mb-6">Forgot password?</h1>
+    <form id="forgotForm" action="forgotPass" method="post" class="flex flex-col items-center">
+        <p class="w-64">Please enter your email so that we can send you a link to help you retrieve your account.</p>
+        <%# No label used as the explanation above replaces it. %>
+        <%- include("./templates/credentialField", {type: "email", id: "emailField", placeholder: "Enter email", fieldLabel: ""}) %>
+        <%- include("./templates/formSubmitButton", {buttonText: "Send login link"}) %>
+    </form>
+</main>
+
+<%- include("./templates/footer", {pageScript: "forgotpass.js"}) %>
