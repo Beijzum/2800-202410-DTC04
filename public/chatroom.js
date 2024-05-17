@@ -10,6 +10,8 @@ let messageSection = document.getElementById("messageSection");
 socket.on("message", (messageContent) => {
     let message = document.createElement("li");
     message.textContent = messageContent;
+    //Tailwind for Messages 
+    message.className = " bg-blue-300 p-3 mx-3 my-3 rounded-lg intense-shadow_2 ";
     messageSection.appendChild(message);
     window.scrollTo(0, document.body.scrollHeight);
 })

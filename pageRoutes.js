@@ -14,6 +14,11 @@ router.get("/game", (req, res) => {
     else res.redirect("/login");
 });
 
+router.get("/test", (req, res) => {
+    if (req.session.username) res.render("test", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    else res.redirect("/login");
+});
+
 router.get("/lobby", (req, res) => {
     if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin }); // Pass authentication and url to view
     else res.redirect("/login");
