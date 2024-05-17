@@ -11,19 +11,19 @@ function runSocket(io) {
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
-            socket.emit("message", formatMessage("", "You have joined the room"));
-            socket.broadcast.emit("message", formatMessage(socket.request.session.username, `${socket.request.session.username} has joined the room`));
+            socket.emit("message", formatMessage("", "", "You have joined the room"));
+            socket.broadcast.emit("message", formatMessage(socket.request.session.username, socket.request.session.profilePic, `${socket.request.session.username} has joined the room`));
             updateReadyMessage(socket);
         });
 
         // when users message
         socket.on("message", (message) => {
-            io.emit("message", formatMessage(socket.request.session.username, message));
+            io.emit("message", formatMessage(socket.request.session.username, socket.request.session.profilePic, message));
         })
 
         // When disconnect
         socket.on("disconnect", () => {
-            socket.emit("message", formatMessage("", `${socket.request.session.username} has disconnected`));
+            socket.emit("message", formatMessage("", "", `${socket.request.session.username} has disconnected`));
             updateReadyMessage(socket);
         })
 
@@ -74,9 +74,10 @@ function runSocket(io) {
     }
 }
 
-function formatMessage(username, text) {
+function formatMessage(username, profilePic, text) {
     return {
         username,
+        profilePic,
         text,
         time: dayjs().format("h:mm a")
     }
