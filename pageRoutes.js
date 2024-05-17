@@ -14,8 +14,13 @@ router.get("/game", (req, res) => {
     else res.redirect("/login");
 });
 
-router.get("/test", (req, res) => {
-    if (req.session.username) res.render("test", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+router.get("/victory", (req, res) => {
+    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    else res.redirect("/login");
+});
+
+router.get("/defeat", (req, res) => {
+    if (req.session.username) res.render("defeat", { authenticated: true, url: req.origin }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
