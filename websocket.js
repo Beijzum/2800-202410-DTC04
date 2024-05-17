@@ -6,13 +6,11 @@ const dayjs = require("dayjs");
 function runSocket(io) {
     io.on("connection", (socket) => {
 
-
-
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
-            socket.emit("message", formatMessage("", "", "You have joined the room"));
-            socket.broadcast.emit("message", formatMessage(socket.request.session.username, socket.request.session.profilePic, `${socket.request.session.username} has joined the room`));
+            socket.emit("systemMessage", formatMessage("", "", "You have joined the room"));
+            socket.broadcast.emit("systemMessage", formatMessage(socket.request.session.username, socket.request.session.profilePic, `${socket.request.session.username} has joined the room`));
             updateReadyMessage(socket);
         });
 
@@ -23,7 +21,7 @@ function runSocket(io) {
 
         // When disconnect
         socket.on("disconnect", () => {
-            socket.emit("message", formatMessage("", "", `${socket.request.session.username} has disconnected`));
+            socket.emit("systemMessage", formatMessage("", "", `${socket.request.session.username} has disconnected`));
             updateReadyMessage(socket);
         })
 
