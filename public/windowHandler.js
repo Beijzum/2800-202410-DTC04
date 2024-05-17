@@ -25,7 +25,7 @@ socket.on("roundUpdate", (round) => {
 
 socket.on("timerUpdate", (time) => {
     let seconds = Number(time.substr(2, 2));
-    if (seconds < 11) flashNavbar();
+    if (seconds < 11 && time[0] !== "0") flashNavbar();
     timeDisplay.innerHTML = `Time Left: ${time}`;
 });
 
