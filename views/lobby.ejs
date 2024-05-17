@@ -1,9 +1,9 @@
 <%- include("./templates/header", {pageName: "Pre-Game" }) %>
-    <div class="fixed offset-navbar w-screen">
+    <div class="fixed w-screen">
         <%- include("./templates/navbar", {currentPage: "lobby" }) %>
             <%- include("./templates/gameNavbar", {currentPage: "lobby" }) %>
     </div>
-    <ul id="messageSection" class="offset-gameNav">
+    <ul id="messageSection" class="offset-nav offset-chatBar">
 
     </ul>
     <%- include("./templates/websocketImport") %>
