@@ -26,6 +26,5 @@ function isReady() {
 }
 
 socket.on("startGame", () => {
-    console.log('asdfasdfasd');
     window.location.href = "/game";
 });
