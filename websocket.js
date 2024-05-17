@@ -1,6 +1,7 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
 const gameHandler = require("./gameHandler");
+const dayjs = require("dayjs");
 
 function runSocket(io) {
     io.on("connection", (socket) => {
@@ -10,8 +11,8 @@ function runSocket(io) {
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
-            socket.emit("message", "You have joined the room");
-            socket.broadcast.emit("message", `${socket.request.session.username} has joined the room`);
+            socket.emit("message", formatMessage("System", "You have joined the room"));
+            socket.broadcast.emit("message", formatMessage(socket.request.session.username, `${socket.request.session.username} has joined the room`));
             updateReadyMessage(socket);
         });
 
@@ -28,15 +29,15 @@ function runSocket(io) {
 
         socket.on("ready", () => {
             socket.join("readyList");
-            
+
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
-            
+
             if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
                 io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
             } else {
                 socket.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
             }
-            
+
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
@@ -59,7 +60,7 @@ function runSocket(io) {
 
         if (io.sockets.adapter.rooms.get("lobby").size < 3)
             socket.broadcast.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
-        else 
+        else
             socket.broadcast.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
     }
 
@@ -70,6 +71,14 @@ function runSocket(io) {
             clientSocket.leave(source);
             clientSocket.join(destination);
         }
+    }
+}
+
+function formatMessage(username, text) {
+    return {
+        username,
+        text,
+        time: dayjs().format("h:mm a")
     }
 }
 

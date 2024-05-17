@@ -6,6 +6,7 @@
         "cloudinary": "^2.2.0",
         "connect-mongo": "^5.1.0",
         "cors": "^2.8.5",
+        "dayjs": "^1.11.11",
         "dotenv": "^16.4.5",
         "ejs": "^3.1.10",
         "events": "^3.3.0",
