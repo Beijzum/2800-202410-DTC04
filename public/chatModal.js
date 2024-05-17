@@ -1,7 +1,7 @@
 // templates for the modal
 const card = document.createElement("div");
 card.appendChild(document.createElement("p"));
-card.classList.add("flex", "flex-row", "py-2", "px-4", "w-full");
+card.classList.add("flex", "flex-row", "my-2", "mx-1", "w-auto", "border-b", "border-black");
 
 const modal = document.querySelector("#userDisplays");
 
@@ -16,7 +16,8 @@ socket.on("updateUserList", (users) => {
     const userIds = [];
     // Removes all users that have left
     modal.childNodes.forEach(function(node) {
-        if (!users.includes(node.id)) {
+        console.log(node, node.id, node.nodeName)
+        if (node.nodeName !== "H1" && !users.includes(node.id)) {
             node.remove();
         }
     })
