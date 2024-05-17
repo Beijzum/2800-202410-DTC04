@@ -8,8 +8,10 @@
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
         "ejs": "^3.1.10",
+        "events": "^3.3.0",
         "express": "^4.19.2",
         "express-session": "^1.18.0",
+        "fs": "^0.0.1-security",
         "flowbite": "^2.3.0",
         "http": "^0.0.1-security",
         "joi": "^17.13.1",
@@ -27,5 +29,11 @@
         "dev": "nodemon server.js"
     },
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "devDependencies": {
+        "autoprefixer": "^10.4.19",
+        "postcss": "^8.4.38",
+        "tailwindcss": "^3.4.3",
+        "vite": "^5.2.11"
+    }
 }

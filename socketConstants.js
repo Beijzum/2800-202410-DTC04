@@ -1,5 +1,53 @@
-// Prompts generated with ChatGPT 3.5
+// first names here
+const firstNamesPool = [
+    'poopy', 'butt', 'mature', 'epic', 'shitake',
+    'goofy', 'strange', 'nice', 'cringe', 'sad',
+    'high', 'stoned', 'hammered', 'drunk', 'zoned',
+    'dank', 'kris', 'bulma', 'goku', 'cold', 'zeek',
+    'elusive', 'vintage', 'tacky', 'rancid', 'greasy'
+];
 
+
+// last names
+const lastNamesPool = [
+    'mushroom', 'smear', 'monkey', 'kappa', 'popo',
+    'loser', 'unicorn', 'fairy', 'robot', 'human',
+    'cat', 'demon', 'angel', 'dog', 'cowboy',
+    'dragon', 'wizard', 'bisnix', 'connor', 'saiyan',
+    'lizard', 'turtle', 'goblin', 'knight', 'vampire'
+];
+
+// path to anonymized images
+const avatarPool = [
+    '/images/avatar0.jpg',
+    '/images/avatar1.jpg',
+    '/images/avatar2.jpg',
+    '/images/avatar3.jpg',
+    '/images/avatar4.jpg',
+    '/images/avatar5.jpg',
+    '/images/avatar6.jpg',
+    '/images/avatar7.jpg',
+    '/images/avatar8.jpg',
+    '/images/avatar9.jpg',
+    '/images/avatar10.jpg',
+    '/images/avatar11.jpg',
+    '/images/avatar12.jpg',
+    '/images/avatar13.jpg',
+    '/images/avatar14.jpg',
+    '/images/avatar15.jpg',
+    '/images/avatar16.jpg',
+    '/images/avatar17.jpg',
+    '/images/avatar18.jpg',
+    '/images/avatar19.jpg',
+    '/images/avatar20.jpg',
+    '/images/avatar21.png',
+    '/images/avatar22.png',
+    '/images/avatar23.png',
+    '/images/avatar24.png',
+];
+
+// Prompts generated with ChatGPT 3.5
+// prompts for game
 const prompts = [
     // RANDOM PROMPTS
     "Write a short story that begins with the line: 'The clock struck midnight, and everything changed.'",
@@ -221,3 +269,10 @@ const prompts = [
     "Create a poem inspired by the concept of parallel universes and alternate realities.",
     "Write a Buzzfeed-style listicle titled '10 Must-Have Gadgets for Surviving in a Post-Apocalyptic World.'",
 ];
+
+module.exports = {
+    prompts: prompts,
+    avatars: avatarPool,
+    firstNames: firstNamesPool,
+    lastNames: lastNamesPool
+}

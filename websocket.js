@@ -1,29 +1,76 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
+const gameHandler = require("./gameHandler");
+
 function runSocket(io) {
     io.on("connection", (socket) => {
-        // When current user joins the chat
-        socket.emit("message", "You have joined a room")
-        // When any other user joins the chat
-        socket.broadcast.emit("message", "User has joined the chat")
+
+
+
         // Player joins chatroom lobby
-        socket.on("joinLobby", (player) => {
-            // Players are given unique ID
-            const playerId = socket.id;
-            // playerName, playerProfile, and ready status is false
-            players[playerId] = { id: playerId, playerName: player.playerName, playerProfile: player.playerProfile, ready: false };
-            // Show other players that a new player has joined.
+        socket.on("joinLobby", () => {
+            socket.join("lobby");
+            socket.emit("message", "You have joined the room");
+            socket.broadcast.emit("message", `${socket.request.session.username} has joined the room`);
+            updateReadyMessage(socket);
         });
 
+        // when users message
         socket.on("message", (message) => {
             io.emit("message", message);
         })
 
-        // When other users disconnect
+        // When disconnect
         socket.on("disconnect", () => {
-            io.emit("message", "A user has disconnected");
+            socket.emit("message", `${socket.request.session.username} has disconnected`);
+            updateReadyMessage(socket);
         })
+
+        socket.on("ready", () => {
+            socket.join("readyList");
+            
+            if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
+            
+            if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
+                io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
+            } else {
+                socket.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
+            }
+            
+            if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
+
+            if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
+                moveClients("lobby", "game");
+                io.emit("startGame");
+            }
+        })
+
+        socket.on("unready", () => {
+            socket.leave("readyList");
+            updateReadyMessage(socket);
+        })
+
+        // Delegate game logic sockets to external module
+        gameHandler.runGame(io, socket);
     })
+
+    function updateReadyMessage(socket) {
+        if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
+
+        if (io.sockets.adapter.rooms.get("lobby").size < 3)
+            socket.broadcast.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
+        else 
+            socket.broadcast.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
+    }
+
+    function moveClients(source, destination) {
+        let clients = io.sockets.adapter.rooms.get(source);
+        for (let client of clients) {
+            let clientSocket = io.sockets.sockets.get(client);
+            clientSocket.leave(source);
+            clientSocket.join(destination);
+        }
+    }
 }
 
 module.exports = {
