@@ -168,7 +168,7 @@ app.post("/changePass", async (req, res) => {
         return;
     }
 
-    let validPass = schemas.passwordSchema.validate(req.body.password);
+    let validPass = joiValidation.passwordSchema.validate(req.body.password);
 
     if (validPass.error) {
         console.log(validPass.error.message);
