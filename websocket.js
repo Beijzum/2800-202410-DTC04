@@ -1,7 +1,6 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
 const gameHandler = require("./gameHandler");
-const dayjs = require("dayjs");
 
 function runSocket(io) {
     io.on("connection", (socket) => {
@@ -72,12 +71,19 @@ function runSocket(io) {
     }
 }
 
+// Format message. Could probably move it elsewhere.
+const dayjs = require("dayjs");
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 function formatMessage(username, profilePic, text) {
     return {
         username,
         profilePic,
         text,
-        time: dayjs().format("h:mm a")
+        time: dayjs().tz('America/Vancouver').format("h:mm a")
     }
 }
 
