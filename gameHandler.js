@@ -79,7 +79,7 @@ function runGame(io, socket) {
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 5;
+            phaseDuration = 61;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runVote");
         }
@@ -95,8 +95,8 @@ function runGame(io, socket) {
         // socket.emit("changeView", renderedVoteTemplate);
         
         if (phaseDuration <= 0) {
-            console.log('vote')
-            phaseDuration = 5;
+            
+            phaseDuration = 61;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runResult");
         }
@@ -113,8 +113,8 @@ function runGame(io, socket) {
         // socket.emit("changeView", renderedResultTemplate);
         
         if (phaseDuration <= 0) {
-            console.log('result')
-            phaseDuration = 5;
+            
+            phaseDuration = 11;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runWait");
         }
@@ -135,10 +135,9 @@ function runGame(io, socket) {
 
         // move onto next round
         if (phaseDuration <= 0) {
-            console.log('wait')
-            phaseDuration = 5;
+            
+            phaseDuration = 11;
             round++;
-            setupNextRound();
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runWrite");
         }
@@ -157,8 +156,9 @@ function runGame(io, socket) {
 
     function createDelayedRedirect(delayTimeInSeconds, timer, nextRoute) {
         setTimeout(() => {
-            ee.emit(nextRoute);
             clearInterval(timer);
+            if (nextRoute === "runWrite") setupNextRound();
+            ee.emit(nextRoute);
         }, delayTimeInSeconds * 1000);
     }
 
@@ -173,12 +173,11 @@ function runGame(io, socket) {
 // GENERAL FUNCTION DEFINITIONS
 
 function convertFormat(seconds) {
-    return `${Math.floor(seconds / 60)}:${seconds < 10 ? "0" + seconds % 60 : seconds % 60}`;
+    return `${Math.floor(seconds / 60)}:${seconds % 60 < 10 ? "0" + seconds % 60 : seconds % 60}`;
 }
 
 function setupNextRound() {
     promptIndex = null;
-    timer = null;
     phaseDuration = null;
 }
 
@@ -187,7 +186,6 @@ function stopGame() {
     gameRunning = false;
     promptIndex = null;
     phaseDuration = null;
-    timer = null;
     round = null;
 }
 
