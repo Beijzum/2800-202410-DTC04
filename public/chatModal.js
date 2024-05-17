@@ -1,7 +1,7 @@
 // templates for the modal
 const card = document.createElement("div");
 card.appendChild(document.createElement("p"));
-card.classList.add("flex", "flex-row", "my-2", "mx-1", "w-auto", "border-b", "border-black");
+card.classList.add("flex", "flex-row", "my-2", "mx-8", "w-auto", "border-b", "border-black");
 
 const modal = document.querySelector("#userDisplays");
 
