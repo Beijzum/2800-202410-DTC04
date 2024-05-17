@@ -5,38 +5,36 @@ const gameHandler = require("./gameHandler");
 function runSocket(io) {
     io.on("connection", (socket) => {
 
-
-
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
-            socket.emit("message", "You have joined the room");
-            socket.broadcast.emit("message", `${socket.request.session.username} has joined the room`);
+            socket.emit("systemMessage", formatMessage("", "", "You have joined the room"));
+            socket.broadcast.emit("systemMessage", formatMessage(socket.request.session.username, socket.request.session.profilePic, `${socket.request.session.username} has joined the room`));
             updateReadyMessage(socket);
         });
 
         // when users message
         socket.on("message", (message) => {
-            io.emit("message", message);
+            io.emit("message", formatMessage(socket.request.session.username, socket.request.session.profilePic, message));
         })
 
         // When disconnect
         socket.on("disconnect", () => {
-            socket.emit("message", `${socket.request.session.username} has disconnected`);
+            socket.emit("systemMessage", formatMessage("", "", `${socket.request.session.username} has disconnected`));
             updateReadyMessage(socket);
         })
 
         socket.on("ready", () => {
             socket.join("readyList");
-            
+
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
-            
+
             if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
                 io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
             } else {
                 socket.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
             }
-            
+
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
@@ -59,7 +57,7 @@ function runSocket(io) {
 
         if (io.sockets.adapter.rooms.get("lobby").size < 3)
             socket.broadcast.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
-        else 
+        else
             socket.broadcast.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
     }
 
@@ -70,6 +68,22 @@ function runSocket(io) {
             clientSocket.leave(source);
             clientSocket.join(destination);
         }
+    }
+}
+
+// Format message. Could probably move it elsewhere.
+const dayjs = require("dayjs");
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+function formatMessage(username, profilePic, text) {
+    return {
+        username,
+        profilePic,
+        text,
+        time: dayjs().tz('America/Vancouver').format("h:mm a")
     }
 }
 

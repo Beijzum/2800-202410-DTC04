@@ -6,6 +6,10 @@
     box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
 }
 
+.intense-shadow_2 {
+    box-shadow: 0 4px 20px 1px rgba(100, 129, 224, 0.5), 0 2px 4px -1px rgba(0, 5, 255, 0.15);
+}
+
 .w-9\/10 {
     width: 90%;
 }
@@ -16,4 +20,8 @@
 
 .offset-nav {
     padding-top: 80px;
+}
+
+.offset-chatBar {
+    padding-bottom: 97px;
 }

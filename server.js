@@ -102,6 +102,7 @@ app.post("/loginAccount", async (req, res) => {
         let loginResult = await database.loginUser(req.body);
         if (loginResult) {
             req.session.username = loginResult.username;
+            req.session.profilePic = loginResult.profilePictureUrl;
             res.redirect("/");
             return;
         }
