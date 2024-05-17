@@ -10,6 +10,7 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
+const aiModel = require("./geminiAI.js")
 
 // set port
 const port = process.env.PORT || 3000;
@@ -19,10 +20,9 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-// requirements for geminiAI
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+// set AI model
+const chat = aiModel.createChatbot().startChat();
 
 // requirements for cloudinary
 const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
@@ -37,8 +37,6 @@ cloudinary.config({
 const multer = require('multer')
 const multerStorage = multer.memoryStorage()
 const upload = multer({ storage: multerStorage })
-
-
 
 // session configuration
 
@@ -174,16 +172,16 @@ app.post("/changePass", async (req, res) => {
 
     if (validPass.error) {
         console.log(validPass.error.message);
-        res.status(400).send({"error": validPass.error.message.replace("", "")});
+        res.status(400).send({ "error": validPass.error.message.replace("", "") });
         return;
-    }   
-    
+    }
+
     try {
-        database.updateUserPass(await database.findUser({"username": req.session.username}), req.body.password);
+        database.updateUserPass(await database.findUser({ "username": req.session.username }), req.body.password);
         res.status(200).send();
     } catch (e) {
         console.error(e);
-        res.status(500).send({"error": "Internal server error"});
+        res.status(500).send({ "error": "Internal server error" });
     }
 });
 
