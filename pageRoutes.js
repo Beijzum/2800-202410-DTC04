@@ -62,6 +62,15 @@ router.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
+router.get("/changePass", (req, res) => {
+    if (!req.session.username) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("changePassModal", {name: req.session.username});
+});
+
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
 })
