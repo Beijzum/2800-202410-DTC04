@@ -7,7 +7,7 @@ card.classList.add("flex", "flex-row", "py-2", "px-4", "w-full");
 document.addEventListener("DOMContentLoaded", (_) => {
     const modal = document.createElement('dialog');
     modal.id = "userDisplays";
-    modal.className = "flex flex-col w-1/3 h-2/3 overflow-y-auto";
+    modal.classList.add("w-1/3", "h-2/3", "overflow-y-auto");
     document.body.appendChild(modal);
 
     modal.addEventListener("click", function(e) {
