@@ -20,7 +20,7 @@ function runSocket(io) {
             socket.emit("message", "You have joined the room");
             socket.broadcast.emit("message", `${socket.request.session.username} has joined the room`);
             updateReadyMessage(socket);
-            userList.add({id: socket.id, username: socket.request.session.username}); // update user list
+            userList.add(socket.request.session.username); // update user list
             io.emit("updateUserList", Array.from(userList)); // notify client
         });
 
@@ -33,7 +33,7 @@ function runSocket(io) {
         socket.on("disconnect", () => {
             socket.emit("message", `${socket.request.session.username} has disconnected`);
             updateReadyMessage(socket);
-            userList.delete({id: socket.id, username: socket.request.session.username}); // update user list
+            userList.delete(socket.request.session.username); // update user list
             io.emit("updateUserList", Array.from(userList)); // notify client
         })
 
