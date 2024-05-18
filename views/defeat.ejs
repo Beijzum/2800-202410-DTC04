@@ -1,0 +1,4 @@
+<%- include("./templates/header", {pageName: "testname" }) %>
+    <%- include("./templates/navbar", {currentPage: "test" }) %>
+    <%- include("./templates/postGameModal", {winOrLose: "Defeat...", imageUrl: "/images/defeat.jpg", color: "red"}) %>
+    <%- include("./templates/footer", {pageScript: "postGameModal.js" }) %>

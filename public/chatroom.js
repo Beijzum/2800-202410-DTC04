@@ -17,7 +17,7 @@ socket.on("message", (messageContent) => {
                 <span class="font-bold text-white">${messageContent.username}</span>
             </div>
             <div class="flex-grow flex justify-end">
-                <span class="text-xs text-black">${messageContent.time}</span>
+                <span class="text-xs text-white font-bold">${messageContent.time}</span>
             </div>
         </div>
         <div class="bg-gray-300 text-black p-2 rounded-b-lg whitespace-normal break-words">
@@ -38,7 +38,7 @@ socket.on("systemMessage", (messageContent) => {
                 <span class="font-bold text-white">System Message</span>
             </div>
             <div class="flex-grow flex justify-end">
-                <span class="text-xs text-black">${messageContent.time}</span>
+                <span class="text-xs text-white font-bold">${messageContent.time}</span>
             </div>
         </div>
         <div class="bg-gray-300 text-black p-2 rounded-b-lg whitespace-normal break-words">
