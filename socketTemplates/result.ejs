@@ -1,16 +1,19 @@
-<div class="m-2 rounded-lg">
-    <label for="card" class="text-xl font-bold m-2">The Most Voted Player</label>
-    <div class="flex bg-gray-300 m-2 rounded-lg">
-        <img src="<%= eliminatedPlayer.aliasPicture %>" class="w-16 h-16 p-2 rounded-full">
-        <div class="p-1">
-            <p class="text-sm font-semibold"><%= eliminatedPlayer.alias %></p>
-            <p class="text-sm"><%= eliminatedPlayer.responseContent %></p>
+<% if (eliminatedPlayer) { %>
+    <div class="m-2 rounded-lg">
+        <label for="card" class="text-xl font-bold m-2">The Most Voted Player</label>
+        <div class="flex bg-gray-300 m-2 rounded-lg">
+            <img src="<%= eliminatedPlayer.aliasPicture %>" class="w-16 h-16 p-2 rounded-full">
+            <div class="p-1">
+                <p class="text-sm font-semibold"><%= eliminatedPlayer.alias %></p>
+                <p class="text-sm"><%= eliminatedPlayer.responseContent %></p>
+            </div>
         </div>
+        <p id="checkmarks" class="text-green-600 text-3xl m-2">✓✓✓</p>
+        <p class="text-center font-semibold"><%= eliminatedPlayer.alias %> has been banned!</p>
     </div>
-    <p id="checkmarks" class="text-green-600 text-3xl m-2">✓✓✓</p>
-    <p class="text-center font-semibold"><%= eliminatedPlayer.alias %> has been banned!</p>
-</div>
-
+<% } else { %>
+    <p class="text-center font-semibold">No unanimous votes, no one has been banned!</p>
+<% } %>
 <div class="m-2 mt-6">
     <label for="players" class="font-bold text-xl m-2">Remaing Players</label>
     <div id="players">
