@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io("/game");
 
 let gameNavbar = document.getElementById("gameNavbar");
 let roundCounter = document.getElementById("roundCounter");
