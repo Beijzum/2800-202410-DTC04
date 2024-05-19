@@ -26,6 +26,8 @@ socket.on("gameOver", () => {
 });
 
 function handleWriteView() {
+    if (!playing) return;
+
     let responseArea = document.getElementById("promptResponse");
     let submitButton = document.getElementById("submitResponse");
 
@@ -38,14 +40,16 @@ function handleWriteView() {
     })
 
     socket.on("retrieveResponse", () => {
+        if (!playing) return;
         socket.emit("submitResponse", responseArea.value);
     })
 }
 
 function handleVoteView() {
+    if (!playing) return;
 
     function handleVoteButton(e) {
-        if (e.target.tagName !== "BUTTON" && e.target.className.includes("voteButton")) return;
+        if (e.target.tagName !== "BUTTON" || !e.target.className.includes("voteButton")) return;
         
         document.removeEventListener("click", handleVoteButton);
         socket.emit("submitVote", e.target.id); // send socket id of voted
@@ -54,6 +58,7 @@ function handleVoteView() {
     document.addEventListener("click", handleVoteButton);
 
     socket.on("changeView", () => {
+        if (!playing) return;
         document.removeEventListener("click", handleVoteButton);
     })
 }
