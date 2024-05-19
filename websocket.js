@@ -25,7 +25,7 @@ function runSocket(io) {
         // when users message
         socket.on("message", (message) => {
             io.emit("message", formatMessage(socket.request.session.username, socket.request.session.profilePic, message));
-        })
+        });
 
         // When disconnect
         socket.on("disconnect", () => {
@@ -33,9 +33,9 @@ function runSocket(io) {
             updateReadyMessage(socket);
             userList.delete(socket.request.session.username); // update user list
             io.emit("updateUserList", Array.from(userList)); // notify client
-        })
+        });
 
-        socket.on("ready", () => {
+        socket.on("ready", async () => {
             socket.join("readyList");
 
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
@@ -49,7 +49,7 @@ function runSocket(io) {
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
-                addClientToGame(socket);
+                await addClientToGame(socket);
                 io.emit("startGame");
             }
         });
@@ -59,11 +59,10 @@ function runSocket(io) {
             updateReadyMessage(socket);
         });
 
-        socket.on("forceJoin", () => {
-            addClientToGame(socket);
+        socket.on("forceJoin", async () => {
+            await addClientToGame(socket);
         })
-
-    })
+    });
     
     // Delegate game logic sockets to external module
     gameHandler.runGame(io);
@@ -86,8 +85,8 @@ const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-function addClientToGame(socket) {
-    gameHandler.reloadSession(socket);
+async function addClientToGame(socket) {
+    await gameHandler.reloadSession(socket);
     socket.request.session.game = {};
     socket.request.session.save();
 }
