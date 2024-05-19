@@ -23,7 +23,7 @@ socket.on("changeView", () => {
 
 socket.on("gameOver", () => {
     window.location.href = "/lobby";
-})
+});
 
 function handleWriteView() {
     let responseArea = document.getElementById("promptResponse");
