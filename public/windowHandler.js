@@ -1,9 +1,10 @@
+var playing = true;
 var socket = io("/game");
 
 let gameNavbar = document.getElementById("gameNavbar");
 let roundCounter = document.getElementById("roundCounter");
 let timeDisplay = document.getElementById("timeDisplay");
-
+let spectateMessage = document.getElementById("spectateMessage");
 
 document.addEventListener("DOMContentLoaded", () => { socket.emit("joinGame"); });
 
@@ -25,10 +26,14 @@ socket.on("roundUpdate", (round) => {
 
 socket.on("timerUpdate", (time) => {
     let seconds = Number(time.substr(2, 2));
-    if (seconds < 11 && time[0] === "0") flashNavbar();
+    // if (seconds < 11 && time[0] === "0") flashNavbar(); // honestly kind of distracting, but up to you guys if you want to keep it
     timeDisplay.innerHTML = `Time Left: ${time}`;
 });
 
+socket.on("notPlaying", () => {
+    playing = false;
+    spectateMessage.className = spectateMessage.className.replace("hidden", "block");
+})
 
 
 function flashNavbar() {
