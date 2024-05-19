@@ -20,6 +20,11 @@ function runSocket(io) {
             updateReadyMessage(socket);
             userList.add(socket.request.session.username); // update user list
             io.emit("updateUserList", Array.from(userList)); // notify client
+
+            // handle players that just returned back to lobby, ADD SHOWING MODAL WHEN SESSION HAS A WIN/LOSE STATE THAT WILL BE ADDED IN GAME HANDLER
+            if (socket.request.session.game) {
+                removeClientFromGame(socket);
+            }
         });
 
         // when users message
@@ -84,6 +89,12 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
+async function removeClientFromGame(socket) {
+    await gameHandler.reloadSession(socket);
+    socket.request.session.game = null;
+    socket.request.session.save();
+}
 
 async function addClientToGame(socket) {
     await gameHandler.reloadSession(socket);
