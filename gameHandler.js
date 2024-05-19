@@ -31,17 +31,17 @@ function runGame(io) {
             // joining game indicates you are a player
             if (socket.request.session.game) socket.join("alive");
 
-            // joining dead indicates you are dead
-            if (socket.request.session.game?.dead) {
-                socket.join("dead");
-                socket.emit("notPlaying");
-            }
-
             // user has joined, but no game is running
             if (getTotalPlayerCount() === 0) {
                 let renderedNoGameTemplate = ejs.render(noGameTemplate);
                 socket.emit("noGameRunning", renderedNoGameTemplate);
                 return;
+            }
+
+            // joining dead indicates you are dead
+            if (socket.request.session.game?.dead) {
+                socket.join("dead");
+                socket.emit("notPlaying");
             }
     
             // user has joined and is part of the game, and is the first to join
@@ -264,12 +264,15 @@ function runGame(io) {
     }
 
     function getTotalPlayerCount() {
-        return game.adapter.rooms.get("alive")?.size + game.adapter.rooms.get("dead")?.size;
+        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
+        let deadPlayers = game.adapter.rooms.get("dead")?.size ? game.adapter.rooms.get("dead").size : 0;
+        return alivePlayers - deadPlayers;
     }
 
 
     function getAlivePlayerCount() {
-        return game.adapter.rooms.get("alive") ? game.adapter.rooms.get("alive").size : 0;
+        let alivePlayers = game.adapter.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
+        return alivePlayers;
     }
 }
 
