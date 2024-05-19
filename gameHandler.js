@@ -19,70 +19,106 @@ const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 
-function runGame(io, socket) {
+function runGame(io) {
 
-    // player connects to game lobby
-    socket.on("joinGame", () => {
-        socket.join("game"); // keep just for testing purposes, remove later
-        socket.join("alive");
+    const game = io.of("/game");
 
-        // user has joined, but no game is running
-        if (!io.sockets.adapter.rooms.get("game") || io.sockets.adapter.rooms.get("game").size === 0) {
-            let renderedNoGameTemplate = ejs.render(noGameTemplate);
-            socket.emit("noGameRunning", renderedNoGameTemplate);
-            return;
-        }
+    game.on("connection", (socket) => {
+        
+        // player connects to game lobby
+        socket.on("joinGame", async () => {
 
-        // user has joined and is part of the game, and is the first to join
-        if (gameRunning === false) {
-            gameRunning = true;
-            round = 1;
-        }
+            // joining game indicates you are a player
+            if (socket.request.session.game) socket.join("alive");
 
-        // send round details to frontend
-        socket.emit("roundUpdate", round);
-
-        // user has joined, and is part of the game
-        if (socket.rooms.has("game")) {
-            assignClientAlias(socket); // might have to move to websocket.js if id is not persistent
-            ee.emit("runWrite");
-        } else {
-            // user has joined, but is not part of the game
-            switch(currentPhase) {
-                // jump to whatever screen the game is currently on
-                case "WRITE":
-                    ee.emit("runWrite");
-                    break;
-                case "VOTE":
-                    ee.emit("runVote");
-                    break;
-                case "RESULT":
-                    ee.emit("runResult");
-                    break;
-                case "WAIT":
-                    ee.emit("runWait");
-                    break;
-                case "TRANSITION":
-                    ee.emit("runTransition");
-                    break;
-                default:
-                    let renderedNoGameTemplate = ejs.render(noGameTemplate);
-                    socket.emit("noGameRunning", renderedNoGameTemplate);
+            // joining dead indicates you are dead
+            if (socket.request.session.game?.dead) {
+                socket.join("dead");
+                socket.emit("notPlaying");
             }
-        }
+
+            // user has joined, but no game is running
+            if (getTotalPlayerCount() === 0) {
+                let renderedNoGameTemplate = ejs.render(noGameTemplate);
+                socket.emit("noGameRunning", renderedNoGameTemplate);
+                return;
+            }
+    
+            // user has joined and is part of the game, and is the first to join
+            if (gameRunning === false) {
+                gameRunning = true;
+                round = 1;
+            }
+    
+            // send round number to frontend
+            socket.emit("roundUpdate", round);
+
+            // user has joined, and is part of the game
+            if (socket.request.session.game) {
+                await assignClientAlias(socket);
+                ee.emit("runWrite", socket);
+            } else {
+                // user has joined, but is not part of the game
+                socket.emit("notPlaying");
+                switch(currentPhase) {
+                    // jump to whatever screen the game is currently on
+                    case "WRITE":
+                        ee.emit("runWrite");
+                        break;
+                    case "VOTE":
+                        ee.emit("runVote");
+                        break;
+                    case "RESULT":
+                        ee.emit("runResult");
+                        break;
+                    case "WAIT":
+                        ee.emit("runWait");
+                        break;
+                    case "TRANSITION":
+                        ee.emit("runTransition");
+                        break;
+                    default:
+                        let renderedNoGameTemplate = ejs.render(noGameTemplate);
+                        socket.emit("noGameRunning", renderedNoGameTemplate);
+                }
+            }
+        });
+    
+        // CLIENT LISTENER SECTION
+    
+        // when player submit response
+        socket.on("submitResponse", (response) => {
+            socket.request.session.game.response = response;
+        });
+    
+        socket.on("submitVote", (socketId) => {
+            let votedPlayerSocket = game.sockets.get(socketId);
+            let votedPlayerSession = votedPlayerSocket.request.session;
+            
+            if (!votedPlayerSession.game.votes) votedPlayerSession.game.votes = 1;
+            else votedPlayerSession.game.votes += 1;
+        });
+
+        socket.on("disconnect", () => {
+            // if you are part of the game, stop the entire game, need to implement logic later
+            if (socket.rooms.has("alive") || socket.rooms.has("dead")) {
+                
+            }
+        })
     });
+
+    // GAME CONTROL FLOW SECTION
 
     // handle logic for write screen
     ee.on("runWrite", () => {
         currentPhase = "WRITE";
-        console.log(currentPhase)
 
         // only generate new prompt when first person joins
         if (!promptIndex) promptIndex = Math.floor(Math.random() * pool.prompts.length);
 
-        // update frontend UI
+        // update frontend UI for alive players
         let renderedWriteTemplate = ejs.render(writeTemplate, {prompt: pool.prompts[promptIndex]});
-        socket.emit("changeView", renderedWriteTemplate);
+        game.emit("changeView", renderedWriteTemplate);
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
@@ -97,32 +133,29 @@ function runGame(io, socket) {
     // handle transition between write and vote
     ee.on("runTransition", () => {
         currentPhase = "TRANSITION"
-        console.log(currentPhase)
-        
+
         // retrieve inputs from players that did not press submit
-        io.emit("retrieveResponse");
+        game.emit("retrieveResponse");
 
         let renderedTransitionTemplate = ejs.render(transitionTemplate, {transitionMessage: "Get Ready To Vote!"});
-        socket.emit("changeView", renderedTransitionTemplate);
+        game.emit("changeView", renderedTransitionTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 11;
+            phaseDuration = 6;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runVote");
         }
     });
 
     // handle logic for vote screen
-    // BUG, THE RUN VOTE RUNS TWICE FOR SOME REASON, SEE CONSOLE FIRING TWICE FOR VOTE
-    // ANOTHER BUG, THE CSS RIGHT NOW PUSHES THE VOTE BUTTON OFF SCREEN INSTEAD OF WRAPPING, NEED TO FIX IT
+    // BUG, THE CSS RIGHT NOW PUSHES THE VOTE BUTTON OFF SCREEN INSTEAD OF WRAPPING, NEED TO FIX IT
     ee.on("runVote", async () => {
         currentPhase = "VOTE";
-        console.log(currentPhase);
 
-        let playerList = await io.in("game").fetchSockets();
+        let playerList = await game.in("alive").fetchSockets();
 
         let renderedVoteTemplate = ejs.render(voteTemplate, {players: playerList, prompt: pool.prompts[promptIndex]});
-        socket.emit("changeView", renderedVoteTemplate);
+        game.emit("changeView", renderedVoteTemplate);
         
         if (phaseDuration <= 0) {
             
@@ -133,30 +166,33 @@ function runGame(io, socket) {
     });
 
     // handle logic for result screen
-    // BUG, THE RUN VOTE RUNS TWICE SOMETIMES, IF IT DOES RUN TWICE THE RESULTS PAGE MIGHT BRICK, NEED TO FIX
     ee.on("runResult", async () => {
         currentPhase = "RESULT";
-        console.log(currentPhase);
 
         // get the player with the most votes
-        let playerSocketList = await io.in("game").fetchSockets();
-        let mostVotedSocket = playerSocketList.reduce((prev, cur) => {
-            return prev > cur ? prev : cur;
+        let playerSocketList = await game.in("alive").fetchSockets();
+        let mostVotedSocket = playerSocketList[0];
+        playerSocketList.forEach(socket => {
+            if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
+                mostVotedSocket = socket;
         });
 
         // if voted player has majority votes
-        if (mostVotedSocket.request.session.game.votes / io.sockets.adapter.rooms.get("alive")?.size > 0.5) {
-            mostVotedSocket.leave("alive");
+        if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) {
+            killPlayer(mostVotedSocket);
 
             playerSocketList.splice(playerSocketList.indexOf(mostVotedSocket), 1);
             let renderedResultTemplate = ejs.render(resultTemplate, {eliminatedPlayer: mostVotedSocket, 
                 remainingPlayers: playerSocketList, voteCount: mostVotedSocket.request.session.game.votes});
-            socket.emit("changeView", renderedResultTemplate);
+            game.emit("changeView", renderedResultTemplate);
         } else {
             // if no majority vote
             let renderedResultTemplate = ejs.render(resultTemplate, {eliminatedPlayer: null, remainingPlayers: playerSocketList});
-            socket.emit("changeView", renderedResultTemplate);
+            game.emit("changeView", renderedResultTemplate);
         }
+
+        // reset vote counter after results have been calculated
+        playerSocketList.forEach(player => {player.request.session.game.votes = 0; });
 
         if (phaseDuration <= 0) {
             
@@ -169,20 +205,19 @@ function runGame(io, socket) {
     // handle logic for wait screen
     ee.on("runWait", async () => {
         currentPhase = "WAIT";
-        console.log(currentPhase);
 
         // move onto rendering page if game has not ended
         let renderedWaitTemplate = ejs.render(waitTemplate);
-        socket.emit("changeView", renderedWaitTemplate);
-        socket.emit("roundUpdate", round);
+        game.emit("changeView", renderedWaitTemplate);
+        game.emit("roundUpdate", round);
 
         // randomly remove 1 player
-        let playerSocketList = await io.in("game").fetchSockets();
+        let playerSocketList = await game.in("alive").fetchSockets();
         let randomSocket = playerSocketList[Math.floor(Math.random() * playerSocketList.length)];
-        randomSocket.leave("alive");
+        killPlayer(randomSocket);
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        if (!io.sockets.adapter.rooms.get("alive") || io.sockets.adapter.rooms.get("alive").size === 0)
+        if (getAlivePlayerCount() === 0)
             stopGame();
 
         // move onto next round
@@ -195,31 +230,26 @@ function runGame(io, socket) {
                 if (gameRunning)
                     ee.emit("runWrite");
                 else
-                    io.emit("gameOver");
+                    game.emit("gameOver");
             }, (phaseDuration + 1) * 1000);
         }
     });
 
-    // CLIENT LISTENER SECTION
-
-    // when player submit response
-    socket.on("submitResponse", (response) => {
-        socket.request.session.game.response = response;
-    });
-
-    socket.on("submitVote", (socketId) => {
-        let votedPlayerSocket = io.sockets.sockets.get(socketId);
-        let votedPlayerSession = votedPlayerSocket.request.session;
-        
-        if (!votedPlayerSession.game.votes) votedPlayerSession.game.votes = 1;
-        else votedPlayerSession.game.votes += 1;
-    });
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
+
+    function killPlayer(socket) {
+        if (!socket) return;
+        socket.leave("alive");
+        socket.join("dead");
+        socket.emit("notPlaying");
+        socket.request.session.game.dead = true;
+    }
 
     function createDelayedRedirect(delayTimeInSeconds, timer, nextRoute) {
         setTimeout(async () => {
             clearInterval(timer);
+ 
             // set up next round if one last phase
             if (nextRoute === "runWrite") setupNextRound();
             ee.emit(nextRoute);
@@ -229,16 +259,24 @@ function runGame(io, socket) {
     function updateClientTimers() {
         if (phaseDuration > 0) {
             phaseDuration--;
-            io.emit("timerUpdate", convertFormat(phaseDuration));
+            game.emit("timerUpdate", convertFormat(phaseDuration));
         }
+    }
+
+    function getTotalPlayerCount() {
+        return game.adapter.rooms.get("alive")?.size + game.adapter.rooms.get("dead")?.size;
+    }
+
+
+    function getAlivePlayerCount() {
+        return game.adapter.rooms.get("alive") ? game.adapter.rooms.get("alive").size : 0;
     }
 }
 
 // GENERAL FUNCTION DEFINITIONS
 
 function assignClientAlias(socket) {
-    let req = socket.request
-    reloadSession(socket);
+    let req = socket.request;
 
     let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
     let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];
@@ -247,13 +285,13 @@ function assignClientAlias(socket) {
 
     req.session.game = {
         alias: randomFirstName + randomLastName + randomNumber,
-        aliasPicture: randomAvatar
-
+        aliasPicture: randomAvatar,
+        votes: 0
     }
-    req.session.save();
+
 }
 
-function reloadSession(socket) {
+async function reloadSession(socket) {
     socket.request.session.reload((err) => {
         if (err) return socket.disconnect();
     })
@@ -277,5 +315,6 @@ function stopGame() {
 }
 
 module.exports = {
-    runGame: runGame
+    runGame: runGame,
+    reloadSession: reloadSession
 }
