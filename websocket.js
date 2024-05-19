@@ -63,10 +63,11 @@ function runSocket(io) {
             addClientToGame(socket);
         })
 
-        // Delegate game logic sockets to external module
-        gameHandler.runGame(io);
     })
-
+    
+    // Delegate game logic sockets to external module
+    gameHandler.runGame(io);
+    
     function updateReadyMessage(socket) {
         if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
 
