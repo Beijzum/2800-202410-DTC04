@@ -26,5 +26,6 @@ function isReady() {
 }
 
 socket.on("startGame", () => {
+    socket.emit("forceJoin");
     window.location.href = "/game";
 });
