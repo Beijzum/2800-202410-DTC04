@@ -49,18 +49,22 @@ function runSocket(io) {
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
-                moveClients("lobby", "game");
+                addClientToGame(socket);
                 io.emit("startGame");
             }
-        })
+        });
 
         socket.on("unready", () => {
             socket.leave("readyList");
             updateReadyMessage(socket);
+        });
+
+        socket.on("forceJoin", () => {
+            addClientToGame(socket);
         })
 
         // Delegate game logic sockets to external module
-        gameHandler.runGame(io, socket);
+        gameHandler.runGame(io);
     })
 
     function updateReadyMessage(socket) {
@@ -72,14 +76,6 @@ function runSocket(io) {
             socket.broadcast.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
     }
 
-    function moveClients(source, destination) {
-        let clients = io.sockets.adapter.rooms.get(source);
-        for (let client of clients) {
-            let clientSocket = io.sockets.sockets.get(client);
-            clientSocket.leave(source);
-            clientSocket.join(destination);
-        }
-    }
 }
 
 // Format message. Could probably move it elsewhere.
@@ -88,6 +84,12 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
+function addClientToGame(socket) {
+    gameHandler.reloadSession(socket);
+    socket.request.session.game = {};
+    socket.request.session.save();
+}
 
 function formatMessage(username, profilePic, text) {
     return {
