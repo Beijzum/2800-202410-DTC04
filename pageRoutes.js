@@ -81,6 +81,11 @@ router.get("/changePass", (req, res) => {
     res.render("changePassModal", {name: req.session.username});
 });
 
+router.get("/memes", (req, res) => {
+    if (req.session.username) res.render("memes", { authenticated: true });
+    else res.render("memes", { authenticated: false });
+});
+
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
 })
