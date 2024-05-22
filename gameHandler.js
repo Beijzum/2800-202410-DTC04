@@ -47,6 +47,7 @@ function runGame(io) {
             // user has joined and is part of the game, and is the first to join
             if (gameRunning === false) {
                 gameRunning = true;
+                createAIs(Math.ceil(getTotalPlayerCount / 3));
                 round = 1;
             }
     
@@ -55,8 +56,8 @@ function runGame(io) {
 
             // user has joined, and is part of the game
             if (socket.request.session.game) {
-                await assignClientAlias(socket);
-                ee.emit("runWrite", socket);
+                assignClientAlias(socket);
+                ee.emit("runWrite");
             } else {
                 // user has joined, but is not part of the game
                 socket.emit("notPlaying");
