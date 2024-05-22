@@ -271,7 +271,7 @@ function runGame(io) {
 
 
     function getAlivePlayerCount() {
-        let alivePlayers = game.adapter.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
+        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
         return alivePlayers;
     }
 }
