@@ -10,7 +10,6 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
-const aiModel = require("./geminiAI.js")
 
 // set port
 const port = process.env.PORT || 3000;
@@ -19,10 +18,6 @@ const port = process.env.PORT || 3000;
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-
-
-// set AI model
-const chat = aiModel.createChatbot().startChat();
 
 // requirements for cloudinary
 const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
