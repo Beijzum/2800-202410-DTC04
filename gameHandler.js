@@ -5,7 +5,7 @@ const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 
 // PHASES: WRITE, VOTE, RESULT, WAIT
-var currentPhase, gameRunning = false, promptIndex, phaseDuration, round;
+var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
 
 // CHECK TO SEE IF REDIRECTING TO NEW PAGE CAUSES A NEW SOCKET SESSION TO BE CREATE ---> DIFFERENT ID SO PLAYERS WONT BE COUNTED AS "IN-GAME"
 
@@ -277,6 +277,24 @@ function runGame(io) {
 }
 
 // GENERAL FUNCTION DEFINITIONS
+
+function createAIs(numberToMake) {
+    for (let i = 0; i < numberToMake; i++) {
+        let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
+        let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];
+        let randomNumber = Math.floor(Math.random() * 10000);
+        let randomAvatar = pool.avatars[Math.floor(Math.random() * pool.avatars.length)];
+
+        let AI = {};
+        AI.request = {session: {game: {
+            alias: randomFirstName + randomLastName + randomNumber,
+            aliasPicture: randomAvatar,
+            votes: 0
+        }}};
+        
+        AIs.push(AI);
+    }
+}
 
 function assignClientAlias(socket) {
     let req = socket.request;
