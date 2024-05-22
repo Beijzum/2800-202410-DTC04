@@ -14,21 +14,20 @@ const chatBot = "You are a chatbot." +
     "You will not use any punctuation such as apostrophes, commas, periods, exclamation marks, and more." +
     "You will type lazily and informally.";
 
-const personalities = [
-    genZ,
-    chatBot,
-];
+personalities = {
+    genZ: genZ,
+    chatBot: chatBot,
+};
 
-const getRandomPersonality = () => personalities[Math.floor(Math.random() * personalities.length)];
-
-const createChatbot = () => {
+const createChatbot = (personality) => {
     const model = genAI.getGenerativeModel({
         model: "gemini-pro",
-        systemInstruction: [getRandomPersonality()]
+        systemInstruction: personality
     });
     return model;
 };
 
 module.exports = {
     createChatbot: createChatbot,
+    personalities: this.personalities,
 };
