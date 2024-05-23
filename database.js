@@ -4,7 +4,6 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
-const { date } = require("joi");
 
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
@@ -39,7 +38,7 @@ async function signUpUser(requestBody) {
             }
 
             let database = client.db(process.env.MONGODB_DATABASE);
-            let users = database.collection("users");
+            let users = database.collection("unverifiedUsers");
 
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(requestBody.password, salt);
@@ -49,7 +48,9 @@ async function signUpUser(requestBody) {
                 email: requestBody.email,
                 password: hashedPassword,
                 winCount: 0,
-                loseCount: 0
+                loseCount: 0,
+                dateCreated: new Date(),
+                hash: requestBody.hash
             }
 
             await users.insertOne(writeQuery);
@@ -203,6 +204,33 @@ async function deleteResetDoc(hash) {
     }
 }
 
+/**
+ * Makes a full account from an unverified account.
+ * 
+ * @param {Object} doc unverified user's doc
+ * @returns true if successful, or false if not
+ */
+async function promoteUnverifiedUser(doc) {
+    try {
+        const db = client.db(process.env.MONGODB_DATABASE);
+        const userCollection = db.collection("users");
+        const write = {
+            username: doc.username,
+            email: doc.email,
+            password: doc.password,
+            winCount: doc.winCount,
+            loseCount: doc.loseCount
+        };
+
+        await userCollection.insertOne(write);
+        await db.collection("unverifiedUsers").findOneAndDelete(doc);
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
 module.exports = {
     client: client,
     mongoSessionStorage: storage,
@@ -214,5 +242,6 @@ module.exports = {
     updateUserPass: updateUserPass,
     writeResetDoc: writeResetDoc,
     getResetDoc: getResetDoc,
-    deleteResetDoc: deleteResetDoc
+    deleteResetDoc: deleteResetDoc,
+    promoteUnverifiedUser: promoteUnverifiedUser
 }
