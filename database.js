@@ -26,13 +26,13 @@ async function signUpUser(requestBody) {
             
             // check if email and username are taken
             let existingUserWithSameName = await findUser({username: requestBody.username});
-            if (existingUserWithSameName)
-                errorList.push({usernameField: `${existingUserWithSameName.username} is taken`});
-  
+            if (existingUserWithSameName){
+                errorList.push({usernameField: `Username "${existingUserWithSameName.username}" is taken`});
+            }
             let existingUserWithSameEmail = await findUser({email: requestBody.email});
-            if (existingUserWithSameEmail) 
-                errorList.push({emailField: `${existingUserWithSameEmail.email} is already associated with an account`});
-
+            if (existingUserWithSameEmail) {
+                errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account`});
+            }
             if (errorList.length !== 0) {
                 res(errorList);
                 return;
