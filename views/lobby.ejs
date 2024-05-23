@@ -8,5 +8,12 @@
     </ul>
     <%- include("./templates/websocketImport") %>
         <%- include("./templates/chatBar", {rows: 2, placeholderText: "Type a message..." }) %>
+        <dialog id="playerListModal" class="bg-gray-900 rounded-lg max-h-96 overflow-y-auto">
+            <div id="modalContent" class="flex flex-col justify-center">
+                <p class="text-white font-bold text-xl bg-zinc-700 border-b border-gray-600 p-2 text-center sticky top-0 left-0 right-0">In Lobby</p>
+                <div id="playerList" class=""></div>
+                <button id="closeModal" class="mx-auto py-1 px-6 mt-3 mb-3 bg-gray-300 outline-none border-2 border-gray-400 rounded-lg hover:bg-gray-400 hover:border-gray-300">Close</button>
+            </div>
+        </dialog>
             <script src="chatroom.js"></script>
             <%- include("./templates/footer", {pageScript: "lobby.js" }) %>
