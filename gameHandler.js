@@ -337,7 +337,9 @@ function shuffleArray(array) {
 
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
-        let chatBot = aiModel.createChatbot().startChat();
+        const aiPersonalities = Object.values(aiModel.personalities);
+        const randomPersonality = aiPersonalities[Math.floor(Math.random() * aiPersonalities.length)];
+        let chatBot = aiModel.createChatbot(randomPersonality).startChat();
 
         let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
         let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];

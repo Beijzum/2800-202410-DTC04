@@ -8,7 +8,7 @@
         <%= session.username %>
     </p>
 
-    <img src="<%= data.profilePictureUrl || '/images/avatar1.jpg' %>"
+    <img src="<%= data.profilePictureUrl || '/images/defaultProfilePicture.webp' %>"
         class="w-60 mx-auto rounded-full aspect-square border-8 border-zinc-800 intense-shadow">
 
     <form id="uploadProfilePicForm" action="/uploadProfilePic" method="POST" enctype="multipart/form-data"

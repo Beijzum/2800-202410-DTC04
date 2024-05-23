@@ -10,6 +10,7 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
+const { randomBytes } = require("crypto");
 
 // set port
 const port = process.env.PORT || 3000;
@@ -78,16 +79,39 @@ app.post("/createAccount", async (req, res) => {
     let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
+        res.status(400).json({ errors: validationResult.error.details });
     } else {
         let errorList = await database.signUpUser(req.body);
-        if (!errorList?.length) {
+        if (errorList?.length) {
+            res.status(400).json({ errors: errorList });
+        } else {
             req.session.username = req.body.username;
-            res.redirect("/");
-            return;
+            res.status(200).json({ redirectUrl: "/" });
+            const hash = randomBytes(12).toString('hex');
+            let errorList = await database.signUpUser({ ...req.body, hash });
+            if (!errorList?.length) {
+                const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+                await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
+                res.redirect(`/registerSuccess?h=${hash}`);
+                return;
+            }
         }
     }
-    res.redirect("/signUp");
-})
+});
+
+
+app.post("/resendReg", async (req, res) => {
+    const { hash } = req.body;
+    const doc = await database.client.db(process.env.MONGODB_DATABASE).collection("unverifiedUsers").findOne({ "hash": hash });
+
+    const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+    if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
+        res.redirect(`/registerSuccess?h=${hash}`);
+    } else {
+        // This should show some error, or clientside should handle this case.
+        res.redirect("/");
+    }
+});
 
 app.post("/loginAccount", async (req, res) => {
     let validationResult = joiValidation.loginSchema.validate(req.body);
@@ -111,28 +135,28 @@ app.post("/forgotpass", async (req, res) => {
         return;
     }
 
-    const user_email = req.body.email;
+    const userEmail = req.body.email;
 
-    let validationResult = joiValidation.emailSchema.validate(user_email);
+    let validationResult = joiValidation.emailSchema.validate(userEmail);
     if (validationResult.error) {
         console.log(validationResult.error.message);
         res.status(400).send({ "error": "Error with email entry" });
         return;
     }
 
-    let user = await database.findUser({ "email": user_email });
+    let user = await database.findUser({ "email": userEmail });
 
     if (!user) {
         res.status(404).send({ "error": "No account with specified email" });
         return;
     }
 
-    const hash = require("crypto").randomBytes(12).toString('hex');
+    const hash = randomBytes(12).toString('hex');
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
 
-    if (email.sendResetLink(user_email, user.username, link)) {
+    if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
         await database.writeResetDoc(user, hash)
-        res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
+        res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
     } else {
         res.status(500).send({ "error": "Error with sending email" })
     }
@@ -199,6 +223,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
             );
+            req.session.profilePic = result.secure_url;
             console.log('updated mongodb');
             res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
         } catch (error) {
