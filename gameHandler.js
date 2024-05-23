@@ -3,8 +3,7 @@ const ejs = require("ejs");
 const pool = require("./socketConstants");
 const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
-const aiModel = require("./geminiAI.js")
-const chatBot = aiModel.createChatbot().startChat();
+const aiModel = require("./geminiAI.js");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT
 var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
@@ -49,7 +48,7 @@ function runGame(io) {
             // user has joined and is part of the game, and is the first to join
             if (gameRunning === false) {
                 gameRunning = true;
-                createAIs(Math.ceil(getTotalPlayerCount / 3));
+                createAIs(Math.ceil(getTotalPlayerCount() / 3));
                 round = 1;
             }
 
@@ -95,6 +94,17 @@ function runGame(io) {
         });
 
         socket.on("submitVote", (socketId) => {
+
+            // handle AI voted
+            let isAI = false;
+            AIs.forEach(AI => {
+                if (AI.id !== socketId) return;
+                AI.request.session.game.votes += 1;
+                isAI = true;
+            })
+            if (isAI) return;
+
+            // handle players voted
             let votedPlayerSocket = game.sockets.get(socketId);
             let votedPlayerSession = votedPlayerSocket.request.session;
 
@@ -113,7 +123,7 @@ function runGame(io) {
     // GAME CONTROL FLOW SECTION
 
     // handle logic for write screen
-    ee.on("runWrite", () => {
+    ee.on("runWrite", async () => {
         currentPhase = "WRITE";
 
         // only generate new prompt when first person joins
@@ -127,6 +137,15 @@ function runGame(io) {
         if (!phaseDuration || phaseDuration <= 0) {
             phaseDuration = 61;
             let timer = setInterval(updateClientTimers, 1000);
+
+            for (let i = 0; i < AIs.length; i++) {
+                // ai gets chat prompt
+                let aiGetPrompt = await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex]);
+                let aiResponse = aiGetPrompt.response;
+                let aiText = aiResponse.text();
+    
+                AIs[i].request.session.game.response = aiText;
+            }
 
             // need a transition screen to be able to receive all players input, even if they havent pressed submit
             createDelayedRedirect(phaseDuration + 1, timer, "runTransition");
@@ -156,12 +175,15 @@ function runGame(io) {
         currentPhase = "VOTE";
 
         let playerList = await game.in("alive").fetchSockets();
-
-        // ai gets chat prompt
-        let aiGetPrompt = await chatBot.sendMessage(pool.prompts[promptIndex]);
-        let aiResponse = aiGetPrompt.response;
-        let aiText = aiResponse.text();
-
+        
+        // add AI to player list to populate vote page
+        AIs.forEach(AI => {
+            playerList.push(AI);
+        });
+        
+        // shuffle list so AI is not always at bottom of the list
+        shuffleArray(playerList);
+        
         let renderedVoteTemplate = ejs.render(voteTemplate, { players: playerList, prompt: pool.prompts[promptIndex] });
         game.emit("changeView", renderedVoteTemplate);
 
@@ -179,12 +201,20 @@ function runGame(io) {
 
         // get the player with the most votes
         let playerSocketList = await game.in("alive").fetchSockets();
+
+        // add AI to player list to populate vote page
+        AIs.forEach(AI => {
+            playerSocketList.push(AI);
+        });
+        // shuffle list so AI is not always at bottom of the list
+        shuffleArray(playerSocketList);
+
         let mostVotedSocket = playerSocketList[0];
         playerSocketList.forEach(socket => {
             if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
                 mostVotedSocket = socket;
         });
-
+  
         // if voted player has majority votes
         if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) {
             killPlayer(mostVotedSocket);
@@ -227,12 +257,12 @@ function runGame(io) {
         killPlayer(randomSocket);
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        if (getAlivePlayerCount() === 0)
+        if (getAlivePlayerCount() === 0 || AIs.length === 0)
             stopGame();
 
         // move onto next round
         if (phaseDuration <= 0) {
-            phaseDuration = 11;
+            phaseDuration = 6;
             if (round) round++;
             let timer = setInterval(updateClientTimers, 1000);
             setTimeout(() => {
@@ -250,6 +280,13 @@ function runGame(io) {
 
     function killPlayer(socket) {
         if (!socket) return;
+        // if most voted socket was AI, then remove from AI list
+        if (socket.bot) {
+            let index = AIs.indexOf(socket);
+            AIs.splice(index, 1);
+            return;
+        }
+        // otherwise edit which room they are in
         socket.leave("alive");
         socket.join("dead");
         socket.emit("notPlaying");
@@ -288,14 +325,29 @@ function runGame(io) {
 
 // GENERAL FUNCTION DEFINITIONS
 
+function shuffleArray(array) {
+    let currentIndex = array.length;
+
+    while (currentIndex !== 0) {
+        let swapIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[swapIndex]] = [array[swapIndex], array[currentIndex]];
+    }
+}
+
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
+        let chatBot = aiModel.createChatbot().startChat();
+
         let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
         let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];
         let randomNumber = Math.floor(Math.random() * 10000);
         let randomAvatar = pool.avatars[Math.floor(Math.random() * pool.avatars.length)];
 
         let AI = {};
+        AI.chatBot = chatBot;
+        AI.id = randomFirstName + randomLastName + randomNumber;
+        AI.bot = true;
         AI.request = {session: {game: {
             alias: randomFirstName + randomLastName + randomNumber,
             aliasPicture: randomAvatar,
