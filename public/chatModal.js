@@ -3,11 +3,12 @@ let playerList = document.getElementById("playerList");
 
 socket.on("updateUserList", (users) => {
     playerList.innerHTML = "";
+    // users = map.entries() object -> [username, pictureURL]
     users.forEach(user => {
         playerList.innerHTML += `
         <div class="flex items-center px-10 py-1 border-b hover:bg-zinc-800 border-zinc-700 text-center gap-1">
-        <img src=${user.profilePicture ? user.profilePicture : "images/defaultProfilePicture.webp"} class="w-8 h-8 rounded-full p-1">
-        <p class="font-bold break-all text-zinc-100">${user.username}</p>
+        <img src=${user[1] ? user[1] : "images/defaultProfilePicture.webp"} class="w-8 h-8 rounded-full p-1">
+        <p class="font-bold break-all text-zinc-100">${user[0]}</p>
         </div>
         `;
     });
