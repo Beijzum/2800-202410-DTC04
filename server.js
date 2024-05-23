@@ -20,10 +20,6 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-
-// set AI model
-const chat = aiModel.createChatbot().startChat();
-
 // requirements for cloudinary
 const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
 
