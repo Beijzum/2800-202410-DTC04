@@ -14,11 +14,6 @@ const chatBot = "You are a chatbot." +
     "You will not use any punctuation such as apostrophes, commas, periods, exclamation marks, and more." +
     "You will type lazily and informally.";
 
-personalities = {
-    genZ: genZ,
-    chatBot: chatBot,
-};
-
 const createChatbot = (personality) => {
     const model = genAI.getGenerativeModel({
         model: "gemini-pro",
@@ -29,5 +24,8 @@ const createChatbot = (personality) => {
 
 module.exports = {
     createChatbot: createChatbot,
-    personalities: this.personalities,
+    personalities: {
+        genZ: genZ,
+        chatBot: chatBot,
+    },
 };
