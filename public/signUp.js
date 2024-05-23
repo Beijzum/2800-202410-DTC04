@@ -1,8 +1,6 @@
 document.getElementById("signUpForm").addEventListener("submit", async (e) => {
-    // stop page from refreshing before handle is done
     e.preventDefault();
 
-    // get field entries
     let username = document.getElementById("usernameField").value;
     let email = document.getElementById("emailField").value;
     let password = document.getElementById("passwordField").value;
@@ -20,5 +18,22 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
         })
     });
 
-    window.location.href = response.url;
+    if (response.ok) {
+        let result = await response.json();
+        window.location.href = result.redirectUrl;
+    } else {
+        let result = await response.json();
+        displayErrors(result.errors);
+    }
 });
+
+function displayErrors(errors) {
+    let errorContainer = document.getElementById("errorContainer");
+    errorContainer.innerHTML = ""; // Clear previous errors
+    errors.forEach(error => {
+        let errorDiv = document.createElement("div");
+        errorDiv.className = "error";
+        errorDiv.textContent = error.message || `${error.usernameField || ""} ${error.emailField || ""}`;
+        errorContainer.appendChild(errorDiv);
+    });
+}
