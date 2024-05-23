@@ -73,6 +73,15 @@ router.get("/verify", async (req, res) => {
     }
 });
 
+router.get("/registerSuccess", (req, res) => {
+    const { h } = req.query;
+    if (!h || req.session.username) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("registerSuccess", { authenticated: false, hash: h });
+});
 
 router.get("/signUp", (req, res) => {
     if (req.session.username) res.redirect("/index");
