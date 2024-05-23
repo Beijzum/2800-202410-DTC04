@@ -11,7 +11,7 @@ socket.on("message", (messageContent) => {
     const message = document.createElement("li");
     message.innerHTML = `
     <div class="w-full rounded-lg text-lg p-2 flex box-border">
-        <img src="${messageContent.profilePic ? messageContent.profilePic : `images/defaultProfilePicture.webp`}" class="w-16 h-16 rounded-full">
+        <img src="${messageContent.profilePic ? messageContent.profilePic : `images/defaultProfilePicture.webp`}" class="w-12 h-12 mr-4 rounded-full">
         <div class="flex flex-col">
             <p class="font-bold text-blue-950">${messageContent.username} <span class="text-xs font-normal text-gray-500">${messageContent.time}</span></p>
             <p class="text-gray-800 text-sm rounded-lg whitespace-normal break-all pr-6">${messageContent.text}</p>
