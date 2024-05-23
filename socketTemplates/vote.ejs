@@ -1,4 +1,4 @@
-<div id="voteView intese-shadow">
+<div id="voteView">
     <p class="text-2xl p-4 text-center font-bold bg-gray-800 m-2 text-white rounded-lg">Who is The AI?</p>
     <label for="prompt" class="text-sm p-2 font-semibold">Prompt</label>
     <p id="prompt" class="p-4 bg-zinc-300 font-semibold m-2 rounded-lg"><%= prompt %></p>
@@ -24,10 +24,10 @@
 
                         </div>
 
-                        <div
-                            class="bg-blue-600 text-white font-semibold text-sm rounded-md w-44 h-14 m-2 text-center flex items-center justify-center">
+                        <button id="<%= players[i].id %>"
+                            class="voteButton bg-blue-600 text-white font-semibold text-sm rounded-md w-44 h-14 m-2 text-center flex items-center justify-center">
                             Vote
-                        </div>
+                        </button>
                     </div>
 
                     <div class="p-1 break-words">
