@@ -135,7 +135,7 @@ app.post("/forgotpass", async (req, res) => {
     const hash = require("crypto").randomBytes(12).toString('hex');
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
 
-    if (email.sendResetLink(user_email, user.username, link)) {
+    if (email.sendEmailWithLink(user_email, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
         await database.writeResetDoc(user, hash)
         res.status(200).render("forgotPassSuccess.ejs", { email: user_email });
     } else {

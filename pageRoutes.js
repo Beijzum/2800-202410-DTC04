@@ -51,6 +51,29 @@ router.get("/reset", async (req, res) => {
     res.render("reset", {authenticated: false, hash: req.query.id});
 });
 
+router.get("/verify", async (req, res) => {
+    const { v } = req.query;
+    const user = await database.client.db(process.env.MONGODB_DATABASE)
+    .collection("unverifiedUsers").findOne({ "hash": v });
+    
+    if (!user) {
+        res.redirect("/");
+        return;
+    }
+
+    if (await database.promoteUnverifiedUser(user)) {
+        req.session.username = user.username;
+        res.render("verify", {authenticated: true});
+    } else {
+        /* 
+         * Should render an error page, but I'm assuming at this point
+         * that the user is logged in, or something to that effect.
+         */
+        res.redirect("/");
+    }
+});
+
+
 router.get("/signUp", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("signUp", { authenticated: false });
