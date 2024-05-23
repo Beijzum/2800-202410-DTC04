@@ -33,6 +33,11 @@ const chatBot = "You are a chatbot." +
     "You will lazily and informally and not use any apostrophes, commas, and exclamation marks." +
     "You will type at around 50 to 100 words with periods separating sentences.";
 
+const smartPerson = "You are a very intelligent person." +
+    "You will have a stuck-up attitude" +
+    "You will type like a professional with correct grammar and punctuation." +
+    "You will type at around 50 to 100 words with periods separating sentences.";
+
 const createChatbot = (personality) => {
     const model = genAI.getGenerativeModel({
         model: "gemini-1.5-pro-latest",
@@ -47,5 +52,6 @@ module.exports = {
     personalities: {
         genZ: genZ,
         chatBot: chatBot,
+        smartPerson: smartPerson,
     },
 };
