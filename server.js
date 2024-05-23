@@ -10,6 +10,7 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
+const aiModel = require("./geminiAI.js")
 
 // set port
 const port = process.env.PORT || 3000;
@@ -18,6 +19,10 @@ const port = process.env.PORT || 3000;
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
+
+// set AI model
+const chat = aiModel.createChatbot().startChat();
 
 // requirements for cloudinary
 const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
@@ -78,16 +83,18 @@ app.post("/createAccount", async (req, res) => {
     let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
+        res.status(400).json({ errors: validationResult.error.details });
     } else {
         let errorList = await database.signUpUser(req.body);
-        if (!errorList?.length) {
+        if (errorList?.length) {
+            res.status(400).json({ errors: errorList });
+        } else {
             req.session.username = req.body.username;
-            res.redirect("/");
-            return;
+            res.status(200).json({ redirectUrl: "/" });
         }
     }
-    res.redirect("/signUp");
-})
+});
+
 
 app.post("/loginAccount", async (req, res) => {
     let validationResult = joiValidation.loginSchema.validate(req.body);
