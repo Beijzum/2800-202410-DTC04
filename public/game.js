@@ -26,16 +26,38 @@ socket.on("gameOver", () => {
 });
 
 function handleWriteView() {
-    if (!playing) return;
+    function disableInputs(buttonMessage) {
+        let responseArea = document.getElementById("promptResponse");
+        let submitButton = document.getElementById("submitResponse");
+        let prompt = document.getElementById("prompt");
+
+        // change prompt color
+        prompt.className = prompt.className.replace("bg-white", "bg-gray-100");
+        prompt.className += " opacity-75";
+
+        // disable textarea
+        responseArea.disabled = true;
+        responseArea.className = responseArea.className.replace("bg-white", "bg-gray-100")
+        responseArea.className += " opacity-75";
+
+        // disable submit button
+        submitButton.disabled = true;
+        submitButton.className = submitButton.className.replace("bg-sky-400", "bg-sky-600");
+        submitButton.className += " opacity-75";
+        submitButton.value = buttonMessage;
+    }
+
+    if (!playing) {
+        disableInputs("You Are Spectating")
+        return;
+    }
 
     let responseArea = document.getElementById("promptResponse");
     let submitButton = document.getElementById("submitResponse");
 
     submitButton.addEventListener("click", (e) => {
         e.preventDefault();
-        responseArea.disabled = true;
-        submitButton.disabled = true;
-        submitButton.value = "Response Received";
+        disableInputs("Response Received");
         socket.emit("submitResponse", responseArea.value);
     })
 
