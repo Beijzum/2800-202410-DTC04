@@ -25,8 +25,13 @@ socket.on("roundUpdate", (round) => {
 });
 
 socket.on("timerUpdate", (time) => {
-    let seconds = Number(time.substr(2, 2));
-    // if (seconds < 11 && time[0] === "0") flashNavbar(); // honestly kind of distracting, but up to you guys if you want to keep it
+    let currentView = document.getElementById("gameMenu").children[0].id;
+    if (currentView === "writeView" || currentView === "voteView") {
+        let seconds = Number(time.substr(2, 2));
+        if (seconds <= 10 && Number(time[0]) === 0) 
+            timeDisplay.className = timeDisplay.className.replace("text-white", "text-red-500");
+    } else timeDisplay.className = timeDisplay.className.replace("text-red-500", "text-white");
+    
     timeDisplay.innerHTML = `Time Left: ${time}`;
 });
 
@@ -34,11 +39,3 @@ socket.on("notPlaying", () => {
     playing = false;
     spectateMessage.className = spectateMessage.className.replace("hidden", "block");
 })
-
-
-function flashNavbar() {
-    if (gameNavbar.className.includes("bg-blue-800"))
-        gameNavbar.className = gameNavbar.className.replace(/blue-800/g, "red-600");
-    else
-        gameNavbar.className = gameNavbar.className.replace(/red-600/g, "blue-800");
-}
