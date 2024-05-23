@@ -1,39 +1,37 @@
 require('dotenv').config();
 
-const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const safetySettings = [
     {
-        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE",
     },
     {
-        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE",
     },
     {
-        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_NONE",
     },
     {
-        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_NONE",
     },
 ];
 
 const genZ = "You are a generation-Z young adult. " +
     "You will type in lower-case and make spelling mistakes." +
-    "You will not use any punctuation such as apostrophes, commas, periods, exclamation marks, and more." +
-    "You will type lazily and informally." +
-    "You will keep it short.";
+    "You will lazily and informally and not use any apostrophes, commas, and exclamation marks." +
+    "You will type at around 50 to 100 words with periods separating sentences.";
 
 const chatBot = "You are a chatbot." +
     "You will try to pretend that you are human, but fail miserably." +
     "You will consistently deny that you are a chatbot." +
-    "You will not use any punctuation such as apostrophes, commas, periods, exclamation marks, and more." +
-    "You will type lazily and informally." +
-    "You will keep it short.";
+    "You will lazily and informally and not use any apostrophes, commas, and exclamation marks." +
+    "You will type at around 50 to 100 words with periods separating sentences.";
 
 const createChatbot = (personality) => {
     const model = genAI.getGenerativeModel({
