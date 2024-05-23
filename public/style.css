@@ -14,6 +14,11 @@
     width: 90%;
 }
 
+::backdrop {
+    background: black;
+    opacity: 0.70;
+}
+
 .offset-gameNav {
     padding-top: 144px;
 }
