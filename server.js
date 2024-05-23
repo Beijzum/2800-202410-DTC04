@@ -91,13 +91,14 @@ app.post("/createAccount", async (req, res) => {
         } else {
             req.session.username = req.body.username;
             res.status(200).json({ redirectUrl: "/" });
-        const hash = randomBytes(12).toString('hex');
-        let errorList = await database.signUpUser({...req.body, hash});
-        if (!errorList?.length) {
-            const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-            await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
-            res.redirect(`/registerSuccess?h=${hash}`);
-            return;
+            const hash = randomBytes(12).toString('hex');
+            let errorList = await database.signUpUser({ ...req.body, hash });
+            if (!errorList?.length) {
+                const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+                await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
+                res.redirect(`/registerSuccess?h=${hash}`);
+                return;
+            }
         }
     }
 });
@@ -105,7 +106,7 @@ app.post("/createAccount", async (req, res) => {
 
 app.post("/resendReg", async (req, res) => {
     const { hash } = req.body;
-    const doc = await database.client.db(process.env.MONGODB_DATABASE).collection("unverifiedUsers").findOne({"hash": hash});
+    const doc = await database.client.db(process.env.MONGODB_DATABASE).collection("unverifiedUsers").findOne({ "hash": hash });
 
     const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
     if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
