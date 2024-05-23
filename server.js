@@ -20,6 +20,10 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
+
+// set AI model
+const chat = aiModel.createChatbot().startChat();
+
 // requirements for cloudinary
 const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
 
@@ -79,7 +83,14 @@ app.post("/createAccount", async (req, res) => {
     let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
+        res.status(400).json({ errors: validationResult.error.details });
     } else {
+        let errorList = await database.signUpUser(req.body);
+        if (errorList?.length) {
+            res.status(400).json({ errors: errorList });
+        } else {
+            req.session.username = req.body.username;
+            res.status(200).json({ redirectUrl: "/" });
         const hash = randomBytes(12).toString('hex');
         let errorList = await database.signUpUser({...req.body, hash});
         if (!errorList?.length) {
@@ -89,8 +100,8 @@ app.post("/createAccount", async (req, res) => {
             return;
         }
     }
-    res.redirect("/signUp");
-})
+});
+
 
 app.post("/resendReg", async (req, res) => {
     const { hash } = req.body;
@@ -215,6 +226,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
             );
+            req.session.profilePic = result.secure_url;
             console.log('updated mongodb');
             res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
         } catch (error) {
