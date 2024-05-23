@@ -206,6 +206,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
             );
+            req.session.profilePic = result.secure_url;
             console.log('updated mongodb');
             res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
         } catch (error) {
