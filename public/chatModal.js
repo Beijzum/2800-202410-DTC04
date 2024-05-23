@@ -1,36 +1,20 @@
-// templates for the modal
-const card = document.createElement("div");
-card.appendChild(document.createElement("p"));
-card.classList.add("flex", "flex-row", "my-2", "mx-8", "w-auto", "border-b", "border-black");
+let modal = document.getElementById("playerListModal");
+let playerList = document.getElementById("playerList");
 
-const modal = document.querySelector("#userDisplays");
-
-modal.addEventListener("click", function(e) {
-    if (e.target === modal) {
-        modal.close();
-    }
-});
-// handle receiving the updated user list
-socket.on("updateUserList", (users) => { 
-    /* This logic handles lazily managing the content of the user modal */
-    const userIds = [];
-    // Removes all users that have left
-    modal.childNodes.forEach(function(node) {
-        console.log(node, node.id, node.nodeName)
-        if (node.nodeName !== "H1" && !users.includes(node.id)) {
-            node.remove();
-        }
-    })
-    // get all users that have been added
-    const user_arr = users.filter(user => !userIds.includes(user));
-    // adds card a card for every new player
-    user_arr.forEach(user => {
-        let userCard = card.cloneNode(true);
-        
-        userCard.id = user;
-        userCard.querySelector("p").innerText = user;
-        modal.appendChild(userCard);
+socket.on("updateUserList", (users) => {
+    playerList.innerHTML = "";
+    users.forEach(user => {
+        playerList.innerHTML += `
+        <div class="flex items-center px-10 py-1 border-b hover:bg-zinc-800 border-zinc-700 text-center gap-1">
+        <img src=${user.profilePicture ? user.profilePicture : "images/defaultProfilePicture.webp"} class="w-8 h-8 rounded-full p-1">
+        <p class="font-bold break-all text-zinc-100">${user.username}</p>
+        </div>
+        `;
     });
+});
+
+document.addEventListener("click", (e) => {
+    if (e.target.id === "closeModal") modal.close();
 });
 
 // click event on the player list icon
@@ -39,6 +23,5 @@ document.querySelector("#playerListButton").addEventListener("click", async func
     if (this.style.display === "none") {
         return;
     }
-
     modal.showModal();
 });
