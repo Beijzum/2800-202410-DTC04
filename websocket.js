@@ -9,7 +9,8 @@ const gameHandler = require("./gameHandler");
  * @param {Server} io the server for handling socketing
  */
 function runSocket(io) {
-    const userList = new Set(); // used to keep track of connected users
+    const userList = new Map(); // used to keep track of connected users
+
     io.on("connection", (socket) => {
 
         // Player joins chatroom lobby
@@ -18,8 +19,9 @@ function runSocket(io) {
             socket.emit("systemMessage", formatMessage("", "", "You have joined the room"));
             socket.broadcast.emit("systemMessage", formatMessage(socket.request.session.username, socket.request.session.profilePic, `${socket.request.session.username} has joined the room`));
             updateReadyMessage(socket);
-            userList.add(socket.request.session.username); // update user list
-            io.emit("updateUserList", Array.from(userList)); // notify client
+            userList.set(socket.request.session.username, socket.request.session.profilePic);
+            // userList.add({username: socket.request.session.username, profilePicture: socket.request.session.profilePic}); // update user list
+            io.emit("updateUserList", Array.from(userList.entries())); // notify client
 
             // handle players that just returned back to lobby, ADD SHOWING MODAL WHEN SESSION HAS A WIN/LOSE STATE THAT WILL BE ADDED IN GAME HANDLER
             if (socket.request.session.game) {
@@ -34,10 +36,10 @@ function runSocket(io) {
 
         // When disconnect
         socket.on("disconnect", () => {
-            socket.emit("systemMessage", formatMessage("", "", `${socket.request.session.username} has disconnected`));
+            io.emit("systemMessage", formatMessage("", "", `${socket.request.session.username} has disconnected`));
             updateReadyMessage(socket);
             userList.delete(socket.request.session.username); // update user list
-            io.emit("updateUserList", Array.from(userList)); // notify client
+            io.emit("updateUserList", Array.from(userList.entries())); // notify client
         });
 
         socket.on("ready", async () => {
