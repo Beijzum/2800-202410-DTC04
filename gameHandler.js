@@ -52,7 +52,7 @@ function runGame(io) {
             // user has joined and is part of the game, and is the first to join
             if (gameRunning === false) {
                 gameRunning = true;
-                // createAIs(Math.ceil(getTotalPlayerCount() / 3));
+                createAIs(Math.ceil(getTotalPlayerCount() / 3));
                 round = 1;
             }
 
