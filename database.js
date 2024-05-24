@@ -66,21 +66,25 @@ async function signUpUser(requestBody) {
 async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
-            let result = await findUser({email: requestBody.email});
+            let result = await findUser({ email: requestBody.email });
             if (result) {
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
-                    res(result);
+                    res({ user: result });
+                    return;
+                } else {
+                    res({ message: "Incorrect password" });
                     return;
                 }
+            } else {
+                res({ message: "Email not found" });
             }
-            else res(null);
-
         } catch (e) {
             rej(e);
         }
     });
 }
+
 
 async function findUser(searchParams) {
     return new Promise(async (res, rej) => {
