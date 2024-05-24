@@ -27,16 +27,7 @@ socket.on("gameOver", () => {
 
 socket.on('gameResult', (data) => {
     const dialogBox = document.getElementById('dialogBox');
-    const dialogTitle = document.getElementById('dialogTitle');
-    const dialogImage = document.getElementById('dialogImage');
-    // shown early to ignore data. This is still hardcoded
     dialogBox.showModal();
-
-    // ignores this data. WIP
-    dialogTitle.textContent = data.winOrLose;
-    dialogTitle.classList.add(data.color);
-    dialogImage.src = data.imageUrl;
-
 });
 
 document.getElementById('closeDialog').onclick = () => {
