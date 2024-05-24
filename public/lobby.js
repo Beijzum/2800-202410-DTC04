@@ -36,7 +36,7 @@ readyButton.addEventListener("click", () => {
 })
 
 socket.on("updateReadyMessage", (readyMessage) => {
-    if (!ready) return;
+    // if (!ready) return;
     navbarMessage.innerHTML = readyMessage;
 });
 
