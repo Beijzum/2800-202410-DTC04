@@ -272,6 +272,11 @@ function runGame(io) {
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
         if (getAlivePlayerCount() === 0 || AIs.length === 0)
+            game.emit("gameWon", {
+                winOrLose: "Victory!",
+                color: "green",
+                imageUrl: "/images/victory.jpg"
+            });
             stopGame();
 
         // move onto next round

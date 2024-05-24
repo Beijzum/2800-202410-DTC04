@@ -2,7 +2,7 @@ let gameMenu = document.getElementById("gameMenu");
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
-    switch(currentView.id) {
+    switch (currentView.id) {
         case "writeView":
             handleWriteView();
             break;
@@ -24,6 +24,26 @@ socket.on("changeView", () => {
 socket.on("gameOver", () => {
     window.location.href = "/lobby";
 });
+
+socket.on('gameWon', (data) => {
+    const dialogBox = document.getElementById('dialogBox');
+    const dialogTitle = document.getElementById('dialogTitle');
+    const dialogImage = document.getElementById('dialogImage');
+    // shown early to ignore data. This is still hardcoded
+    dialogBox.showModal();
+
+    // ignores this data. WIP
+    dialogTitle.textContent = data.winOrLose;
+    dialogTitle.classList.add(data.color);
+    dialogImage.src = data.imageUrl;
+
+});
+
+document.getElementById('closeDialog').onclick = () => {
+    const dialogBox = document.getElementById('dialogBox');
+    dialogBox.close();
+    window.location.href = "/lobby";
+}
 
 function handleWriteView() {
     function disableInputs(buttonMessage) {
