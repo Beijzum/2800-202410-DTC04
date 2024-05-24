@@ -36,11 +36,15 @@ readyButton.addEventListener("click", () => {
 })
 
 socket.on("updateReadyMessage", (readyMessage) => {
-    if (!ready) return;
+    // if (!ready) return;
     navbarMessage.innerHTML = readyMessage;
 });
 
 socket.on("startGame", () => {
     socket.emit("forceJoin");
     window.location.href = "/game";
+});
+
+socket.on("readyTimerUpdate", (seconds) => {
+    navbarMessage.innerHTML = `Starting in ${seconds}...`
 });
