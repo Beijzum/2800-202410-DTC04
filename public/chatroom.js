@@ -10,18 +10,11 @@ let messageSection = document.getElementById("messageSection");
 socket.on("message", (messageContent) => {
     const message = document.createElement("li");
     message.innerHTML = `
-    <div class="max-w-lg ml-3 my-3 p-3 rounded-lg intense-shadow_2 text-lg">
-        <div class="flex justify-between items-center bg-blue-500 p-2 rounded-t-lg">
-            <div class="flex items-center">
-                ${messageContent.profilePic ? `<img src="${messageContent.profilePic}" class="w-8 h-8 rounded-full mr-3">` : ""}
-                <span class="font-bold text-white">${messageContent.username}</span>
-            </div>
-            <div class="flex-grow flex justify-end">
-                <span class="text-xs text-white font-bold">${messageContent.time}</span>
-            </div>
-        </div>
-        <div class="bg-gray-300 text-black p-2 rounded-b-lg whitespace-normal break-words">
-            ${messageContent.text}
+    <div class="w-full rounded-lg text-lg p-2 flex box-border">
+        <img src="${messageContent.profilePic ? messageContent.profilePic : `images/defaultProfilePicture.webp`}" class="w-12 h-12 mr-4 rounded-full">
+        <div class="flex flex-col">
+            <p class="font-bold text-blue-950">${messageContent.username} <span class="text-xs font-normal text-gray-500">${messageContent.time}</span></p>
+            <p class="text-gray-800 text-sm rounded-lg whitespace-normal break-all pr-6">${messageContent.text}</p>
         </div>
     </div>
     `;
@@ -32,18 +25,11 @@ socket.on("message", (messageContent) => {
 socket.on("systemMessage", (messageContent) => {
     const message = document.createElement("li");
     message.innerHTML = `
-    <div class="max-w-lg ml-3 my-3 p-3 rounded-lg intense-shadow_2 text-lg">
-        <div class="flex justify-between items-center bg-red-500 p-2 rounded-t-lg">
-            <div class="flex items-center">
-                <span class="font-bold text-white">System Message</span>
-            </div>
-            <div class="flex-grow flex justify-end">
-                <span class="text-xs text-white font-bold">${messageContent.time}</span>
-            </div>
-        </div>
-        <div class="bg-gray-300 text-black p-2 rounded-b-lg whitespace-normal break-words">
-            ${messageContent.text}
-        </div>
+    <div class="flex">
+        <p class="text-sky-500 pl-2">➤</p>
+        <p class="text-gray-500 pl-2 whitespace-normal break-normal">
+            ${messageContent.text}. <span class="text-xs">${messageContent.time}</span>
+        </p>
     </div>
     `;
     messageSection.appendChild(message);

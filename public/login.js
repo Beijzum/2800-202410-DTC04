@@ -1,10 +1,9 @@
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    // stop page from refreshing before handle is done
     e.preventDefault();
 
-    // get field entries
     let email = document.getElementById("emailField").value;
     let password = document.getElementById("passwordField").value;
+    let errorContainer = document.getElementById("errorContainer");
 
     let response = await fetch(e.target.action, {
         method: "POST",
@@ -18,5 +17,10 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         })
     });
 
-    window.location.href = response.url;
+    if (response.ok) {
+        window.location.href = response.url;
+    } else {
+        let errorData = await response.json();
+        errorContainer.innerText = errorData.message;
+    }
 });

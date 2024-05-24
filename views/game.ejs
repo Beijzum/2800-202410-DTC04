@@ -1,6 +1,8 @@
 <%- include("./templates/header", {pageName: "Game Lobby"}) %>
 <%- include("./templates/navbar", {currentPage: "game"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "game" }) %>
+<%- include("./templates/postGameModal", {currentPage: "game" , winOrLose: "You win!" , color: "green" , imageUrl: "/images/victory.jpg" }) %>
+<div id="statusMenu"></div>
 <div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
 <script src="windowHandler.js"></script>

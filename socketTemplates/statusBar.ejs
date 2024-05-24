@@ -1,0 +1,11 @@
+<div id="status" class="flex items-center bg-gray-900 text-gray-200 p-2 font-semibold">
+    <% if (status === "alive") { %>
+        <p class="mr-4">Your Alias:</p>
+        <img src="<%= socket.request.session.game.aliasPicture %>" class="w-10 h-10 rounded-full p-1 mr-2">
+        <p><%= socket.request.session.game.alias %></p>
+    <% } else if (status === "dead") { %>
+        <p class="mx-auto font-bold text-red-500">You have been eliminated</p>
+    <% } else { %>
+        <p class="mx-auto font-bold">Spectating...</p>
+    <% } %>
+</div>
