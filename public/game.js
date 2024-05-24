@@ -34,7 +34,7 @@ socket.on('gameWon', (data) => {
 
     // ignores this data. WIP
     dialogTitle.textContent = data.winOrLose;
-    dialogTitle.classList.add(`text-${data.color}-700`);
+    dialogTitle.classList.add(data.color);
     dialogImage.src = data.imageUrl;
 
 });
