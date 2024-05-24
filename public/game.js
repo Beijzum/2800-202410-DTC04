@@ -26,11 +26,11 @@ socket.on("gameOver", () => {
 });
 
 socket.on('gameWon', (data) => {
-    const dialog = document.getElementById('dialogBox');
+    const dialogBox = document.getElementById('dialogBox');
     const dialogTitle = document.getElementById('dialogTitle');
     const dialogImage = document.getElementById('dialogImage');
     // shown early to ignore data. This is still hardcoded
-    dialog.showModal();
+    dialogBox.showModal();
 
     // ignores this data. WIP
     dialogTitle.textContent = data.winOrLose;
@@ -40,8 +40,8 @@ socket.on('gameWon', (data) => {
 });
 
 document.getElementById('closeDialog').onclick = () => {
-    const dialog = document.getElementById('dialogBox');
-    dialog.close();
+    const dialogBox = document.getElementById('dialogBox');
+    dialogBox.close();
     window.location.href = "/lobby";
 }
 
