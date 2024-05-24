@@ -25,7 +25,7 @@ socket.on("gameOver", () => {
     window.location.href = "/lobby";
 });
 
-socket.on('gameWon', (data) => {
+socket.on('gameResult', (data) => {
     const dialogBox = document.getElementById('dialogBox');
     const dialogTitle = document.getElementById('dialogTitle');
     const dialogImage = document.getElementById('dialogImage');
@@ -89,7 +89,7 @@ function handleWriteView() {
 
 function handleVoteView() {
     if (!playing) return;
-    
+
     let voted = false;
     let selected = false;
     let responseCards = document.querySelectorAll(".responseCard");
@@ -101,9 +101,9 @@ function handleVoteView() {
         let cancelButton = buttonsDiv.children[1];
 
         function hideButtons(boolean) {
-            if (boolean) 
+            if (boolean)
                 buttonsDiv.className = buttonsDiv.className.replace("opacity-100", "opacity-0");
-            else 
+            else
                 buttonsDiv.className = buttonsDiv.className.replace("opacity-0", "opacity-100");
             voteButton.disabled = boolean;
             cancelButton.disabled = boolean;
@@ -124,12 +124,12 @@ function handleVoteView() {
             hideButtons(true);
         })
 
-        card.addEventListener("click", function(e) {
+        card.addEventListener("click", function (e) {
             if (voted || e.target === cancelButton || selected) return;
             hideButtons(false);
             selected = true;
         });
-    });  
+    });
 }
 
 function handleResultView() {

@@ -271,13 +271,23 @@ function runGame(io) {
         killPlayer(randomSocket);
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        if (getAlivePlayerCount() === 0 || AIs.length === 0)
-            game.emit("gameWon", {
+        if (getAlivePlayerCount() === 0) {
+            console.log("Defeat")
+            game.emit("gameResult", {
+                winOrLose: "Defeat!",
+                color: "red",
+                imageUrl: "/images/defeat.jpg"
+            });
+            stopGame();
+        } else if (AIs.length === 0) {
+            console.log("Victory")
+            game.emit("gameResult", {
                 winOrLose: "Victory!",
                 color: "green",
                 imageUrl: "/images/victory.jpg"
             });
             stopGame();
+        }
 
         // move onto next round
         if (phaseDuration <= 0) {
