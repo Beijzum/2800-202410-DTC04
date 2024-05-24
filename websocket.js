@@ -1,6 +1,6 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
-const { Server } = require("socket.io");
+const { Server, Socket } = require("socket.io");
 const gameHandler = require("./gameHandler");
 
 /**
@@ -67,6 +67,7 @@ function runSocket(io) {
         });
 
         socket.on("forceJoin", async () => {
+            socket.join("readyList");
             await addClientToGame(socket);
         })
     });
