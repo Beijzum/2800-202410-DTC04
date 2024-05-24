@@ -3,7 +3,7 @@
 let no = new Audio("sfx/no.mp3");
 let robot = new Audio("sfx/robot.mp3");
 let heli = new Audio("sfx/heliAudio.mp3");
-let nextGen = new Audio("sfx/suspicious.mp3");
+let nextGen = new Audio("sfx/nextGen.mp3");
 // It's REALLY loud
 heli.volume = 0.5;
 
