@@ -1,4 +1,4 @@
-let last8ButtonsPressed = [];
+let last10ButtonsPressed = [];
 let correctSequence = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
 document.addEventListener("keyup", (e) => {
@@ -7,17 +7,31 @@ document.addEventListener("keyup", (e) => {
 });
 
 function checkSequence() {
-    if (last8ButtonsPressed.length < 8) return false;
-    for (let i = 0; i < last8ButtonsPressed.length; i++) {
-        if (last8ButtonsPressed[i] !== correctSequence[i]) return false;
+    if (last10ButtonsPressed.length < 10) return false;
+    for (let i = 0; i < last10ButtonsPressed.length; i++) {
+        if (last10ButtonsPressed[i] !== correctSequence[i]) return false;
     }
     return true;
 }
 
 function logButtonPressed(key) {
-    if (last8ButtonsPressed.length > 8) {
-        last8ButtonsPressed.shift();
-        last8ButtonsPressed.push(key);
-    } 
-    else last8ButtonsPressed.push(key);
+    if (last10ButtonsPressed.length >= 10) {
+        last10ButtonsPressed.shift();
+        if (key === "B" || key === "A") last10ButtonsPressed.push(key.toLowerCase());
+        else last10ButtonsPressed.push(key);
+    }
+    else last10ButtonsPressed.push(key);
+}
+
+let winsElement = document.querySelector("#wins");
+let wins = winsElement.innerHTML.trim();
+let userExist = document.querySelector("#userExist").innerHTML.trim();
+
+// Convert wins to a number for comparison
+wins = Number(wins);
+
+if (wins === 0 && userExist === "false") {
+    document.querySelector("#userScores").style.display = "none";
+} else {
+    document.querySelector("#userScores").style.display = "flex";
 }

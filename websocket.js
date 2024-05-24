@@ -1,6 +1,6 @@
 /* Part of code from: https://socket.io/docs/v4/, https://www.youtube.com/watch?v=jD7FnbI76Hg */
 
-const { Server } = require("socket.io");
+const { Server, Socket } = require("socket.io");
 const gameHandler = require("./gameHandler");
 
 /**
@@ -11,6 +11,7 @@ const gameHandler = require("./gameHandler");
 function runSocket(io) {
     const userList = new Map(); // used to keep track of connected users
 
+    let readyTimer = null, countdown;
     io.on("connection", (socket) => {
 
         // Player joins chatroom lobby
@@ -56,17 +57,42 @@ function runSocket(io) {
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
-                await addClientToGame(socket);
-                io.emit("startGame");
+                // TODO: cleanup this crime against humanity
+                if (readyTimer) return;
+                countdown = 10;
+                io.emit("readyTimerUpdate", countdown);
+                readyTimer = setInterval(() => {
+                    countdown--;
+                    if (countdown <= 0) {
+                        clearInterval(readyTimer);
+                        readyTimer = null;
+                        addClientToGame(socket)
+                        .then(()=> io.emit("startGame"))
+                    } else io.emit("readyTimerUpdate", countdown);
+                }, 1000);
+            } else {
+                if (readyTimer) {
+                    clearInterval(readyTimer);
+                    readyTimer = null;
+                    updateReadyMessage(socket);
+                }
             }
         });
 
         socket.on("unready", () => {
             socket.leave("readyList");
-            updateReadyMessage(socket);
+            if (readyTimer) {
+                if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size < 0.5) {
+                    clearInterval(readyTimer);
+                    readyTimer = null;
+                    updateReadyMessage(socket);
+                } 
+            } else updateReadyMessage(socket);
+
         });
 
         socket.on("forceJoin", async () => {
+            socket.join("readyList");
             await addClientToGame(socket);
         })
     });

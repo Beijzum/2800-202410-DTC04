@@ -2,6 +2,7 @@
 <%- include("./templates/navbar", {currentPage: "login"}) %>
 <div class="max-w-lg flex flex-col justify-center mx-auto " 
     style="margin-top: 7rem;">
+    <div id="errorContainer" class="text-red-400"></div>
     <form id="loginForm" class="flex flex-col items-center m-3" action="/loginAccount">
         <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
         <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
