@@ -29,7 +29,7 @@ readyButton.addEventListener("click", () => {
          readyButton.className = readyButton.className.replace(/zinc-300/g, "sky-400");
          readyButton.className = readyButton.className.replace("text-gray-700", "text-white");
          readyButton.innerHTML = "Ready";
-         navbarMessage.innerHTML = "Waiting for Game to Start...";
+        //  navbarMessage.innerHTML = "Waiting for Game to Start...";
          ready = false;
         socket.emit("unready");
     }
