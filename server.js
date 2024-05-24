@@ -81,20 +81,15 @@ app.post("/createAccount", async (req, res) => {
         console.log(validationResult.error.message);
         res.status(400).json({ errors: validationResult.error.details });
     } else {
-        let errorList = await database.signUpUser(req.body);
+        const hash = randomBytes(12).toString('hex');
+        let errorList = await database.signUpUser({ ...req.body, hash });
         if (errorList?.length) {
             res.status(400).json({ errors: errorList });
         } else {
-            req.session.username = req.body.username;
-            res.status(200).json({ redirectUrl: "/" });
-            const hash = randomBytes(12).toString('hex');
-            let errorList = await database.signUpUser({ ...req.body, hash });
-            if (!errorList?.length) {
-                const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-                await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
-                res.redirect(`/registerSuccess?h=${hash}`);
-                return;
-            }
+            const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+            await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
+            res.json({redirectUrl: `/registerSuccess?h=${hash}`});
+            return;
         }
     }
 });
