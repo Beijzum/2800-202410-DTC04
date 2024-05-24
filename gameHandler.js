@@ -177,7 +177,7 @@ function runGame(io) {
         game.emit("changeView", renderedTransitionTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 22; //6
+            phaseDuration = 6;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runVote");
         }
@@ -203,7 +203,7 @@ function runGame(io) {
 
         if (phaseDuration <= 0) {
 
-            phaseDuration = 51; //61
+            phaseDuration = 61;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runResult");
         }
@@ -250,7 +250,7 @@ function runGame(io) {
 
         if (phaseDuration <= 0) {
 
-            phaseDuration = 22; //11
+            phaseDuration = 11;
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runWait");
         }
@@ -291,7 +291,7 @@ function runGame(io) {
 
         // move onto next round
         if (phaseDuration <= 0) {
-            phaseDuration = 12; //6
+            phaseDuration = 6;
             if (round) round++;
             let timer = setInterval(updateClientTimers, 1000);
             setTimeout(() => {
