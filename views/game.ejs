@@ -1,6 +1,7 @@
 <%- include("./templates/header", {pageName: "Game Lobby"}) %>
 <%- include("./templates/navbar", {currentPage: "game"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "game" }) %>
+<%- include("./templates/postGameModal", {currentPage: "game" , winOrLose: "You win!" , color: "green" , imageUrl: "/images/victory.jpg" }) %>
 <p id="spectateMessage" class="bg-gray-300 text-4xl m-2 p-5 rounded-lg text-center font-semibold hidden">You Are Spectating...</p>
 <div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
