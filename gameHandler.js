@@ -43,7 +43,7 @@ function runGame(io) {
             // joining dead indicates you are dead
             if (socket.request.session.game?.dead) {
                 socket.join("dead");
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "dead"});
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "dead" });
                 socket.emit("updateStatus", renderedStatusBarTemplate);
                 socket.emit("notPlaying");
                 return;
@@ -66,13 +66,13 @@ function runGame(io) {
                 assignClientAlias(socket);
 
                 // send alias to frontend
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "alive", socket: socket});
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "alive", socket: socket });
                 socket.emit("updateStatus", renderedStatusBarTemplate);
 
                 ee.emit("runWrite");
             } else {
                 // user has joined, but is not part of the game
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "spectate"});
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "spectate" });
                 socket.emit("updateStatus", renderedStatusBarTemplate);
                 socket.emit("notPlaying");
 
@@ -157,7 +157,7 @@ function runGame(io) {
                 let aiGetPrompt = await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex]);
                 let aiResponse = aiGetPrompt.response;
                 let aiText = aiResponse.text();
-    
+
                 AIs[i].request.session.game.response = aiText;
             }
 
@@ -177,7 +177,7 @@ function runGame(io) {
         game.emit("changeView", renderedTransitionTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 6;
+            phaseDuration = 22; //6
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runVote");
         }
@@ -189,21 +189,21 @@ function runGame(io) {
         currentPhase = "VOTE";
 
         let playerList = await game.in("alive").fetchSockets();
-        
+
         // add AI to player list to populate vote page
         AIs.forEach(AI => {
             playerList.push(AI);
         });
-        
+
         // shuffle list so AI is not always at bottom of the list
         shuffleArray(playerList);
-        
+
         let renderedVoteTemplate = ejs.render(voteTemplate, { players: playerList, prompt: pool.prompts[promptIndex] });
         game.emit("changeView", renderedVoteTemplate);
 
         if (phaseDuration <= 0) {
 
-            phaseDuration = 61;
+            phaseDuration = 51; //61
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runResult");
         }
@@ -228,7 +228,7 @@ function runGame(io) {
             if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
                 mostVotedSocket = socket;
         });
-  
+
         // if voted player has majority votes
         if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) {
             killPlayer(mostVotedSocket);
@@ -250,7 +250,7 @@ function runGame(io) {
 
         if (phaseDuration <= 0) {
 
-            phaseDuration = 11;
+            phaseDuration = 22; //11
             let timer = setInterval(updateClientTimers, 1000);
             createDelayedRedirect(phaseDuration + 1, timer, "runWait");
         }
@@ -291,7 +291,7 @@ function runGame(io) {
 
         // move onto next round
         if (phaseDuration <= 0) {
-            phaseDuration = 6;
+            phaseDuration = 12; //6
             if (round) round++;
             let timer = setInterval(updateClientTimers, 1000);
             setTimeout(() => {
@@ -318,8 +318,8 @@ function runGame(io) {
         // otherwise edit which room they are in
         socket.leave("alive");
         socket.join("dead");
-        
-        let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "dead"});
+
+        let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "dead" });
         socket.emit("updateStatus", renderedStatusBarTemplate);
         socket.emit("notPlaying");
         socket.request.session.game.dead = true;
@@ -382,12 +382,16 @@ function createAIs(numberToMake) {
         AI.chatBot = chatBot;
         AI.id = randomFirstName + randomLastName + randomNumber;
         AI.bot = true;
-        AI.request = {session: {game: {
-            alias: randomFirstName + randomLastName + randomNumber,
-            aliasPicture: randomAvatar,
-            votes: 0
-        }}};
-        
+        AI.request = {
+            session: {
+                game: {
+                    alias: randomFirstName + randomLastName + randomNumber,
+                    aliasPicture: randomAvatar,
+                    votes: 0
+                }
+            }
+        };
+
         AIs.push(AI);
     }
 }
