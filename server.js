@@ -112,17 +112,22 @@ app.post("/loginAccount", async (req, res) => {
     let validationResult = joiValidation.loginSchema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error.message);
+        res.status(400).json({ message: validationResult.error.message });
     } else {
         let loginResult = await database.loginUser(req.body);
-        if (loginResult) {
-            req.session.username = loginResult.username;
-            req.session.profilePic = loginResult.profilePictureUrl;
+        if (loginResult.message === undefined) {
+            req.session.username = loginResult.user.username;
+            req.session.profilePic = loginResult.user.profilePictureUrl;
             res.redirect("/");
-            return;
+        } else {
+            res.status(400).json({ message: loginResult.message });
         }
-        res.redirect("/login");
     }
-})
+});
+
+
+
+
 
 app.post("/forgotpass", async (req, res) => {
     if (req.session.username) {
