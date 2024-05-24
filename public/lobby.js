@@ -44,3 +44,7 @@ socket.on("startGame", () => {
     socket.emit("forceJoin");
     window.location.href = "/game";
 });
+
+socket.on("readyTimerUpdate", (seconds) => {
+    navbarMessage.innerHTML = `Starting in ${seconds}...`
+});
