@@ -4,7 +4,7 @@ var socket = io("/game");
 let gameNavbar = document.getElementById("gameNavbar");
 let roundCounter = document.getElementById("roundCounter");
 let timeDisplay = document.getElementById("timeDisplay");
-let spectateMessage = document.getElementById("spectateMessage");
+let statusBar = document.getElementById("statusMenu");
 
 document.addEventListener("DOMContentLoaded", () => { socket.emit("joinGame"); });
 
@@ -17,7 +17,6 @@ socket.on("noGameRunning", (newHTML) => {
 socket.on("changeView", (newHTML) => {
     document.getElementById("gameMenu").innerHTML = newHTML;
 });
-
 
 // UI element handlers
 socket.on("roundUpdate", (round) => {
@@ -35,7 +34,10 @@ socket.on("timerUpdate", (time) => {
     timeDisplay.innerHTML = `Time Left: ${time}`;
 });
 
+socket.on("updateStatus", (newHTML) => {
+    statusBar.innerHTML = newHTML;
+})
+
 socket.on("notPlaying", () => {
     playing = false;
-    spectateMessage.className = spectateMessage.className.replace("hidden", "block");
 })

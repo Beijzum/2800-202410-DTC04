@@ -1,41 +1,24 @@
 <div id="voteView">
-    <p class="text-2xl p-4 text-center font-bold bg-gray-800 m-2 text-white rounded-lg">Who is The AI?</p>
+    <p class="text-4xl mt-4 mb-2 text-center font-bold m-2">Who is The AI?</p>
     <label for="prompt" class="text-sm p-2 font-semibold">Prompt</label>
-    <p id="prompt" class="p-4 bg-zinc-300 font-semibold m-2 rounded-lg"><%= prompt %></p>
+    <p id="prompt" class="p-4 bg-white font-semibold m-2 rounded-lg intense-shadow"><%= prompt %></p>
     
     <label for="responses" class="text-sm p-2 font-semibold">Responses</label>
     <div id="responses" class="m-2">
         <% for(let i = 0; i < players.length; i++) { %>
             <!-- Passes list of sockets -->
-            <div class="bg-gray-300 rounded-lg flex mt-2 w-full justify-between items-center " id="<%= players[i].request.session.game.alias %>Card">
-                <div class="flex flex-col w-full ">
-
+            <div id="<%= players[i].id %>" class="responseCard flex flex-col bg-white rounded-lg p-2 m-2 intense-shadow select-none">
+                <div class="flex justify-between mb-1">
                     <div class="flex items-center">
-                        <div class="flex-grow flex items-center gap-2">
-
-                            <div class="w-16 h-16 p-2 rounded-full bg-gray-300">
-                                <img src="<%= players[i].request.session.game.aliasPicture %>" alt="Player Image"
-                                    class="w-full h-full rounded-full">
-                            </div>
-
-                            <div class="text-sm font-semibold p-2">
-                                <%= players[i].request.session.game.alias %>
-                            </div>
-
-                        </div>
-
-                        <button id="<%= players[i].id %>"
-                            class="voteButton bg-blue-600 text-white font-semibold text-sm rounded-md w-44 h-14 m-2 text-center flex items-center justify-center">
-                            Vote
-                        </button>
+                        <img src="<%= players[i].request.session.game.aliasPicture %>" class="w-12 h-12 rounded-full mr-2">
+                        <p class="font-bold text-gray-800 text-sm"><%= players[i].request.session.game.alias %></p>
                     </div>
-
-                    <div class="p-1 break-words">
-                        <p class="text-sm break-words w-full">
-                            <%= players[i].request.session.game.response %>
-                        </p>
+                    <div class="buttonsDiv flex opacity-0 transition-opacity ease-in-out duration-200">
+                        <button class="vote bg-green-300 m-1 px-4 rounded-lg text-green-700 border-2 border-green-800 text-lg " disabled>✓</button>
+                        <button class="vote bg-red-300 m-1 px-4 rounded-lg text-red-700 border-2 border-red-800 text-xl" disabled>X</button>
                     </div>
                 </div>
+                <p class="p-1 break-all text-sm w-full text-gray-800"><%= players[i].request.session.game.response %></p>
             </div>
         <% } %>
     </div>

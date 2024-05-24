@@ -37,7 +37,7 @@ function handleWriteView() {
 
         // disable textarea
         responseArea.disabled = true;
-        responseArea.className = responseArea.className.replace("bg-white", "bg-gray-100")
+        responseArea.className = responseArea.className.replace("bg-white", "bg-gray-100");
         responseArea.className += " opacity-75";
 
         // disable submit button
@@ -69,20 +69,47 @@ function handleWriteView() {
 
 function handleVoteView() {
     if (!playing) return;
-
-    function handleVoteButton(e) {
-        if (e.target.tagName !== "BUTTON" || !e.target.className.includes("voteButton")) return;
-        
-        document.removeEventListener("click", handleVoteButton);
-        socket.emit("submitVote", e.target.id); // send socket id of voted
-    }
     
-    document.addEventListener("click", handleVoteButton);
+    let voted = false;
+    let selected = false;
+    let responseCards = document.querySelectorAll(".responseCard");
 
-    socket.on("changeView", () => {
-        if (!playing) return;
-        document.removeEventListener("click", handleVoteButton);
-    })
+    responseCards.forEach((card) => {
+
+        let buttonsDiv = card.children[0].children[1];
+        let voteButton = buttonsDiv.children[0];
+        let cancelButton = buttonsDiv.children[1];
+
+        function hideButtons(boolean) {
+            if (boolean) 
+                buttonsDiv.className = buttonsDiv.className.replace("opacity-100", "opacity-0");
+            else 
+                buttonsDiv.className = buttonsDiv.className.replace("opacity-0", "opacity-100");
+            voteButton.disabled = boolean;
+            cancelButton.disabled = boolean;
+        }
+
+        voteButton.addEventListener("click", () => {
+            if (voted) return;
+
+            voted = true;
+            card.className = card.className.replace("bg-white", "bg-gray-200");
+            card.className += " opacity-75";
+            hideButtons(true);
+            socket.emit("submitVote", card.id);
+        });
+
+        cancelButton.addEventListener("click", () => {
+            selected = false;
+            hideButtons(true);
+        })
+
+        card.addEventListener("click", function(e) {
+            if (voted || e.target === cancelButton || selected) return;
+            hideButtons(false);
+            selected = true;
+        });
+    });  
 }
 
 function handleResultView() {

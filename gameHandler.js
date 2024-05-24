@@ -19,6 +19,7 @@ const noGameTemplate = fs.readFileSync("./socketTemplates/noGame.ejs", "utf8");
 const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
+const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
 
 function runGame(io) {
 
@@ -42,26 +43,39 @@ function runGame(io) {
             // joining dead indicates you are dead
             if (socket.request.session.game?.dead) {
                 socket.join("dead");
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "dead"});
+                socket.emit("updateStatus", renderedStatusBarTemplate);
                 socket.emit("notPlaying");
+                return;
             }
 
             // user has joined and is part of the game, and is the first to join
             if (gameRunning === false) {
                 gameRunning = true;
-                createAIs(Math.ceil(getTotalPlayerCount() / 3));
+                // createAIs(Math.ceil(getTotalPlayerCount() / 3));
                 round = 1;
             }
 
             // send round number to frontend
             socket.emit("roundUpdate", round);
 
+            // CURRENT SET UP DOESN'T ALLOW DEAD PEOPLE TO LEAVE THE GAME, OTHERWISE THE UI WILL MESS UP SINCE IT FULFILLS THE CONDITIONAL CHECK BELOW
+
             // user has joined, and is part of the game
             if (socket.request.session.game) {
                 assignClientAlias(socket);
+
+                // send alias to frontend
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "alive", socket: socket});
+                socket.emit("updateStatus", renderedStatusBarTemplate);
+
                 ee.emit("runWrite");
             } else {
                 // user has joined, but is not part of the game
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "spectate"});
+                socket.emit("updateStatus", renderedStatusBarTemplate);
                 socket.emit("notPlaying");
+
                 switch (currentPhase) {
                     // jump to whatever screen the game is currently on
                     case "WRITE":
@@ -289,6 +303,9 @@ function runGame(io) {
         // otherwise edit which room they are in
         socket.leave("alive");
         socket.join("dead");
+        
+        let renderedStatusBarTemplate = ejs.render(statusBarTemplate, {status: "dead"});
+        socket.emit("updateStatus", renderedStatusBarTemplate);
         socket.emit("notPlaying");
         socket.request.session.game.dead = true;
     }
