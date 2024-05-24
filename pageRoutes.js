@@ -5,7 +5,10 @@ const database = require("./database");
 
 router.get("/", async (req, res) => {
     let top10Players = await database.getLeaderboard();
-    res.render("index", { authenticated: req.session.username !== undefined, topUsers: top10Players });
+    if (req.session.username) {
+        let userData = await database.findUser({ username: req.session.username });
+        res.render("index", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue : true } });
+    } else { res.render("index", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }) };
 });
 
 router.get("/game", (req, res) => {
