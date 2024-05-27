@@ -1,5 +1,19 @@
 <%- include("./templates/header", {pageName: "Home"}) %>
 <%- include("./templates/navbar", {currentPage: "/"}) %>
+
+<% if (authenticated) { %>
+    <div class="bg-gradient-to-t from-sky-400 to-sky-700 w-full intense-shadow flex py-3 px-2 font-semibold text-gray-200">
+        <a href="/profile">
+            <img class="w-12 h-12 rounded-full mr-4" src="<%= sessionData.profilePic %>">
+        </a>
+        <div class="">
+            <p>Logged in as <%= sessionData.username %></p>
+            <p>Wins: <%= data.winCount %><span class="ml-3">Games Played: <%= data.loseCount %></span></p>
+        </div>
+
+    </div>
+<% } %>
+
 <div class="flex flex-col">
     <% if (authenticated) { %>
         <a href="lobby" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 px-20">Play</a>
@@ -7,24 +21,6 @@
         <a href="login" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Login</a>
         <a href="signUp" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Sign Up</a>
     <% } %>
-</div>
-
-<div class="flex" id="userScores">
-    <p style="display: none;" id="userExist"><%= authenticated %></p>
-    <div
-        class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-        <p class="font-semibold mb-5">Wins</p>
-        <p class="font-semibold" id="wins">
-            <%= data.winCount %>
-        </p>
-    </div>
-    <div
-        class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-        <p class="font-semibold mb-5">Games Played</p>
-        <p class="font-semibold" id="gamesPlayed">
-            <%= data.winCount + data.loseCount %>
-        </p>
-    </div>
 </div>
 
 <p class="text-center font-bold text-xl p-2">Top Players</p>
