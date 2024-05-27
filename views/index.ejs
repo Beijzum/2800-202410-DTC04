@@ -2,7 +2,7 @@
 <%- include("./templates/navbar", {currentPage: "/"}) %>
 
 <% if (authenticated) { %>
-    <div class="bg-gradient-to-t from-sky-400 to-sky-700 w-full intense-shadow flex py-3 px-2 font-semibold text-gray-200">
+    <div class="bg-gradient-to-t from-sky-400 to-sky-700 w-full intense-shadow flex py-3 px-2 text-white">
         <a href="/profile">
             <img class="w-12 h-12 rounded-full mr-4" src="<%= sessionData.profilePic %>">
         </a>
