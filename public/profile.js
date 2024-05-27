@@ -14,12 +14,20 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
 
     if (response.ok) {
         alert(result.message);
-        // Optionally, refresh the page or update the image URL dynamically
         location.reload();
     } else {
         alert(result.error);
     }
 });
+
+// preview picture upon upload
+document.getElementById("imageInput").addEventListener("change", function() {
+    if (!this.files) return;
+    let fileReader = new FileReader();
+    let profilePicture = document.getElementById("profilePicture");
+    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); }
+    fileReader.readAsDataURL(this.files[0]);
+})
 
 document.querySelector("#changePass").addEventListener("click", async (e) => {
     e.preventDefault();
