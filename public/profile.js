@@ -11,12 +11,17 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
     });
 
     const result = await response.json();
+    let resultMessage = document.getElementById("savedChangesMessage");
 
     if (response.ok) {
-        alert(result.message);
-        location.reload();
+        resultMessage.innerHTML = result.message;
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
     } else {
-        alert(result.error);
+        resultMessage.innerHTML = result.error;
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("green", "red");
     }
 });
 
