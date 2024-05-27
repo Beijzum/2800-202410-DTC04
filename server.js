@@ -200,10 +200,10 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             console.log('updated mongodb');
-            res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
+            res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: result.secure_url });
         } catch (error) {
-            console.error('Error updating profile picture:', error);
-            res.status(500).send({ error: 'Failed to update profile picture' });
+            console.error('Error Updating Profile Picture:', error);
+            res.status(500).send({ error: 'Failed to Update Profile Picture' });
         }
     });
 
