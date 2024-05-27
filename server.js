@@ -217,18 +217,17 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
 
     let buf64 = req.file.buffer.toString('base64');
     stream = cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
-        console.log(result)
         try {
             await userCollection.updateOne(
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             req.session.profilePic = result.secure_url;
-            console.log('updated mongodb');
-            res.status(200).send({ message: 'Profile picture updated', imageUrl: result.secure_url });
+            console.log(`${req.session.username} has updated their profile picture`);
+            res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: result.secure_url });
         } catch (error) {
-            console.error('Error updating profile picture:', error);
-            res.status(500).send({ error: 'Failed to update profile picture' });
+            console.error(`${req.session.username} failed to update their profile picture: `, error);
+            res.status(500).send({ error: 'Failed to Update Profile Picture' });
         }
     });
 

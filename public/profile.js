@@ -11,15 +11,28 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
     });
 
     const result = await response.json();
+    let resultMessage = document.getElementById("savedChangesMessage");
 
     if (response.ok) {
-        alert(result.message);
-        // Optionally, refresh the page or update the image URL dynamically
-        location.reload();
+        resultMessage.innerHTML = result.message;
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
     } else {
-        alert(result.error);
+        resultMessage.innerHTML = result.error;
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("green", "red");
     }
 });
+
+// preview picture upon upload
+document.getElementById("imageInput").addEventListener("change", function() {
+    if (!this.files) return;
+    let fileReader = new FileReader();
+    let profilePicture = document.getElementById("profilePicture");
+    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); }
+    fileReader.readAsDataURL(this.files[0]);
+})
 
 document.querySelector("#changePass").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -49,7 +62,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
+        
         const data = e.target;
 
         let resp = await fetch(data.action, {
@@ -64,7 +77,8 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         });
 
         if (!resp.ok) {
-            form.querySelector("label").innerText = (await resp.json()).error;
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerHTML = (await resp.json()).error;
             form.querySelector("#passwordField").classList.add("border-red-500");
             return;
         }
