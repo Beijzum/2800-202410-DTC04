@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .intense-shadow {
     box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
 }
@@ -33,4 +34,23 @@
 
 .offset-chatBar {
     padding-bottom: 97px;
+}
+
+@media screen and (min-width: 768px) {
+    /* For profile picture on desktop*/ 
+    #pencilIcon {
+        top: 88px;
+        left: 88px;
+        opacity: 0%;
+        background-color: transparent;
+    }
+
+    #profilePictureContainer:hover #pencilIcon {
+        opacity: 100%;
+        filter: invert(100%);
+    }
+
+    #profilePictureContainer:hover #profilePicture {
+        filter: brightness(0.75);
+    }
 }
