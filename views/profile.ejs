@@ -15,40 +15,29 @@
         </div>
     </label>
 
-    <form id="uploadProfilePicForm" action="/uploadProfilePic" method="POST" enctype="multipart/form-data"
-        class="flex flex-col items-center my-5 mx-2">
-        <input type="file" name="image" id="imageInput" class="hidden" enctype="multipart/form-data" required />
-        <button type="submit"
-            class="shadow-2xl intense-shadow text-slate-200 text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg focus:outline-none dark:focus:ring-zinc-500 mx-auto my-4 p-5 py-4 w-full">Confirm Change</button>
-    </form>
-
-    <div class="flex">
-        <div
-            class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-            <p class="font-semibold mb-5">Wins</p>
-            <p class="font-semibold">
-                <%= data.winCount %>
-            </p>
-        </div>
-        <div
-            class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-            <p class="font-semibold mb-5">Games Played</p>
-            <p class="font-semibold">
-                <%= data.winCount + data.loseCount %>
-            </p>
-        </div>
+    <div class="text-center mt-3">
+        <p class="text-lg font-semibold">Wins: <%= data.winCount %></p>
+        <p class="text-lg font-semibold">Games Played: <%= data.winCount + data.loseCount %></p>
     </div>
-</div>
 
-<div class="max-w-lg flex flex-col justify-center mx-auto">
-    <div class="flex flex-col m-2">
+    <div class="flex flex-col mx-2">
         <a href="/changePass" id="changePass"
-            class="shadow-2xl intense-shadow text-slate-200 text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg  focus:outline-none dark:focus:ring-zinc-500 mx-auto my-4 p-5 py-4 w-full">Change
-            Password</a>
+        class="shadow-2xl intense-shadow text-slate-200 text-center bg-zinc-800 hover:bg-zinc-700 font-medium rounded-lg mx-auto p-5 py-4 mt-4 w-full">Change
+        Password</a>
+        <form id="uploadProfilePicForm" action="/uploadProfilePic" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" id="imageInput" class="hidden" enctype="multipart/form-data" required />
+            <button type="submit"
+                class="shadow-2xl intense-shadow text-slate-200 text-center bg-zinc-800 hover:bg-zinc-700 font-medium rounded-lg mx-auto p-5 py-4 mt-4 w-full">Save Changes</button>
+        </form>
         <a href="/logout"
-            class="drop-shadow-2xl intense-shadow text-slate-200 text-center bg-red-700 hover:bg-red-500 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg  focus:outline-none dark:focus:ring-zinc-500 mx-auto my-4 p-5 py-4 w-full">Log
+            class="drop-shadow-2xl intense-shadow text-slate-200 text-center bg-red-700 hover:bg-red-500 font-medium rounded-lg  mx-auto my-4 p-5 py-4 w-full">Log
             Out</a>
+        
     </div>
+
 </div>
+
+
+
 
 <%- include("./templates/footer", {pageScript: "profile.js" }) %>
