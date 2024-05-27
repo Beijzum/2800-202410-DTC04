@@ -62,7 +62,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
+        
         const data = e.target;
 
         let resp = await fetch(data.action, {
@@ -77,7 +77,8 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         });
 
         if (!resp.ok) {
-            form.querySelector("label").innerText = (await resp.json()).error;
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerHTML = (await resp.json()).error;
             form.querySelector("#passwordField").classList.add("border-red-500");
             return;
         }
