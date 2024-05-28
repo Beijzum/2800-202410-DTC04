@@ -4,6 +4,7 @@ const pool = require("./socketConstants");
 const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
+const { Socket, Server } = require("socket.io");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT
 var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
@@ -21,6 +22,11 @@ const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
 
+/**
+ * Handles the game logic.
+ * 
+ * @param {Server} io the server for handling socketing
+ */
 function runGame(io) {
 
     const game = io.of("/game");
@@ -307,6 +313,13 @@ function runGame(io) {
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
 
+    /**
+     * Attempts to kill a player. 
+     * 
+     * If the player is an AI, remove it from the AI list.
+     * 
+     * @param {Socket} socket client socket to kill 
+     */
     function killPlayer(socket) {
         if (!socket) return;
         // if most voted socket was AI, then remove from AI list
@@ -325,6 +338,13 @@ function runGame(io) {
         socket.request.session.game.dead = true;
     }
 
+    /**
+     * Creates a delayed redirect to the next phase.
+     * 
+     * @param {Number} delayTimeInSeconds time used to delay redirect
+     * @param {NodeJS.Timeout} timer An interval timer that updates the client timer
+     * @param {String} nextRoute the next phase to redirect to
+     */
     function createDelayedRedirect(delayTimeInSeconds, timer, nextRoute) {
         setTimeout(async () => {
             clearInterval(timer);
@@ -335,6 +355,9 @@ function runGame(io) {
         }, delayTimeInSeconds * 1000);
     }
 
+    /**
+     * Updates the client timers for the game.
+     */
     function updateClientTimers() {
         if (phaseDuration > 0) {
             phaseDuration--;
@@ -342,13 +365,22 @@ function runGame(io) {
         }
     }
 
+    /**
+     * Returns the diference between the number of living players and dead players.
+     * 
+     * @returns the number of living players minus the dead players
+     */
     function getTotalPlayerCount() {
         let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
         let deadPlayers = game.adapter.rooms.get("dead")?.size ? game.adapter.rooms.get("dead").size : 0;
         return alivePlayers - deadPlayers;
     }
 
-
+    /**
+     * Returns the number of living players.
+     * 
+     * @returns the number of living players
+     */
     function getAlivePlayerCount() {
         let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
         return alivePlayers;
@@ -357,6 +389,11 @@ function runGame(io) {
 
 // GENERAL FUNCTION DEFINITIONS
 
+/**
+ * Shuffles an array in place.
+ * 
+ * @param {Array} array array to shuffle
+ */
 function shuffleArray(array) {
     let currentIndex = array.length;
 
@@ -367,6 +404,13 @@ function shuffleArray(array) {
     }
 }
 
+/**
+ * Creates a number of AI players.
+ * 
+ * Pushes the AI into the global AI list.
+ * 
+ * @param {Number} numberToMake the number of AI to create
+ */
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
         const aiPersonalities = Object.values(aiModel.personalities);
@@ -396,6 +440,11 @@ function createAIs(numberToMake) {
     }
 }
 
+/**
+ * Anonymises a client by assigning them a random alias.
+ * 
+ * @param {Socket} socket client socket to assign alias to
+ */
 function assignClientAlias(socket) {
     let req = socket.request;
 
@@ -412,21 +461,40 @@ function assignClientAlias(socket) {
 
 }
 
+/**
+ * Reloads the session for a client socket.
+ * 
+ * If the session cannot be reloaded, the client is disconnected.
+ * 
+ * @param {Socket} socket client socket to reload session for
+ */
 async function reloadSession(socket) {
     socket.request.session.reload((err) => {
         if (err) return socket.disconnect();
     })
 }
 
+/**
+ * Converts a time in seconds to a string in the format of "mm:ss".
+ * 
+ * @param {Number} seconds time in seconds to convert
+ * @returns string in the format of "mm:ss"
+ */
 function convertFormat(seconds) {
     return `${Math.floor(seconds / 60)}:${seconds % 60 < 10 ? "0" + seconds % 60 : seconds % 60}`;
 }
 
+/**
+ * Clears the prompt index and phase duration for the next round.
+ */
 function setupNextRound() {
     promptIndex = null;
     phaseDuration = null;
 }
 
+/**
+ * Stops the game from running by clearing all game variables.
+ */
 function stopGame() {
     currentPhase = null;
     gameRunning = false;
