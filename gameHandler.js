@@ -139,6 +139,7 @@ function runGame(io) {
     // handle logic for write screen
     ee.on("runWrite", async () => {
         currentPhase = "WRITE";
+        game.emit("roundUpdate", round);
 
         // only generate new prompt when first person joins
         if (!promptIndex) promptIndex = Math.floor(Math.random() * pool.prompts.length);
@@ -263,7 +264,6 @@ function runGame(io) {
         // move onto rendering page if game has not ended
         let renderedWaitTemplate = ejs.render(waitTemplate);
         game.emit("changeView", renderedWaitTemplate);
-        game.emit("roundUpdate", round);
 
         // randomly remove 1 player
         let playerSocketList = await game.in("alive").fetchSockets();
@@ -292,7 +292,7 @@ function runGame(io) {
         // move onto next round
         if (phaseDuration <= 0) {
             phaseDuration = 6;
-            if (round) round++;
+            round++;
             let timer = setInterval(updateClientTimers, 1000);
             setTimeout(() => {
                 clearInterval(timer);
