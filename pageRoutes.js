@@ -126,6 +126,10 @@ router.get("/howToPlay", (req, res) => {
     else res.render("howToPlay", { authenticated: false });
 });
 
+router.get("/privacy", async (req, res) => {
+    res.render("privacy", { authenticated: req.session.username !== undefined });
+});
+
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
 })
