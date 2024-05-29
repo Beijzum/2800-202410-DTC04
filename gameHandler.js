@@ -4,6 +4,7 @@ const pool = require("./socketConstants");
 const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
+const database = require("./database");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT
 var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
@@ -30,7 +31,7 @@ function runGame(io) {
         // player connects to game lobby
         socket.on("joinGame", async () => {
             // uncomment to create new game session for testing
-            // socket.request.session.game = {};
+            socket.request.session.game = {};
 
             // joining game indicates you are a player
             if (socket.request.session.game) socket.join("alive");
