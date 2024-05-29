@@ -45,6 +45,7 @@ function runSocket(io) {
 
         socket.on("ready", async () => {
             socket.join("readyList");
+            gameHandler.eventEmitter.emit("updatePlayerCount", 1);
 
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
 
@@ -80,6 +81,7 @@ function runSocket(io) {
         });
 
         socket.on("unready", () => {
+            gameHandler.eventEmitter.emit("updatePlayerCount", -1);
             socket.leave("readyList");
             if (readyTimer) {
                 if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size < 0.5) {
