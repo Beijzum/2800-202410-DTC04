@@ -30,7 +30,8 @@ function runGame(io) {
 
         // player connects to game lobby
         socket.on("joinGame", async () => {
-
+            
+            socket.join("alive");
             // if handle spectators (joining but not part of game)
             if (!socket.request.session.game && !gameRunning) {
                 let renderedNoGameTemplate = ejs.render(noGameTemplate);
@@ -40,7 +41,7 @@ function runGame(io) {
                 let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "spectate" });
                 socket.emit("updateStatus", renderedStatusBarTemplate);
                 socket.emit("roundUpdate", round);
-                socket.emit("notPlaying"); 
+                socket.emit("notPlaying");
                 handleSpectatorView();
                 return;
             }
@@ -64,7 +65,6 @@ function runGame(io) {
             }
 
             // send round number to frontend
-            socket.join("alive");
             assignClientAlias(socket);
             socket.emit("roundUpdate", round);
             let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "alive", socket: socket });
@@ -171,7 +171,7 @@ function runGame(io) {
 
             // need a transition screen to be able to receive all players input, even if they havent pressed submit
             let timeout = createDelayedRedirect(phaseDuration + 1, "runTransition");
-            
+
             let timer = setInterval(() => {
                 handleGameTick(timer);
 
@@ -180,16 +180,16 @@ function runGame(io) {
                     clearTimeout(timeout);
                 }
             }, 1000);
-            
+
             for (let i = 0; i < AIs.length; i++) {
                 // ai gets chat prompt
                 let aiGetPrompt = await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex]);
                 let aiResponse = aiGetPrompt.response;
                 let aiText = aiResponse.text();
-                
+
                 AIs[i].request.session.game.response = aiText;
             }
-            
+
         }
     });
 
@@ -206,7 +206,7 @@ function runGame(io) {
         if (phaseDuration <= 0) {
             phaseDuration = 6;
             let timeout = createDelayedRedirect(phaseDuration + 1, "runVote");
-            
+
             let timer = setInterval(() => {
                 handleGameTick(timer);
                 if (!gameRunning) {
@@ -309,7 +309,7 @@ function runGame(io) {
         killPlayer(randomSocket);
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        
+
 
         // move onto next round
         if (phaseDuration <= 0) {
@@ -320,7 +320,7 @@ function runGame(io) {
                 if (gameRunning) ee.emit("runWrite");
                 else game.emit("gameOver");
             }, (phaseDuration + 1) * 1000);
-            
+
             let timer = setInterval(() => {
                 handleGameTick(timer);
                 if (!gameRunning) {
@@ -351,7 +351,7 @@ function runGame(io) {
                 imageUrl: "/images/victory.jpg"
             });
             return true;
-        } else if (getTotalPlayerCount() === 0) return true; 
+        } else if (getTotalPlayerCount() === 0) return true;
         else return false;
     }
 
@@ -381,7 +381,7 @@ function runGame(io) {
             if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
                 mostVotedSocket = socket;
         });
-        
+
         if (getAlivePlayerCount() === 0) return;
         if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) return mostVotedSocket;
         else return null;
@@ -396,7 +396,7 @@ function runGame(io) {
     }
 
     function handleGameTick(timer) {
-        
+
         if (phaseDuration > 0) {
             phaseDuration--;
             game.emit("timerUpdate", convertFormat(phaseDuration));
