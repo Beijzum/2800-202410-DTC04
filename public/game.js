@@ -26,40 +26,22 @@ socket.on("gameOver", () => {
 });
 
 socket.on('gameWin', () => {
-    const dialogBoxWin = document.getElementById('dialogBoxWin');
-    if (dialogBoxWin) {
-        dialogBoxWin.showModal();
-    }
+    document.getElementById('dialogBoxWin').showModal();
 });
 
 socket.on('gameLose', () => {
-    const dialogBoxLose = document.getElementById('dialogBoxLose');
-    if (dialogBoxLose) {
-        dialogBoxLose.showModal();
-    }
+    document.getElementById('dialogBoxLose').showModal();
 });
 
-const closeDialogWin = document.getElementsByClassName('closeDialog')[0];
-if (closeDialogWin) {
-    closeDialogWin.onclick = () => {
-        const dialogBoxWin = document.getElementById('dialogBoxWin');
-        if (dialogBoxWin) {
-            dialogBoxWin.close();
-            window.location.href = "/lobby";
-        }
-    };
-}
+document.getElementsByClassName('closeDialog')[0].onclick = () => {
+    document.getElementById('dialogBoxWin').close();
+    window.location.href = "/lobby";
+};
 
-const closeDialogLose = document.getElementsByClassName('closeDialog')[1];
-if (closeDialogLose) {
-    closeDialogLose.onclick = () => {
-        const dialogBoxLose = document.getElementById('dialogBoxLose');
-        if (dialogBoxLose) {
-            dialogBoxLose.close();
-            window.location.href = "/lobby";
-        }
-    };
-}
+document.getElementsByClassName('closeDialog')[1].onclick = () => {
+    document.getElementById('dialogBoxLose').close();
+    window.location.href = "/lobby";
+};
 
 function handleWriteView() {
     function disableInputs(buttonMessage) {
