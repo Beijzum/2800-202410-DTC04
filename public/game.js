@@ -1,4 +1,6 @@
 let gameMenu = document.getElementById("gameMenu");
+let winSound = new Audio("sfx/gameWin.mp3")
+let loseSound = new Audio("sfx/gameLose.mp3")
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
@@ -25,16 +27,25 @@ socket.on("gameOver", () => {
     window.location.href = "/lobby";
 });
 
-socket.on('gameResult', (data) => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.showModal();
+socket.on('gameWin', () => {
+    winSound.play();
+    document.getElementById('dialogBoxWin').showModal();
 });
 
-document.getElementById('closeDialog').onclick = () => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.close();
+socket.on('gameLose', () => {
+    loseSound.play();
+    document.getElementById('dialogBoxLose').showModal();
+});
+
+document.getElementsByClassName('closeDialog')[0].onclick = () => {
+    document.getElementById('dialogBoxWin').close();
     window.location.href = "/lobby";
-}
+};
+
+document.getElementsByClassName('closeDialog')[1].onclick = () => {
+    document.getElementById('dialogBoxLose').close();
+    window.location.href = "/lobby";
+};
 
 function handleWriteView() {
     function disableInputs(buttonMessage) {

@@ -6,7 +6,7 @@ const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
 const database = require("./database");
 
-// PHASES: WRITE, VOTE, RESULT, WAIT
+// PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
 var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
 
 // CHECK TO SEE IF REDIRECTING TO NEW PAGE CAUSES A NEW SOCKET SESSION TO BE CREATE ---> DIFFERENT ID SO PLAYERS WONT BE COUNTED AS "IN-GAME"
@@ -21,11 +21,14 @@ const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
+const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
+const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
 
 function runGame(io) {
 
     const game = io.of("/game");
 
+    // BUG, TRYING SOMETIMES SOCKET JOINS WITHOU SESSION FOR SOME REASON, REPLICATING IT IS INCONSISTENT
     game.on("connection", (socket) => {
 
         // player connects to game lobby
@@ -33,74 +36,47 @@ function runGame(io) {
             // uncomment to create new game session for testing
             socket.request.session.game = {};
 
-            // joining game indicates you are a player
-            if (socket.request.session.game) socket.join("alive");
+            //player joins alive
+            socket.join("alive");
 
-            // user has joined, but no game is running
-            if (getTotalPlayerCount() === 0) {
+            // if handle spectators (joining but not part of game)
+            if (!socket.request.session.game && !gameRunning) {
                 let renderedNoGameTemplate = ejs.render(noGameTemplate);
                 socket.emit("noGameRunning", renderedNoGameTemplate);
                 return;
+            } else if (!socket.request.session.game && gameRunning) {
+                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "spectate" });
+                socket.emit("updateStatus", renderedStatusBarTemplate);
+                socket.emit("roundUpdate", round);
+                socket.emit("notPlaying");
+                handleSpectatorView();
+                return;
             }
 
-            // joining dead indicates you are dead
+            // handle players that disconnect and reconnect
             if (socket.request.session.game?.dead) {
                 socket.join("dead");
                 let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "dead" });
                 socket.emit("updateStatus", renderedStatusBarTemplate);
+                socket.emit("roundUpdate", round);
                 socket.emit("notPlaying");
+                handleSpectatorView();
                 return;
             }
 
             // user has joined and is part of the game, and is the first to join
-            if (gameRunning === false) {
+            if (!gameRunning) {
                 gameRunning = true;
                 createAIs(Math.ceil(getTotalPlayerCount() / 3));
                 round = 1;
             }
 
             // send round number to frontend
+            assignClientAlias(socket);
             socket.emit("roundUpdate", round);
-
-            // CURRENT SET UP DOESN'T ALLOW DEAD PEOPLE TO LEAVE THE GAME, OTHERWISE THE UI WILL MESS UP SINCE IT FULFILLS THE CONDITIONAL CHECK BELOW
-
-            // user has joined, and is part of the game
-            if (socket.request.session.game) {
-                assignClientAlias(socket);
-
-                // send alias to frontend
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "alive", socket: socket });
-                socket.emit("updateStatus", renderedStatusBarTemplate);
-
-                ee.emit("runWrite");
-            } else {
-                // user has joined, but is not part of the game
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "spectate" });
-                socket.emit("updateStatus", renderedStatusBarTemplate);
-                socket.emit("notPlaying");
-
-                switch (currentPhase) {
-                    // jump to whatever screen the game is currently on
-                    case "WRITE":
-                        ee.emit("runWrite");
-                        break;
-                    case "VOTE":
-                        ee.emit("runVote");
-                        break;
-                    case "RESULT":
-                        ee.emit("runResult");
-                        break;
-                    case "WAIT":
-                        ee.emit("runWait");
-                        break;
-                    case "TRANSITION":
-                        ee.emit("runTransition");
-                        break;
-                    default:
-                        let renderedNoGameTemplate = ejs.render(noGameTemplate);
-                        socket.emit("noGameRunning", renderedNoGameTemplate);
-                }
-            }
+            let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "alive", socket: socket });
+            socket.emit("updateStatus", renderedStatusBarTemplate);
+            ee.emit("runWrite");
         });
 
         // CLIENT LISTENER SECTION
@@ -130,11 +106,56 @@ function runGame(io) {
         });
 
         socket.on("disconnect", () => {
-            // if you are part of the game, stop the entire game, need to implement logic later
-            if (socket.rooms.has("alive") || socket.rooms.has("dead")) {
+            if (!socket.request.session.game) return;
+            reloadSession(socket);
+            socket.request.session.game.dead = true;
+            socket.request.session.save();
+        });
 
+        // FUNCTION DEFINITIONS THAT REQUIRE INDIVIDUAL SOCKETS
+        async function handleSpectatorView() {
+            switch (currentPhase) {
+                case "WRITE":
+                    let renderedWriteTemplate = ejs.render(writeTemplate, { prompt: pool.prompts[promptIndex] });
+                    socket.emit("changeView", renderedWriteTemplate);
+                    break;
+                case "VOTE":
+                    let renderedVoteTemplate = ejs.render(voteTemplate, { players: playerList, prompt: pool.prompts[promptIndex] });
+                    socket.emit("changeView", renderedVoteTemplate);
+                    break;
+                case "RESULT":
+                    // result page needs logic to render most voted player
+                    let playerSocketList = await game.in("alive").fetchSockets();
+                    AIs.forEach(AI => { playerSocketList.push(AI); });
+                    let eliminatedSocket = getMajorityVotedSocket(playerSocketList);
+                    shuffleArray(playerSocketList);
+
+                    // if someone has majority vote
+                    if (eliminatedSocket) {
+                        let renderedResultTemplate = ejs.render(resultTemplate, {
+                            eliminatedPlayer: mostVotedSocket,
+                            remainingPlayers: playerSocketList, voteCount: mostVotedSocket.request.session.game.votes
+                        });
+                        socket.emit("changeView", renderedResultTemplate);
+                    } else {
+                        // if no one has majority vote
+                        let renderedResultTemplate = ejs.render(resultTemplate, { eliminatedPlayer: null, remainingPlayers: playerSocketList });
+                        socket.emit("changeView", renderedResultTemplate);
+                    }
+                    break;
+                case "WAIT":
+                    let renderedWaitTemplate = ejs.render(waitTemplate);
+                    socket.emit("changeView", renderedWaitTemplate);
+                    break;
+                case "TRANSITION":
+                    let renderedTransitionTemplate = ejs.render(transitionTemplate, { transitionMessage: "Get Ready To Vote!" });
+                    socket.emit("changeView", renderedTransitionTemplate);
+                    break;
+                default:
+                    let renderedNoGameTemplate = ejs.render(noGameTemplate);
+                    socket.emit("noGameRunning", renderedNoGameTemplate);
             }
-        })
+        }
     });
 
     // GAME CONTROL FLOW SECTION
@@ -142,6 +163,7 @@ function runGame(io) {
     // handle logic for write screen
     ee.on("runWrite", async () => {
         currentPhase = "WRITE";
+        game.emit("roundUpdate", round);
 
         // only generate new prompt when first person joins
         if (!promptIndex) promptIndex = Math.floor(Math.random() * pool.prompts.length);
@@ -152,8 +174,19 @@ function runGame(io) {
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 61;
-            let timer = setInterval(updateClientTimers, 1000);
+            phaseDuration = 61; // 61
+
+            // need a transition screen to be able to receive all players input, even if they havent pressed submit
+            let timeout = createDelayedRedirect(phaseDuration + 1, "runTransition");
+
+            let timer = setInterval(() => {
+                handleGameTick(timer);
+
+                if (!gameRunning) {
+                    clearInterval(timer);
+                    clearTimeout(timeout);
+                }
+            }, 1000);
 
             for (let i = 0; i < AIs.length; i++) {
                 // ai gets chat prompt
@@ -164,8 +197,6 @@ function runGame(io) {
                 AIs[i].request.session.game.response = aiText;
             }
 
-            // need a transition screen to be able to receive all players input, even if they havent pressed submit
-            createDelayedRedirect(phaseDuration + 1, timer, "runTransition");
         }
     });
 
@@ -180,9 +211,16 @@ function runGame(io) {
         game.emit("changeView", renderedTransitionTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 6;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runVote");
+            phaseDuration = 6; // 6
+            let timeout = createDelayedRedirect(phaseDuration + 1, "runVote");
+
+            let timer = setInterval(() => {
+                handleGameTick(timer);
+                if (!gameRunning) {
+                    clearInterval(timer);
+                    clearTimeout(timeout)
+                }
+            }, 1000);
         }
     });
 
@@ -205,10 +243,16 @@ function runGame(io) {
         game.emit("changeView", renderedVoteTemplate);
 
         if (phaseDuration <= 0) {
+            phaseDuration = 61; // 61
 
-            phaseDuration = 61;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runResult");
+            let timeout = createDelayedRedirect(phaseDuration + 1, "runResult");
+            let timer = setInterval(() => {
+                handleGameTick(timer);
+                if (!gameRunning) {
+                    clearInterval(timer);
+                    clearTimeout(timeout);
+                }
+            }, 1000);
         }
     });
 
@@ -218,97 +262,98 @@ function runGame(io) {
 
         // get the player with the most votes
         let playerSocketList = await game.in("alive").fetchSockets();
+        AIs.forEach(AI => { playerSocketList.push(AI); });
+        let majorityVotedSocket = getMajorityVotedSocket(playerSocketList);
 
-        // add AI to player list to populate vote page
-        AIs.forEach(AI => {
-            playerSocketList.push(AI);
-        });
-        // shuffle list so AI is not always at bottom of the list
-        shuffleArray(playerSocketList);
+        if (majorityVotedSocket) {
+            killPlayer(majorityVotedSocket);
+            playerSocketList.splice(playerSocketList.indexOf(majorityVotedSocket), 1);
 
-        let mostVotedSocket = playerSocketList[0];
-        playerSocketList.forEach(socket => {
-            if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
-                mostVotedSocket = socket;
-        });
-
-        // if voted player has majority votes
-        if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) {
-            killPlayer(mostVotedSocket);
-
-            playerSocketList.splice(playerSocketList.indexOf(mostVotedSocket), 1);
+            shuffleArray(playerSocketList);
             let renderedResultTemplate = ejs.render(resultTemplate, {
-                eliminatedPlayer: mostVotedSocket,
-                remainingPlayers: playerSocketList, voteCount: mostVotedSocket.request.session.game.votes
+                eliminatedPlayer: majorityVotedSocket,
+                remainingPlayers: playerSocketList, voteCount: majorityVotedSocket.request.session.game.votes
             });
             game.emit("changeView", renderedResultTemplate);
         } else {
-            // if no majority vote
+            shuffleArray(playerSocketList);
             let renderedResultTemplate = ejs.render(resultTemplate, { eliminatedPlayer: null, remainingPlayers: playerSocketList });
             game.emit("changeView", renderedResultTemplate);
         }
 
-        // reset vote counter after results have been calculated
-        playerSocketList.forEach(player => { player.request.session.game.votes = 0; });
-
         if (phaseDuration <= 0) {
-
-            phaseDuration = 11;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runWait");
+            phaseDuration = 11; // 11
+            let timeout = createDelayedRedirect(phaseDuration + 1, "runWait");
+            let timer = setInterval(() => {
+                handleGameTick(timer);
+                if (!gameRunning) {
+                    clearInterval(timer);
+                    clearTimeout(timeout);
+                }
+            }, 1000);
         }
     });
 
     // handle logic for wait screen
     ee.on("runWait", async () => {
         currentPhase = "WAIT";
+        if (checkEndConditions()) {
+            stopGame();
+            return;
+        }
+
+        let playerSocketList = await game.in("alive").fetchSockets();
+
+        // reset vote counter after result, so spectate still has vote count to render their pages
+        playerSocketList.forEach(player => { player.request.session.game.votes = 0; });
 
         // move onto rendering page if game has not ended
         let renderedWaitTemplate = ejs.render(waitTemplate);
         game.emit("changeView", renderedWaitTemplate);
-        game.emit("roundUpdate", round);
 
         // randomly remove 1 player
-        let playerSocketList = await game.in("alive").fetchSockets();
         let randomSocket = playerSocketList[Math.floor(Math.random() * playerSocketList.length)];
         killPlayer(randomSocket);
 
         // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        if (getAlivePlayerCount() === 0) {
-            console.log("Defeat")
-            game.emit("gameResult", {
-                winOrLose: "Defeat!",
-                color: "red",
-                imageUrl: "/images/defeat.jpg"
-            });
-            stopGame();
-        } else if (AIs.length === 0) {
-            console.log("Victory")
-            game.emit("gameResult", {
-                winOrLose: "Victory!",
-                color: "green",
-                imageUrl: "/images/victory.jpg"
-            });
-            stopGame();
-        }
+
 
         // move onto next round
         if (phaseDuration <= 0) {
             phaseDuration = 6;
-            if (round) round++;
-            let timer = setInterval(updateClientTimers, 1000);
-            setTimeout(() => {
-                clearInterval(timer);
-                if (gameRunning)
-                    ee.emit("runWrite");
-                else
-                    game.emit("gameOver");
+            round++;
+
+            let timeout = setTimeout(() => {
+                if (gameRunning) ee.emit("runWrite");
+                else game.emit("gameOver");
             }, (phaseDuration + 1) * 1000);
+
+            let timer = setInterval(() => {
+                handleGameTick(timer);
+                if (!gameRunning) {
+                    clearInterval(timer);
+                    clearTimeout(timeout);
+                }
+            }, 1000);
+
         }
     });
 
-
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
+    function checkEndConditions() {
+        if (getAlivePlayerCount() === 0 || getAlivePlayerCount() <= AIs.length) {
+            console.log("Defeat");
+            let renderedModal = ejs.render(postGameModalLose);
+            game.emit("gameLose", renderedModal);
+            return true;
+        } else if (AIs.length === 0) {
+            console.log("Victory")
+            let renderedModal = ejs.render(postGameModalWin);
+            game.emit("gameWin", renderedModal);
+            return true;
+        } else if (getTotalPlayerCount() === 0) return true;
+        else return false;
+    }
 
     function killPlayer(socket) {
         if (!socket) return;
@@ -328,21 +373,35 @@ function runGame(io) {
         socket.request.session.game.dead = true;
     }
 
-    function createDelayedRedirect(delayTimeInSeconds, timer, nextRoute) {
-        setTimeout(async () => {
-            clearInterval(timer);
+    function getMajorityVotedSocket(playerSocketList) {
+        if (playerSocketList.length === 0) return;
 
+        let mostVotedSocket = playerSocketList[0];
+        playerSocketList.forEach(socket => {
+            if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
+                mostVotedSocket = socket;
+        });
+
+        if (getAlivePlayerCount() === 0) return;
+        if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) return mostVotedSocket;
+        else return null;
+    }
+
+    function createDelayedRedirect(delayTimeInSeconds, nextRoute) {
+        return setTimeout(async () => {
             // set up next round if one last phase
             if (nextRoute === "runWrite") setupNextRound();
             ee.emit(nextRoute);
         }, delayTimeInSeconds * 1000);
     }
 
-    function updateClientTimers() {
+    function handleGameTick(timer) {
+
         if (phaseDuration > 0) {
             phaseDuration--;
             game.emit("timerUpdate", convertFormat(phaseDuration));
-        }
+            if (getTotalPlayerCount() === 0) stopGame();
+        } else clearInterval(timer);
     }
 
     function getTotalPlayerCount() {
@@ -373,7 +432,7 @@ function shuffleArray(array) {
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
         const aiPersonalities = Object.values(aiModel.personalities);
-        const randomPersonality = aiPersonalities[Math.floor(Math.random() * aiPersonalities.length)];
+        let randomPersonality = aiPersonalities[Math.floor(Math.random() * aiPersonalities.length)];
         let chatBot = aiModel.createChatbot(randomPersonality).startChat();
 
         let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
@@ -410,7 +469,9 @@ function assignClientAlias(socket) {
     req.session.game = {
         alias: randomFirstName + randomLastName + randomNumber,
         aliasPicture: randomAvatar,
-        votes: 0
+        votes: 0,
+        dead: false,
+        response: "",
     }
 
 }
@@ -436,6 +497,8 @@ function stopGame() {
     promptIndex = null;
     phaseDuration = null;
     round = null;
+    AIs = [];
+    console.log("Game has stopped");
 }
 
 module.exports = {
