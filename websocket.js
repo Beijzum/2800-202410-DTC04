@@ -14,6 +14,8 @@ function runSocket(io) {
     let readyTimer = null, countdown;
     io.on("connection", (socket) => {
 
+        if (socket.request.session.game) socket.request.session.game = null;
+
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
             socket.join("lobby");
