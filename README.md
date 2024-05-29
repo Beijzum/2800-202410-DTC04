@@ -21,21 +21,21 @@ Create an .env file
 
 ## How to Start Playing 
 
-# Account Creation: 
+### Account Creation: 
 You must register an account using a valid email.
 
-# Confirm your Account
+### Confirm your Account
 You will receive a confirmation in your inbox, click confirm and you will be redirected to the game.
-# Play the Game 
+### Play the Game 
 Click on play, which you will be directed to the lobby while waiting for other players.
 
-# During In Game 
+### During In Game 
 You must answer the prompt given to you.
 
-# Voting Phase
+### Voting Phase
 You will vote out who you think is an AI. 
 
-# Cycle
+### Cycle
 The same process of writing prompts and voting will repeat until all players are voted out or all the AI are voted out 
 
 
