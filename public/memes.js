@@ -3,9 +3,11 @@
 let no = new Audio("sfx/no.mp3");
 let robot = new Audio("sfx/robot.mp3");
 let heli = new Audio("sfx/heliAudio.mp3");
+let trapCard = new Audio("sfx/trapCard.mp3");
 let nextGen = new Audio("sfx/nextGen.mp3");
 // It's REALLY loud
 heli.volume = 0.5;
+trapCard.volume = 0.75;
 
 // CLICK EVENT LISTENERS HERE
 document.getElementById("nextGen").addEventListener("click", () => {
@@ -18,6 +20,10 @@ document.getElementById("no").addEventListener("click", () => {
 
 document.getElementById("robot").addEventListener("click", () => {
     robot.play();
+});
+
+document.getElementById("trapCard").addEventListener("click", () => {
+    trapCard.play();
 });
 
 document.getElementById("heli").addEventListener("click", () => {
