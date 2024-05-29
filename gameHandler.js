@@ -20,6 +20,8 @@ const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
+const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
+const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
 
 function runGame(io) {
 
@@ -30,8 +32,12 @@ function runGame(io) {
 
         // player connects to game lobby
         socket.on("joinGame", async () => {
-            
+            // for starting game solo (comment out when pushing)
+            // socket.request.session.game = {};
+
+            //player joins alive
             socket.join("alive");
+
             // if handle spectators (joining but not part of game)
             if (!socket.request.session.game && !gameRunning) {
                 let renderedNoGameTemplate = ejs.render(noGameTemplate);
@@ -167,7 +173,7 @@ function runGame(io) {
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 61;
+            phaseDuration = 61; // 61
 
             // need a transition screen to be able to receive all players input, even if they havent pressed submit
             let timeout = createDelayedRedirect(phaseDuration + 1, "runTransition");
@@ -204,7 +210,7 @@ function runGame(io) {
         game.emit("changeView", renderedTransitionTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 6;
+            phaseDuration = 6; // 6
             let timeout = createDelayedRedirect(phaseDuration + 1, "runVote");
 
             let timer = setInterval(() => {
@@ -236,7 +242,7 @@ function runGame(io) {
         game.emit("changeView", renderedVoteTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 61;
+            phaseDuration = 61; // 61
 
             let timeout = createDelayedRedirect(phaseDuration + 1, "runResult");
             let timer = setInterval(() => {
@@ -275,7 +281,7 @@ function runGame(io) {
         }
 
         if (phaseDuration <= 0) {
-            phaseDuration = 11;
+            phaseDuration = 11; // 11
             let timeout = createDelayedRedirect(phaseDuration + 1, "runWait");
             let timer = setInterval(() => {
                 handleGameTick(timer);
@@ -332,24 +338,17 @@ function runGame(io) {
         }
     });
 
-
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
     function checkEndConditions() {
         if (getAlivePlayerCount() === 0 || getAlivePlayerCount() <= AIs.length) {
             console.log("Defeat");
-            game.emit("gameResult", {
-                winOrLose: "Defeat!",
-                color: "red",
-                imageUrl: "/images/defeat.jpg"
-            });
+            let renderedModal = ejs.render(postGameModalLose);
+            game.emit("gameLose", renderedModal);
             return true;
         } else if (AIs.length === 0) {
-            console.log("Victory");
-            game.emit("gameResult", {
-                winOrLose: "Victory!",
-                color: "green",
-                imageUrl: "/images/victory.jpg"
-            });
+            console.log("Victory")
+            let renderedModal = ejs.render(postGameModalWin);
+            game.emit("gameWin", renderedModal);
             return true;
         } else if (getTotalPlayerCount() === 0) return true;
         else return false;
