@@ -23,6 +23,7 @@ const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
 const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
 const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
+let mySocket = null;
 
 function runGame(io) {
 
@@ -30,6 +31,7 @@ function runGame(io) {
 
     // BUG, TRYING SOMETIMES SOCKET JOINS WITHOU SESSION FOR SOME REASON, REPLICATING IT IS INCONSISTENT
     game.on("connection", (socket) => {
+        mySocket = socket;
 
         // player connects to game lobby
         socket.on("joinGame", async () => {
@@ -174,7 +176,7 @@ function runGame(io) {
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 61; // 61
+            phaseDuration = 4; // 61
 
             // need a transition screen to be able to receive all players input, even if they havent pressed submit
             let timeout = createDelayedRedirect(phaseDuration + 1, "runTransition");
@@ -243,7 +245,7 @@ function runGame(io) {
         game.emit("changeView", renderedVoteTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 61; // 61
+            phaseDuration = 4; // 61
 
             let timeout = createDelayedRedirect(phaseDuration + 1, "runResult");
             let timer = setInterval(() => {
@@ -341,15 +343,18 @@ function runGame(io) {
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
     function checkEndConditions() {
+        const username = mySocket.request.session.username;
         if (getAlivePlayerCount() === 0 || getAlivePlayerCount() <= AIs.length) {
             console.log("Defeat");
             let renderedModal = ejs.render(postGameModalLose);
             game.emit("gameLose", renderedModal);
+            database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: username }, { $inc: { loseCount: 1 } });
             return true;
         } else if (AIs.length === 0) {
             console.log("Victory")
             let renderedModal = ejs.render(postGameModalWin);
             game.emit("gameWin", renderedModal);
+            database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: username }, { $inc: { winCount: 1 } });
             return true;
         } else if (getTotalPlayerCount() === 0) return true;
         else return false;
