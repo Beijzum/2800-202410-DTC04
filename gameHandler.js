@@ -496,7 +496,7 @@ function stopGame() {
     promptIndex = null;
     phaseDuration = null;
     round = null;
-    AIs = null;
+    AIs = [];
     console.log("Game has stopped");
 }
 
