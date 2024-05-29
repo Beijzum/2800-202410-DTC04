@@ -7,7 +7,8 @@ let trapCard = new Audio("sfx/trapCard.mp3");
 let nextGen = new Audio("sfx/nextGen.mp3");
 // It's REALLY loud
 heli.volume = 0.5;
-trapCard.volume = 0.75;
+trapCard.volume = 0.5;
+robot.volume = 0.5;
 
 // CLICK EVENT LISTENERS HERE
 document.getElementById("nextGen").addEventListener("click", () => {
