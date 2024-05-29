@@ -25,15 +25,40 @@ socket.on("gameOver", () => {
     window.location.href = "/lobby";
 });
 
-socket.on('gameResult', (data) => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.showModal();
+socket.on('gameWin', () => {
+    const dialogBoxWin = document.getElementById('dialogBoxWin');
+    if (dialogBoxWin) {
+        dialogBoxWin.showModal();
+    }
 });
 
-document.getElementById('closeDialog').onclick = () => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.close();
-    window.location.href = "/lobby";
+socket.on('gameLose', () => {
+    const dialogBoxLose = document.getElementById('dialogBoxLose');
+    if (dialogBoxLose) {
+        dialogBoxLose.showModal();
+    }
+});
+
+const closeDialogWin = document.getElementsByClassName('closeDialog')[0];
+if (closeDialogWin) {
+    closeDialogWin.onclick = () => {
+        const dialogBoxWin = document.getElementById('dialogBoxWin');
+        if (dialogBoxWin) {
+            dialogBoxWin.close();
+            window.location.href = "/lobby";
+        }
+    };
+}
+
+const closeDialogLose = document.getElementsByClassName('closeDialog')[1];
+if (closeDialogLose) {
+    closeDialogLose.onclick = () => {
+        const dialogBoxLose = document.getElementById('dialogBoxLose');
+        if (dialogBoxLose) {
+            dialogBoxLose.close();
+            window.location.href = "/lobby";
+        }
+    };
 }
 
 function handleWriteView() {
