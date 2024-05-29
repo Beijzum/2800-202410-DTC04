@@ -6,6 +6,11 @@ document.addEventListener("keyup", (e) => {
     if (checkSequence()) window.location.href = "memes";
 });
 
+/**
+ * Checks the sequence of the last 10 buttons pressed.
+ * 
+ * @returns true if the last 10 buttons pressed match the correct sequence, else false
+ */
 function checkSequence() {
     if (last10ButtonsPressed.length < 10) return false;
     for (let i = 0; i < last10ButtonsPressed.length; i++) {
@@ -14,6 +19,11 @@ function checkSequence() {
     return true;
 }
 
+/**
+ * Handles updating the last 10 buttons pressed.
+ * 
+ * @param {String} key key pressed
+ */
 function logButtonPressed(key) {
     if (last10ButtonsPressed.length >= 10) {
         last10ButtonsPressed.shift();

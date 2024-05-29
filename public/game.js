@@ -1,6 +1,7 @@
 let gameMenu = document.getElementById("gameMenu");
 let winSound = new Audio("sfx/gameWin.mp3")
 let loseSound = new Audio("sfx/gameLose.mp3")
+loseSound.volume = 0.5;
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
@@ -47,7 +48,15 @@ document.getElementsByClassName('closeDialog')[1].onclick = () => {
     window.location.href = "/lobby";
 };
 
+/**
+ * Handles the game view for the write phase.
+ */
 function handleWriteView() {
+    /**
+     * Handles disabling the response text area and submit button.
+     *
+     * @param {String} buttonMessage Message to display on the submit button
+     */
     function disableInputs(buttonMessage) {
         let responseArea = document.getElementById("promptResponse");
         let submitButton = document.getElementById("submitResponse");
@@ -89,6 +98,9 @@ function handleWriteView() {
     })
 }
 
+/**
+ * Handles the game view for the vote phase.
+ */
 function handleVoteView() {
     if (!playing) return;
 
@@ -102,6 +114,11 @@ function handleVoteView() {
         let voteButton = buttonsDiv.children[0];
         let cancelButton = buttonsDiv.children[1];
 
+        /**
+         * Handles hiding the vote and cancel buttons.
+         * 
+         * @param {Boolean} boolean whether to hide the buttons or not 
+         */
         function hideButtons(boolean) {
             if (boolean)
                 buttonsDiv.className = buttonsDiv.className.replace("opacity-100", "opacity-0");

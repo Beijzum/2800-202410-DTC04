@@ -4,6 +4,7 @@ const pool = require("./socketConstants");
 const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
+const { Socket, Server } = require("socket.io");
 const database = require("./database");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
@@ -25,6 +26,11 @@ const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs
 const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
 let mySocket = null;
 
+/**
+ * Handles the game logic.
+ * 
+ * @param {Server} io the server for handling socketing
+ */
 function runGame(io) {
 
     const game = io.of("/game");
@@ -342,6 +348,12 @@ function runGame(io) {
     });
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
+
+    /**
+     * Checks if the game has ended.
+     * 
+     * @returns true if the game has ended, false otherwise
+     */
     function checkEndConditions() {
         const username = mySocket.request.session.username;
         if (getAlivePlayerCount() === 0 || getAlivePlayerCount() <= AIs.length) {
@@ -360,6 +372,11 @@ function runGame(io) {
         else return false;
     }
 
+    /**
+     * Kills the specified player.
+     * 
+     * @param {Socket} socket client socket to kill 
+     */
     function killPlayer(socket) {
         if (!socket) return;
         // if most voted socket was AI, then remove from AI list
@@ -378,8 +395,14 @@ function runGame(io) {
         socket.request.session.game.dead = true;
     }
 
+    /**
+     * Determines which client has the most votes.
+     * 
+     * @param {Array} playerSocketList 
+     * @returns the most voted client, or null if no one has majority vote or no one is alive
+     */
     function getMajorityVotedSocket(playerSocketList) {
-        if (playerSocketList.length === 0) return;
+        if (playerSocketList.length === 0) return null;
 
         let mostVotedSocket = playerSocketList[0];
         playerSocketList.forEach(socket => {
@@ -387,11 +410,17 @@ function runGame(io) {
                 mostVotedSocket = socket;
         });
 
-        if (getAlivePlayerCount() === 0) return;
+        if (getAlivePlayerCount() === 0) return null;
         if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) return mostVotedSocket;
         else return null;
     }
 
+    /**
+     * Creates a delayed redirect to the next phase.
+     * 
+     * @param {Number} delayTimeInSeconds time used to delay redirect
+     * @param {String} nextRoute the next phase to redirect to
+     */
     function createDelayedRedirect(delayTimeInSeconds, nextRoute) {
         return setTimeout(async () => {
             // set up next round if one last phase
@@ -400,6 +429,10 @@ function runGame(io) {
         }, delayTimeInSeconds * 1000);
     }
 
+    
+    /**
+     * Updates the client timers for the game.
+     */
     function handleGameTick(timer) {
 
         if (phaseDuration > 0) {
@@ -409,13 +442,24 @@ function runGame(io) {
         } else clearInterval(timer);
     }
 
+    /**
+     * Returns the total numbers of players.
+     * 
+     * Assumes that the "alive" room has some players that should not be counted, and the "dead" room has all players that should not be counted.
+     * 
+     * @returns the number of living players minus the dead players
+     */
     function getTotalPlayerCount() {
         let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
         let deadPlayers = game.adapter.rooms.get("dead")?.size ? game.adapter.rooms.get("dead").size : 0;
         return alivePlayers - deadPlayers;
     }
 
-
+    /**
+     * Returns the number of living players.
+     * 
+     * @returns the number of living players
+     */
     function getAlivePlayerCount() {
         let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
         return alivePlayers;
@@ -424,6 +468,11 @@ function runGame(io) {
 
 // GENERAL FUNCTION DEFINITIONS
 
+/**
+ * Shuffles an array in place.
+ * 
+ * @param {Array} array array to shuffle
+ */
 function shuffleArray(array) {
     let currentIndex = array.length;
 
@@ -434,6 +483,13 @@ function shuffleArray(array) {
     }
 }
 
+/**
+ * Creates a number of AI players.
+ * 
+ * Pushes the AI into the global AI list.
+ * 
+ * @param {Number} numberToMake the number of AI to create
+ */
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
         const aiPersonalities = Object.values(aiModel.personalities);
@@ -463,6 +519,11 @@ function createAIs(numberToMake) {
     }
 }
 
+/**
+ * Anonymises a client by assigning them a random alias.
+ * 
+ * @param {Socket} socket client socket to assign alias to
+ */
 function assignClientAlias(socket) {
     let req = socket.request;
 
@@ -481,21 +542,40 @@ function assignClientAlias(socket) {
 
 }
 
+/**
+ * Reloads the session for a client socket.
+ * 
+ * If the session cannot be reloaded, the client is disconnected.
+ * 
+ * @param {Socket} socket client socket to reload session for
+ */
 async function reloadSession(socket) {
     socket.request.session.reload((err) => {
         if (err) return socket.disconnect();
     })
 }
 
+/**
+ * Converts a time in seconds to a string in the format of "mm:ss".
+ * 
+ * @param {Number} seconds time in seconds to convert
+ * @returns string in the format of "mm:ss"
+ */
 function convertFormat(seconds) {
     return `${Math.floor(seconds / 60)}:${seconds % 60 < 10 ? "0" + seconds % 60 : seconds % 60}`;
 }
 
+/**
+ * Clears the prompt index and phase duration for the next round.
+ */
 function setupNextRound() {
     promptIndex = null;
     phaseDuration = null;
 }
 
+/**
+ * Stops the game from running by clearing all game variables.
+ */
 function stopGame() {
     currentPhase = null;
     gameRunning = false;

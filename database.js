@@ -18,6 +18,12 @@ const client = new MongoClient(databaseLink, {
     }
 });
 
+/**
+ * Registers an unverified user to the database.
+ * 
+ * @param {Object} requestBody the request body from the client
+ * @returns an array of errors if any, or null if successful
+ */
 async function signUpUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
@@ -63,6 +69,12 @@ async function signUpUser(requestBody) {
     });
 }
 
+/**
+ * Logs in a user.
+ * 
+ * @param {Object} requestBody the request body from the client
+ * @returns user document if successful, or an error message if not
+ */
 async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
@@ -85,7 +97,12 @@ async function loginUser(requestBody) {
     });
 }
 
-
+/**
+ * Finds a user in the database.
+ * 
+ * @param {Object} searchParams search parameters for the query
+ * @returns query result from users collection
+ */
 async function findUser(searchParams) {
     return new Promise(async (res, rej) => {
         try {
@@ -101,6 +118,11 @@ async function findUser(searchParams) {
     });
 }
 
+/**
+ * Gets the top 10 users in the database.
+ * 
+ * @returns the top 10 users in the database sorted by winCount
+ */
 async function getLeaderboard() {
     return new Promise(async (res, rej) => {
         try {

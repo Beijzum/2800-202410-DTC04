@@ -97,7 +97,7 @@ router.get("/profile", async (req, res) => {
         return;
     }
     let userData = await database.findUser({ username: req.session.username });
-    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl } });
+    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl, email: userData.email } });
 
 })
 
@@ -119,6 +119,15 @@ router.get("/changePass", (req, res) => {
 router.get("/memes", (req, res) => {
     if (req.session.username) res.render("memes", { authenticated: true });
     else res.render("memes", { authenticated: false });
+});
+
+router.get("/howToPlay", (req, res) => {
+    if (req.session.username) res.render("howToPlay", { authenticated: true });
+    else res.render("howToPlay", { authenticated: false });
+});
+
+router.get("/privacy", async (req, res) => {
+    res.render("privacy", { authenticated: req.session.username !== undefined });
 });
 
 router.get("*", (req, res) => {
