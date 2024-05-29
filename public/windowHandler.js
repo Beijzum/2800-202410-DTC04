@@ -6,8 +6,6 @@ let roundCounter = document.getElementById("roundCounter");
 let timeDisplay = document.getElementById("timeDisplay");
 let statusBar = document.getElementById("statusMenu");
 
-document.addEventListener("DOMContentLoaded", () => { socket.emit("joinGame"); });
-
 // handlers for changing screen
 socket.on("noGameRunning", (newHTML) => {
     timeDisplay.innerHTML = "No Game Found";

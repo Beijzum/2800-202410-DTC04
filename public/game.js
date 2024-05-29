@@ -2,6 +2,10 @@ let gameMenu = document.getElementById("gameMenu");
 // let winSound = new Audio("sfx/gameWin.mp3")
 // let loseSound = new Audio("sfx/gameLose.mp3")
 
+socket.on("idAssigned", () => {
+    socket.emit("joinGame");
+});
+
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
     switch (currentView.id) {
