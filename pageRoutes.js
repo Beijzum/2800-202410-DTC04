@@ -121,6 +121,11 @@ router.get("/memes", (req, res) => {
     else res.render("memes", { authenticated: false });
 });
 
+router.get("/howToPlay", (req, res) => {
+    if (req.session.username) res.render("howToPlay", { authenticated: true });
+    else res.render("howToPlay", { authenticated: false });
+});
+
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
 })
