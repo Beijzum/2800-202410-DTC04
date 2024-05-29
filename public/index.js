@@ -45,3 +45,22 @@ if (wins === 0 && userExist === "false") {
 } else {
     document.querySelector("#userScores").style.display = "flex";
 }
+
+// For Main Page Lobby Music 
+let indexMusic = new Audio("sfx/lobby_music_2.mp3");
+indexMusic.volume = 0.3;
+
+const musicButton = document.querySelector("#index-music");
+const musicIcon = document.querySelector("#music-icon");
+
+musicButton.addEventListener("click", () => {
+    if (indexMusic.paused) {
+        indexMusic.play();
+        indexMusic.loop = true;
+        musicIcon.src = "images/playMusicIcon.png"
+    } else {
+        indexMusic.pause();
+        musicIcon.src = "images/muteMusicIcon.png";
+    }
+});
+
