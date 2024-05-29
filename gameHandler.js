@@ -29,6 +29,8 @@ function runGame(io) {
 
         // player connects to game lobby
         socket.on("joinGame", async () => {
+            // uncomment to create new game session for testing
+            // socket.request.session.game = {};
 
             // joining game indicates you are a player
             if (socket.request.session.game) socket.join("alive");
