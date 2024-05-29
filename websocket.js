@@ -14,7 +14,7 @@ function runSocket(io) {
     let readyTimer = null, countdown;
     io.on("connection", async (socket) => {
 
-        if (socket.request.session.game) await removeClientFromGame(socket);
+        if (socket.request.session.game) removeClientFromGame(socket);
 
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
@@ -43,7 +43,7 @@ function runSocket(io) {
         socket.on("ready", async () => {
             socket.join("readyList");
             gameHandler.eventEmitter.emit("updatePlayerCount", 1);
-
+            addClientToGame(socket);
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
 
             if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
@@ -66,7 +66,6 @@ function runSocket(io) {
                     }
 
                     clearInterval(readyTimer);
-                    await addClientToGame(socket);
                     io.emit("startGame");
                 }, 1000);
 
@@ -80,6 +79,7 @@ function runSocket(io) {
 
         socket.on("unready", () => {
             gameHandler.eventEmitter.emit("updatePlayerCount", -1);
+            removeClientFromGame(socket);
             socket.leave("readyList");
             if (readyTimer) {
                 if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size < 0.5) {
@@ -92,8 +92,8 @@ function runSocket(io) {
         });
 
         socket.on("forceJoin", async () => {
+            addClientToGame(socket);
             socket.join("readyList");
-            await addClientToGame(socket);
         })
     });
     
@@ -121,14 +121,14 @@ const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-async function removeClientFromGame(socket) {
-    await gameHandler.reloadSession(socket);
+function removeClientFromGame(socket) {
+    gameHandler.reloadSession(socket);
     socket.request.session.game = false;
     socket.request.session.save();
 }
 
-async function addClientToGame(socket) {
-    await gameHandler.reloadSession(socket);
+function addClientToGame(socket) {
+    gameHandler.reloadSession(socket);
     socket.request.session.game = true;
     socket.request.session.save();
 }
