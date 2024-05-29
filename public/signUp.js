@@ -27,6 +27,11 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
     }
 });
 
+/**
+ * Handles displaying errors to the user.
+ * 
+ * @param {Array} errors array of errors encountered during sign up 
+ */
 function displayErrors(errors) {
     let errorContainer = document.getElementById("errorContainer");
     errorContainer.innerHTML = ""; // Clear previous errors

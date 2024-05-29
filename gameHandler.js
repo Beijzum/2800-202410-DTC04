@@ -366,7 +366,9 @@ function runGame(io) {
     }
 
     /**
-     * Returns the diference between the number of living players and dead players.
+     * Returns the total numbers of players.
+     * 
+     * Assumes that the "alive" room has some players that should not be counted, and the "dead" room has all players that should not be counted.
      * 
      * @returns the number of living players minus the dead players
      */
