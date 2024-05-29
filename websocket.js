@@ -12,9 +12,9 @@ function runSocket(io) {
     const userList = new Map(); // used to keep track of connected users
 
     let readyTimer = null, countdown;
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
 
-        if (socket.request.session.game) socket.request.session.game = null;
+        if (socket.request.session.game) await removeClientFromGame(socket);
 
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
@@ -25,11 +25,6 @@ function runSocket(io) {
             userList.set(socket.request.session.username, socket.request.session.profilePic);
             // userList.add({username: socket.request.session.username, profilePicture: socket.request.session.profilePic}); // update user list
             io.emit("updateUserList", Array.from(userList.entries())); // notify client
-
-            // handle players that just returned back to lobby, ADD SHOWING MODAL WHEN SESSION HAS A WIN/LOSE STATE THAT WILL BE ADDED IN GAME HANDLER
-            if (socket.request.session.game) {
-                removeClientFromGame(socket);
-            }
         });
 
         // when users message
@@ -60,25 +55,26 @@ function runSocket(io) {
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
-                // TODO: cleanup this crime against humanity
                 if (readyTimer) return;
                 countdown = 10;
                 io.emit("readyTimerUpdate", countdown);
-                readyTimer = setInterval(() => {
+                readyTimer = setInterval(async () => {
                     countdown--;
-                    if (countdown <= 0) {
-                        clearInterval(readyTimer);
-                        readyTimer = null;
-                        addClientToGame(socket)
-                        .then(()=> io.emit("startGame"))
-                    } else io.emit("readyTimerUpdate", countdown);
-                }, 1000);
-            } else {
-                if (readyTimer) {
+                    if (countdown > 0) {
+                        io.emit("readyTimerUpdate", countdown);
+                        return;
+                    }
+
                     clearInterval(readyTimer);
-                    readyTimer = null;
-                    updateReadyMessage(socket);
-                }
+                    await addClientToGame(socket);
+                    io.emit("startGame");
+                }, 1000);
+
+            } else {
+                if (!readyTimer) return;
+                clearInterval(readyTimer);
+                readyTimer = null;
+                updateReadyMessage(socket);
             }
         });
 
@@ -127,13 +123,13 @@ dayjs.extend(timezone)
 
 async function removeClientFromGame(socket) {
     await gameHandler.reloadSession(socket);
-    socket.request.session.game = null;
+    socket.request.session.game = false;
     socket.request.session.save();
 }
 
 async function addClientToGame(socket) {
     await gameHandler.reloadSession(socket);
-    socket.request.session.game = {};
+    socket.request.session.game = true;
     socket.request.session.save();
 }
 
