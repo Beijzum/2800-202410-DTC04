@@ -8,5 +8,10 @@
 <div style="margin-bottom: 180px;" id="white-space-for-fixed-game-Alias"></div>
 <div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
+<dialog id="eliminatedModal" class="bg-zinc-200 rounded-lg p-3">
+    <img src="images/deadPicture.gif" class="rounded-full w-64 h-64 mx-auto border-8 border-zinc-800">
+    <p class="text-center font-semibold text-xl mt-3">The AIs Have <span class="text-red-700">Eliminated</span> You...</p>
+    <button id="closeEliminatedModal" class="block mx-auto mt-3 text-gray-200 bg-zinc-800 outline-none p-2 px-5 rounded-lg">Close</button>
+</dialog>
 <script src="windowHandler.js"></script>
 <%- include("./templates/footer", {pageScript: "game.js"}) %>
