@@ -32,6 +32,14 @@ router.get("/lobby", (req, res) => {
     else res.redirect("/login");
 });
 
+router.get("/leaderboard", async (req, res) => {
+    let top10Players = await database.getLeaderboard();
+    if (req.session.username) {
+        let userData = await database.findUser({ username: req.session.username });
+        res.render("leaderboard", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue: true }, sessionData: req.session });
+    } else { res.render("leaderboard", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0, loseCount: 0 }, userExist: { isTrue: false } }) };
+});
+
 
 router.get("/login", (req, res) => {
     if (req.session.username) res.redirect("/index");
