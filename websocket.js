@@ -6,6 +6,16 @@ const gameHandler = require("./gameHandler");
 /**
  * Handles the socket server.
  * 
+ * This function is responsible for handling the socket server. It will handle the following events:
+ * - When a user joins the lobby
+ * - When a user sends a message
+ * - When a user disconnects
+ * - When a user is ready
+ * - When a user is unready
+ * - When a game starts, pulling all players into the game
+ * 
+ * For game logic, it will delegate to the gameHandler module.
+ * 
  * @param {Server} io the server for handling socketing
  */
 function runSocket(io) {
@@ -40,6 +50,7 @@ function runSocket(io) {
             io.emit("updateUserList", Array.from(userList.entries())); // notify client
         });
 
+        // Triggered when a user readies up
         socket.on("ready", async () => {
             socket.join("readyList");
             gameHandler.eventEmitter.emit("updatePlayerCount", 1);
@@ -77,6 +88,7 @@ function runSocket(io) {
             }
         });
 
+        // Triggered when a user un-readies
         socket.on("unready", () => {
             gameHandler.eventEmitter.emit("updatePlayerCount", -1);
             removeClientFromGame(socket);
@@ -91,6 +103,7 @@ function runSocket(io) {
 
         });
 
+        // Triggers when the game starts
         socket.on("forceJoin", async () => {
             addClientToGame(socket);
             socket.join("readyList");
@@ -100,7 +113,12 @@ function runSocket(io) {
     // Delegate game logic sockets to external module
     gameHandler.runGame(io);
     
-    function updateReadyMessage(socket) {
+    /**
+     * Updates the ready message for all clients.
+     * 
+     * @param {Socket} _ client socket - unsused
+     */
+    function updateReadyMessage(_) {
         if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) {
             io.emit("updateReadyMessage", "Waiting for Game to Start...");
             return;
@@ -133,6 +151,14 @@ function addClientToGame(socket) {
     socket.request.session.save();
 }
 
+/**
+ * Formats a user's message for client display.
+ * 
+ * @param {String} username username of the user
+ * @param {String} profilePic profile picture of the user
+ * @param {String} text message text
+ * @returns object with the message formatted and the time
+ */
 function formatMessage(username, profilePic, text) {
     return {
         username,

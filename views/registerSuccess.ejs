@@ -2,8 +2,10 @@
 <%- include("./templates/navbar", {currentPage: "N/a"}) %>
 
 <h1 class="text-center font-bold text-2xl my-6">We have sent you an email to finish registering your account.</h1>
-<form id="resendForm" class="flex flex-col items-center m-auto w-64" action="resendReg" method="post">
-    <p class="text-center my-2">Please click on the link inside the email. If you haven't received an email from us after a few minutes, please click the button below to resend.</p>
+<form id="resendForm" class="flex flex-col items-center m-auto w-80" action="resendReg" method="post">
+    <p class="text-center my-2"> Please click the link in the email, and make sure to check your spam folder. </p>
+    <p class="text-center my-2"> Managed email clients (e.g., school or work) may have additional delays. </p>
+    <p class="text-center my-2"> If you don't receive the email in 3-4 minutes, click the button below to resend or contact us at bcit.deadnet@gmail.com. </p>
     <input type="hidden" name="hash" value="<%= hash %>">
     <%- include("./templates/formSubmitButton", {buttonText: "Resend email"}) %>
 </form>

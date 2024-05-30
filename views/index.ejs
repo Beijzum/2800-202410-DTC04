@@ -1,43 +1,58 @@
 <%- include("./templates/header", {pageName: "Home"}) %>
 <%- include("./templates/navbar", {currentPage: "/"}) %>
-
-<% if (authenticated) { %>
-    <div class="bg-gradient-to-t from-sky-400 to-sky-700 w-full intense-shadow flex py-3 px-2 text-white">
-        <a href="/profile">
-            <img class="w-12 h-12 rounded-full mr-4" src="<%= sessionData.profilePic %>">
-        </a>
-        <div class="">
-            <p>Logged in as <%= sessionData.username %></p>
-            <p>Wins: <%= data.winCount %><span class="ml-3">Games Played: <%= data.loseCount + data.winCount %></span></p>
-        </div>
-
-    </div>
-<% } %>
-
-<div class="flex flex-col">
+<div class="background-animation">
     <% if (authenticated) { %>
-        <a href="lobby" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 px-20">Play</a>
-    <% } else { %>
-        <a href="login" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Login</a>
-        <a href="signUp" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Sign Up</a>
-    <% } %>
-</div>
+        <div class="bg-gradient-to-t from-sky-400 to-sky-700 w-full intense-shadow flex py-3 px-2 text-white">
+            <a href="/profile">
+                <img class="w-12 h-12 rounded-full mr-4" src="<%= sessionData.profilePic %>">
+            </a>
+            <div class="">
+                <p>Logged in as <%= sessionData.username %></p>
+                <p>Wins: <%= data.winCount %><span class="ml-3">Games Played: <%= data.winCount + data.loseCount %></span></p>
+            </div>
 
-<p class="text-center font-bold text-xl p-2">Top Players</p>
-<div id="leaderboard" class="relative overflow-x-auto shadow-md rounded-lg bg-zinc-900 m-2">
-    <table class="w-full text-sm text-zinc-300">
-        <thead class="text-xs text-gray-400 uppercase bg-zinc-700">
-            <tr>
-                <th scope="col" class="px-3 py-2">Player</th>
-                <th scope="col" class="px-3 py-2">Win Rate</th>
-                <th scope="col" class="px-3 py-2">Games Played</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < topUsers.length; i++) { %>
-                <%- include("./templates/leaderboardEntry", {userEntry: topUsers[i]}) %>
-            <% } %>
-        </tbody>
-    </table>
-</div>
+        </div>
+    <% } %>
+
+    <div class="flex flex-col">
+        <% if (authenticated) { %>
+            <a href="lobby" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 px-20">Play</a>
+        <% } else { %>
+            <a href="login" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Login</a>
+            <a href="signUp" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Sign Up</a>
+        <% } %>
+    </div>
+
+    <div class="flex flex-col">
+        <a href="howToPlay" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-3 sm:p-5 w-48 sm:w-64">How to Play</a>
+    </div>
+    <p class="text-white bg-zinc-700/70 p-5 m-5">
+        In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population.
+        We developed Dead Net as a game to encourage people to have fun while learning about the dangers of AI. 
+        We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content 
+        because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
+    </p>
+</div>  
+    <p class="text-white text-center font-bold text-xl p-2">Top Players</p>
+    <div id="leaderboard" class="relative overflow-x-auto shadow-md rounded-lg bg-zinc-900 m-2">
+        <table class="w-full text-sm text-zinc-300">
+            <thead class="text-xs text-gray-400 uppercase bg-zinc-700">
+                <tr>
+                    <th scope="col" class="px-3 py-2">Player</th>
+                    <th scope="col" class="px-3 py-2">Win Rate</th>
+                    <th scope="col" class="px-3 py-2">Games Played</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < topUsers.length; i++) { %>
+                    <%- include("./templates/leaderboardEntry", {userEntry: topUsers[i]}) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-center">
+        <button id="index-music" button class="btn max-h-10 max-w-10" ><img id="music-icon" src="images/muteMusicIcon.png" alt=""></button>
+    </div>
+
 <%- include("./templates/footer", {pageScript: "index.js"}) %>
