@@ -30,7 +30,8 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_CLOUD_SECRET
 });
 
-const multer = require('multer')
+const multer = require('multer');
+const e = require('cors');
 const multerStorage = multer.memoryStorage()
 const upload = multer({ storage: multerStorage })
 
@@ -241,26 +242,28 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
     .then((url) => res.status(200).send({message: "Profile Picture Updated!", imageUrl: url}))
     .catch((error) => {
         console.error(error);
-        // handle explicitly named errors
-        switch(error.name) {
-            case "AuthenticationError":
-                res.status(500).send({error: "Server-side authentication error"});
-                return;
-            case "NetworkError":
-                res.status(500).send({error: "Network error occurred"});
-                return;
-            case "RateLimitError":
-                res.status(500).send({error: "Rate limit exceeded, please try again later."});
-                return;
-            default:
-                // Handle other errors outside of the switch
-                break;
+
+        if (error.message.includes("Invalid api")) {
+            res.status(500).send({error: "Server failed to authenticate with cloudinary"});
+            return;
+        }
+
+        if (error.message.includes("network")) {
+            res.status(500).send({error: "Network error occurred"});
+            return;
+        }
+
+        if (error.message.includes("rate limit")) {
+            res.status(500).send({error: "Rate limit exceeded, please try again later."});
+            return;
         }
 
         if (error.message.includes("File size")) {
             res.status(400).send({error: "Uploaded file is too large"});
             return;
-        } else if (error.message.includes("Unknown format") || error.message.includes("Invalid image")) {
+        } 
+        
+        if (error.message.includes("Unknown format") || error.message.includes("Invalid image")) {
             res.status(400).send({error: "Uploaded file is an unsupported format"});
             return;
         }
