@@ -6,6 +6,13 @@ let gameNavbar = document.getElementById("gameNavbar");
 let roundCounter = document.getElementById("roundCounter");
 let timeDisplay = document.getElementById("timeDisplay");
 let statusBar = document.getElementById("statusMenu");
+let deadModal = document.getElementById("eliminatedModal");
+let closeModalButton = document.getElementById("closeEliminatedModal");
+
+closeModalButton.addEventListener("click", () => {
+    deadModal.close();
+});
+
 
 // handler for joining game
 socket.on("gameReady", () => {
