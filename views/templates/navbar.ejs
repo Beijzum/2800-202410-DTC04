@@ -30,12 +30,13 @@
                     <% if (authenticated) { %>
                         <%- include("navbarItem", {label: "Profile", pageLink: "profile", currentPage: currentPage}) %>
                         <%- include("navbarItem", {label: "Play", pageLink: "lobby", currentPage: currentPage}) %>
+                        <%- include("navbarItem", {label: "How to play" , pageLink: "howToPlay" , currentPage: currentPage}) %>
                         <%- include("navbarItem", {label: "Logout", pageLink: "/logout", currentPage: currentPage}) %>
                     <% } else { %>
                         <%- include("navbarItem", {label: "Login", pageLink: "login", currentPage: currentPage}) %>
                         <%- include("navbarItem", {label: "Sign Up", pageLink: "signUp", currentPage: currentPage}) %>
+                        <%- include("navbarItem", {label: "How to play" , pageLink: "howToPlay" , currentPage: currentPage}) %>
                     <% } %>
-                    <%- include("navbarItem", {label: "How to play" , pageLink: "howToPlay" , currentPage: currentPage}) %>
                 </ul>
 
             </div>
