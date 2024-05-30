@@ -304,6 +304,7 @@ function runGame(io) {
         let statusBarHTML = ejs.render(statusBarTemplate, { status: "dead" });
         playerSocket.emit("updateStatus", statusBarHTML);
         playerSocket.emit("notPlaying");
+        if (currentPhase === "WAIT") playerSocket.emit("killedByAI");
     }
 
     function getMajorityVotedPlayer() {
