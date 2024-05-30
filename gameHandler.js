@@ -182,7 +182,7 @@ function runGame(io) {
 
         // only run when the first user connects
         if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 4; // 61
+            phaseDuration = 61; // 61
 
             // need a transition screen to be able to receive all players input, even if they havent pressed submit
             let timeout = createDelayedRedirect(phaseDuration + 1, "runTransition");
@@ -251,7 +251,7 @@ function runGame(io) {
         game.emit("changeView", renderedVoteTemplate);
 
         if (phaseDuration <= 0) {
-            phaseDuration = 4; // 61
+            phaseDuration = 61; // 61
 
             let timeout = createDelayedRedirect(phaseDuration + 1, "runResult");
             let timer = setInterval(() => {
