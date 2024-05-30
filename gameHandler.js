@@ -30,19 +30,26 @@ function runGame(io) {
     game.on("connection", (socket) => {
 
         connectedClients++;
-        
+
+        // if game running, tell client game is ready
         if (gameRunning) socket.emit("gameReady");
+        // if game isn't running, and client doesnt have game, then show no game
+        else if (!gameRunning && !socket.request.session.game) renderCurrentPhase();
+
         // first person to join the lobby before game has started signals to server to start game
         if (socket.request.session.game && !gameRunning) startGame();
-
-        // compare if joined socket has an existing session
+        
+        // assign new socket to old id if they were originally a player
         let gameSession = playerList.find(session => session.username === socket.request.session.username);
-        if (gameSession) socket.id = gameSession.originalSocketId;
+        if (gameSession) {
+            socket.id = gameSession.originalSocketId;
+            socket.request.session.game = true;
+        }
         socket.emit("idAssigned");
   
         // player connects to game lobby
         socket.on("joinGame", () => {
-        
+            
             // if no game running then do nothing
             if (!gameRunning) {
                 renderCurrentPhase();
@@ -82,6 +89,9 @@ function runGame(io) {
 
         socket.on("disconnect", async () => {
             connectedClients--;
+            reloadSession(socket);
+            socket.request.session.game = false;
+            socket.request.session.save();
         });
 
         // FUNCTION DEFINITIONS THAT REQUIRE INDIVIDUAL SOCKETS
@@ -228,6 +238,31 @@ function runGame(io) {
         ee.emit("runWrite");
         console.log("A game session has started");
         game.emit("gameReady");
+    }
+
+    function stopGame() {
+        // reset global variables
+        currentPhase = null;
+        gameRunning = false;
+        promptIndex = null;
+        round = null;
+        playerCount = 0;
+        AIs.length = 0;
+        combinedList.length = 0;
+        clearInterval(timer);
+        timer = null;
+        
+        // clear everyones game session at end of game
+        playerList.forEach(player => {
+            let socket = game.sockets.get(player.originalSocketId);
+            if (!socket) return;
+            reloadSession(socket);
+            socket.request.session.game = false;
+            socket.request.session.save();
+            
+        });
+        playerList.length = 0;
+        console.log("A game session has ended");
     }
 
     function handleGameEnd() {
@@ -395,30 +430,6 @@ function convertFormat(seconds) {
 function setupNextRound() {
     round++;
     promptIndex = null;
-}
-
-function stopGame() {
-    // reset global variables
-    currentPhase = null;
-    gameRunning = false;
-    promptIndex = null;
-    round = null;
-    playerCount = 0;
-    AIs.length = 0;
-    playerList.length = 0;
-    combinedList.length = 0;
-
-    clearInterval(timer);
-    timer = null;
-    timeout = null;
-
-    // clear everyones game session at end of game
-    playerList.forEach(player => {
-        reloadSession(player);
-        player = null;
-        player.request.session.save();
-    });
-    console.log("A game session has ended");
 }
 
 module.exports = {
