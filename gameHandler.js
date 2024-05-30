@@ -5,7 +5,6 @@ const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
 const { Socket, Server } = require("socket.io");
-const database = require("./database");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
 var currentPhase, gameRunning = false, promptIndex, round, playerCount = 0;
@@ -24,7 +23,6 @@ const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
 const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
 const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
-let mySocket = null;
 
 /**
  * Handles the game logic.
@@ -326,18 +324,7 @@ function runGame(io) {
         else return null;
     }
 
-    function prepareNextPhase(length, nextPhase) {
-        console.log(`Current Phase: ${currentPhase}`);
-        if (timer) clearInterval(timer);
-        let timeout = createDelayedRedirect(length + 1, nextPhase);
-        let countdown = length;
-        timer = setInterval(() => {
-            countdown--;
-            handleGameTick(timeout, countdown);
-        }, 1000);
-    }
-
-        /**
+    /**
      * Creates a delayed redirect to the next phase.
      * 
      * @param {Number} delayTimeInSeconds time used to delay redirect
@@ -377,29 +364,6 @@ function runGame(io) {
             if (connectedClients <= 0) stopGame();
             game.emit("timerUpdate", convertFormat(length));
         } else clearInterval(timer);
-    }
-
-    /**
-     * Returns the total numbers of players.
-     * 
-     * Assumes that the "alive" room has some players that should not be counted, and the "dead" room has all players that should not be counted.
-     * 
-     * @returns the number of living players minus the dead players
-     */
-    function getTotalPlayerCount() {
-        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
-        let deadPlayers = game.adapter.rooms.get("dead")?.size ? game.adapter.rooms.get("dead").size : 0;
-        return alivePlayers - deadPlayers;
-    }
-
-    /**
-     * Returns the number of living players.
-     * 
-     * @returns the number of living players
-     */
-    function getAlivePlayerCount() {
-        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
-        return alivePlayers;
     }
 }
 
