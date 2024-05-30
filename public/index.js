@@ -51,16 +51,3 @@ musicButton.addEventListener("click", () => {
     }
 });
 
-// ------------------ Causes and Errors As of May 29 2pm 2024 ------------------
-let winsElement = document.querySelector("#wins");
-let wins = winsElement.innerHTML.trim();
-let userExist = document.querySelector("#userExist").innerHTML.trim();
-
-// Convert wins to a number for comparison
-wins = Number(wins);
-
-if (wins === 0 && userExist === "false") {
-    document.querySelector("#userScores").style.display = "none";
-} else {
-    document.querySelector("#userScores").style.display = "flex";
-}
