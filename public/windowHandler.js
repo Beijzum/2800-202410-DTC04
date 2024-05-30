@@ -1,10 +1,22 @@
 var playing = true;
 var socket = io("/game");
+var gameReady = false, socketAssigned = false;
 
 let gameNavbar = document.getElementById("gameNavbar");
 let roundCounter = document.getElementById("roundCounter");
 let timeDisplay = document.getElementById("timeDisplay");
 let statusBar = document.getElementById("statusMenu");
+
+// handler for joining game
+socket.on("gameReady", () => {
+    gameReady = true;
+    if (gameReady && socketAssigned) socket.emit("joinGame");
+});
+
+socket.on("idAssigned", () => {
+    socketAssigned = true;
+    if (gameReady && socketAssigned) socket.emit("joinGame");
+});
 
 // handlers for changing screen
 socket.on("noGameRunning", (newHTML) => {
@@ -22,7 +34,7 @@ socket.on("roundUpdate", (round) => {
 });
 
 socket.on("timerUpdate", (time) => {
-    let currentView = document.getElementById("gameMenu").children[0].id;
+    let currentView = document.getElementById("gameMenu").children[0]?.id;
     if (currentView === "writeView" || currentView === "voteView") {
         let seconds = Number(time.substr(2, 2));
         if (seconds <= 10 && Number(time[0]) === 0) 
