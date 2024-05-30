@@ -100,7 +100,6 @@ app.post("/createAccount", async (req, res) => {
     } else {
         const hash = randomBytes(12).toString('hex');
         let errorList = await database.signUpUser({ ...req.body, hash });
-        console.log(errorList);
         if (errorList?.length) {
             res.status(400).json({ errors: errorList });
         } else {

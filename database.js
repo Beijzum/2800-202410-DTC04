@@ -36,7 +36,6 @@ async function signUpUser(requestBody) {
             }
             let existingUserWithSameEmail = await findUser({email: requestBody.email});
             if (existingUserWithSameEmail) {
-                console.log("email exists in db")
                 errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account.`});
             }
             if (errorList.length !== 0) {
