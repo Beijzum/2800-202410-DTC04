@@ -215,7 +215,21 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
     const databaseServer = database.client.db(process.env.MONGODB_DATABASE);
     const userCollection = databaseServer.collection('users');
 
-    let buf64 = req.file.buffer.toString('base64');
+    if(!req.file.mimetype.includes("image")) {
+        res.status(400).send({error: "Uploaded file is an unsupported format"});
+        return;
+    }
+
+    let buf64;
+    try {
+        buf64 = req.file.buffer.toString('base64');
+    } catch (e) {
+        // This will most likely be a file too large error, but it could be something else so it's non-specific
+        console.error(e);
+        res.status(400).send({error: "Error uploading file"});
+        return;
+    }
+
     stream = cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
             await userCollection.updateOne(
                 { username: req.session.username },
@@ -251,7 +265,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
             return;
         }
 
-        res.status(500).send({error: "Unexpected error occurred"});
+        res.status(error.http_code || 500).send({error: "Unexpected error occurred"});
     });
 });
 
