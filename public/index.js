@@ -33,20 +33,6 @@ function logButtonPressed(key) {
     else last10ButtonsPressed.push(key);
 }
 
-// ------------------ Causes and Errors As of May 29 2pm 2024 ------------------
-// let winsElement = document.querySelector("#wins");
-// let wins = winsElement.innerHTML.trim();
-// let userExist = document.querySelector("#userExist").innerHTML.trim();
-
-// // Convert wins to a number for comparison
-// wins = Number(wins);
-
-// if (wins === 0 && userExist === "false") {
-//     document.querySelector("#userScores").style.display = "none";
-// } else {
-//     document.querySelector("#userScores").style.display = "flex";
-// }
-
 // For Main Page Lobby Music 
 let indexMusic = new Audio("sfx/lobby_music_2.mp3");
 indexMusic.volume = 0.04;
@@ -65,3 +51,16 @@ musicButton.addEventListener("click", () => {
     }
 });
 
+// ------------------ Causes and Errors As of May 29 2pm 2024 ------------------
+let winsElement = document.querySelector("#wins");
+let wins = winsElement.innerHTML.trim();
+let userExist = document.querySelector("#userExist").innerHTML.trim();
+
+// Convert wins to a number for comparison
+wins = Number(wins);
+
+if (wins === 0 && userExist === "false") {
+    document.querySelector("#userScores").style.display = "none";
+} else {
+    document.querySelector("#userScores").style.display = "flex";
+}
