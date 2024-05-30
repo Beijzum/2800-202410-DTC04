@@ -237,9 +237,8 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             req.session.profilePic = result.secure_url;
-            return result.secure_url;
     })
-    .then((url) => res.status(200).send({message: "Profile Picture Updated!", imageUrl: url}))
+    .then(() => res.status(200).send({message: "Profile Picture Updated!"}))
     .catch((error) => {
         console.error(error);
 
