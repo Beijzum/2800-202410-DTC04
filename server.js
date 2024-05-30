@@ -231,7 +231,8 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
         return;
     }
 
-    stream = cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
+    cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64)
+    .then(async (result)  => {
             await userCollection.updateOne(
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
