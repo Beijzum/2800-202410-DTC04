@@ -129,8 +129,22 @@ app.post("/resendReg", async (req, res) => {
 app.post("/loginAccount", async (req, res) => {
     let validationResult = joiValidation.loginSchema.validate(req.body);
     if (validationResult.error) {
-        console.log(validationResult.error.message);
-        res.status(400).json({ message: validationResult.error.message });
+        const errorDetails = validationResult.error.details;
+        const errors = errorDetails.map(detail => {
+            let message;
+            switch (detail.context.key) {
+                case 'email':
+                    message = 'Invalid email format';
+                    break;
+                case 'password':
+                    message = 'Password must be at least 5 characters long and include at least one lowercase letter, one uppercase letter, one special character (@#$%^&+!.=), and one number';
+                    break;
+                default:
+                    message = detail.message;
+            }
+            return { field: detail.context.key, message: message };
+        });
+        res.status(400).json({ errors: errors });
     } else {
         let loginResult = await database.loginUser(req.body);
         if (loginResult.message === undefined) {
