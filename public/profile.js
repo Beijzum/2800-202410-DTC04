@@ -1,5 +1,7 @@
 document.getElementById('uploadProfilePicForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    let resultMessage = document.getElementById("savedChangesMessage");
+    resultMessage.classList.add("hidden");
 
     const form = e.target;
     const formData = new FormData(form);
@@ -9,14 +11,14 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
         body: formData,
         credentials: 'include'
     });
-
+    
     const result = await response.json();
-    let resultMessage = document.getElementById("savedChangesMessage");
 
     if (response.ok) {
         resultMessage.innerHTML = result.message;
         if (resultMessage.classList.contains("hidden"))
             resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("red", "green");
     } else {
         resultMessage.innerHTML = result.error;
         if (resultMessage.classList.contains("hidden"))
