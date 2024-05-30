@@ -22,8 +22,8 @@ const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
-const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
-const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8")
+const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8");
+const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8");
 
 /**
  * Handles the game logic.
@@ -78,6 +78,7 @@ function runGame(io) {
                 playerList.push(gameSession);
                 combinedList.push(gameSession);
                 if (playerCount === playerList.length) shuffleArray(combinedList);
+                updatePlayerList();
             }
             if (gameSession.dead) renderUI("dead");
             else renderUI("alive");
@@ -209,6 +210,7 @@ function runGame(io) {
         // get the player with the most votes
         let majorityVotedPlayer = getMajorityVotedPlayer();
         killPlayer(majorityVotedPlayer); // will do nothing if no majority
+        updatePlayerList();
         let resultHTML = ejs.render(resultTemplate, { 
             eliminatedPlayer: majorityVotedPlayer, remainingPlayers: combinedList,
             voteCount: majorityVotedPlayer?.votes
@@ -231,6 +233,7 @@ function runGame(io) {
         handleGameEnd();
         if (!gameRunning) return;
 
+        updatePlayerList();
         // reset vote counts
         combinedList.forEach(player => { player.votes = 0; });
 
@@ -264,19 +267,17 @@ function runGame(io) {
         if(outcome){ 
             playerList.forEach(player => {
                 let userID = player.username;
-                console.log("user: " + userID);
                 if (outcome === "win"){
                     database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { winCount: 1 } });
-                    console.log("win +1");
+                    console.log(`User: ${userID} +1 win`);
                 }
                 else if (outcome === "lose"){
                     database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { loseCount: 1 } });
-                    console.log("lose +1");
+                    console.log(`User: ${userID} +1 lose`);
                 }
             });
         }
             
-        
         // clear everyones game session at end of game
         playerList.forEach(player => {
             let socket = game.sockets.get(player.originalSocketId);
@@ -288,6 +289,19 @@ function runGame(io) {
         });
         playerList.length = 0;
         console.log("A game session has ended");
+    }
+
+    function updatePlayerList() {
+        let deadPlayers = getDeadPlayers();
+        let combinedListPlusDeadPlayers = combinedList.concat(deadPlayers);
+        game.emit("updatePlayerList", combinedListPlusDeadPlayers);
+    }
+
+    function getDeadPlayers() {
+        let deadPlayers = [];
+        playerList.forEach(player => { if (player.dead) deadPlayers.push(player); });
+        AIs.forEach(AI => { if (AI.dead) deadPlayers.push(AI); });
+        return deadPlayers;
     }
 
     function handleGameEnd() {
@@ -329,6 +343,7 @@ function runGame(io) {
         let statusBarHTML = ejs.render(statusBarTemplate, { status: "dead" });
         playerSocket.emit("updateStatus", statusBarHTML);
         playerSocket.emit("notPlaying");
+        if (currentPhase === "WAIT") playerSocket.emit("killedByAI");
     }
 
     function getMajorityVotedPlayer() {
