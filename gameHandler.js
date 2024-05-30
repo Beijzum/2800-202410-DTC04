@@ -6,8 +6,8 @@ const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
-var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, playerCount = 0;
-var connectedClients = 0, timer = null, timeout = null;
+var currentPhase, gameRunning = false, promptIndex, round, playerCount = 0;
+var connectedClients = 0, timer = null;
 
 // AIs = list of AIs, players = list of players, combinedList = list of both players and AIs, remove players from combinedList
 const AIs = [], playerList = [], combinedList = [];
@@ -31,6 +31,7 @@ function runGame(io) {
 
         connectedClients++;
         
+        if (gameRunning) socket.emit("gameReady");
         // first person to join the lobby before game has started signals to server to start game
         if (socket.request.session.game && !gameRunning) startGame();
 
@@ -149,7 +150,7 @@ function runGame(io) {
         promptIndex = Math.floor(Math.random() * pool.prompts.length);
         let writeHTML = ejs.render(writeTemplate, { prompt: pool.prompts[promptIndex] });
         game.emit("changeView", writeHTML);
-        prepareNextPhase(11, "runTransition"); // Original duration: 61
+        prepareNextPhase(61, "runTransition"); // Original duration: 61
 
         // get AIs response
         for(let i = 0; i < AIs.length; i++) {
@@ -169,7 +170,7 @@ function runGame(io) {
 
         let transitionHTML = ejs.render(transitionTemplate, { transitionMessage: "Get Ready To Vote!" });
         game.emit("changeView", transitionHTML);
-        prepareNextPhase(1, "runVote"); // Original duration: 6
+        prepareNextPhase(6, "runVote"); // Original duration: 6
     });
 
     // vote screen logic
@@ -178,7 +179,7 @@ function runGame(io) {
         if (!gameRunning) return;
         let voteHTML = ejs.render(voteTemplate, { players: combinedList, prompt: pool.prompts[promptIndex] });
         game.emit("changeView", voteHTML);
-        prepareNextPhase(11, "runResult"); // Original duration: 61
+        prepareNextPhase(61, "runResult"); // Original duration: 61
     });
 
     // result screen logic
@@ -200,11 +201,14 @@ function runGame(io) {
     // wait screen logic
     ee.on("runWait", async () => {
         currentPhase = "WAIT";
-        killRandomPlayer();
+        
         let waitHTML = ejs.render(waitTemplate);
         game.emit("changeView", waitHTML);
 
         // check if win or lose conditions have been met, early return if met
+        handleGameEnd();
+        if (!gameRunning) return;
+        killRandomPlayer();
         handleGameEnd();
         if (!gameRunning) return;
 
@@ -212,19 +216,26 @@ function runGame(io) {
         combinedList.forEach(player => { player.votes = 0; });
 
         // handle next round if game has not ended
-        round++;
-        prepareNextPhase(1, "runWrite"); // Original duration: 6
+        prepareNextPhase(6, "runWrite"); // Original duration: 6
     });
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
 
+    function startGame() {
+        gameRunning = true;
+        round = 1;
+        createAIs(Math.ceil(playerCount / 3));
+        ee.emit("runWrite");
+        console.log("A game session has started");
+        game.emit("gameReady");
+    }
+
     function handleGameEnd() {
-        if (getAlivePlayerCount() < AIs.length) {
+        if (getAlivePlayerCount() < getAliveAICount()) {
             stopGame();
             let postModalHTML = ejs.render(postGameModalLose);
             game.emit("gameLose", postModalHTML);
-        } else if (AIs.length === 0) {
-            console.log("no more AIs")
+        } else if (getAliveAICount() === 0) {
             stopGame();
             let postModalHTML = ejs.render(postGameModalWin);
             game.emit("gameWin", postModalHTML);
@@ -273,10 +284,14 @@ function runGame(io) {
     }
 
     function prepareNextPhase(length, nextPhase) {
-        phaseDuration = length;
+        console.log(`Current Phase: ${currentPhase}`);
         if (timer) clearInterval(timer);
-        let timeout = createDelayedRedirect(phaseDuration + 1, nextPhase);
-        timer = setInterval(() => handleGameTick(timeout, timer), 1000);
+        let timeout = createDelayedRedirect(length + 1, nextPhase);
+        let countdown = length;
+        timer = setInterval(() => {
+            countdown--;
+            handleGameTick(timeout, countdown);
+        }, 1000);
     }
 
     function createDelayedRedirect(delayTimeInSeconds, nextRoute) {
@@ -287,29 +302,36 @@ function runGame(io) {
         }, delayTimeInSeconds * 1000);
     }
 
-    function handleGameTick(timeout, timer) {
+    function handleGameTick(timeout, length) {
         if (!gameRunning) {
             clearTimeout(timeout);
-            clearInterval(timer);
             return;
         }
-        if (phaseDuration > 0) {
-            phaseDuration--;
-            game.emit("timerUpdate", convertFormat(phaseDuration));
+        if (length >= 0) {
             if (connectedClients <= 0) stopGame();
+            game.emit("timerUpdate", convertFormat(length));
         } else clearInterval(timer);
     }
 
-    function getAlivePlayerCount() {
-        let count = 0;
-        playerList.forEach(player => {
-            if (!player.dead) count++;
-        });
-        return count;
-    }
 }
 
 // GENERAL FUNCTION DEFINITIONS
+
+function getAlivePlayerCount() {
+    let count = 0;
+    playerList.forEach(player => {
+        if (!player.dead) count++;
+    });
+    return count;
+}
+
+function getAliveAICount() {
+    let count = 0;
+    AIs.forEach(AI => {
+        if (!AI.dead) count++;
+    });
+    return count;
+}
 
 // Taken from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array, based on the Fisher-Yates shuffling algorithm
 function shuffleArray(array) {
@@ -370,16 +392,9 @@ function convertFormat(seconds) {
     return `${Math.floor(seconds / 60)}:${seconds % 60 < 10 ? "0" + seconds % 60 : seconds % 60}`;
 }
 
-function startGame() {
-    gameRunning = true;
-    round = 1;
-    createAIs(Math.ceil(playerCount / 3));
-    ee.emit("runWrite");
-}
-
 function setupNextRound() {
+    round++;
     promptIndex = null;
-    phaseDuration = null;
 }
 
 function stopGame() {
@@ -387,7 +402,6 @@ function stopGame() {
     currentPhase = null;
     gameRunning = false;
     promptIndex = null;
-    phaseDuration = null;
     round = null;
     playerCount = 0;
     AIs.length = 0;
@@ -396,7 +410,6 @@ function stopGame() {
 
     clearInterval(timer);
     timer = null;
-    clearTimeout(timeout);
     timeout = null;
 
     // clear everyones game session at end of game
@@ -405,8 +418,7 @@ function stopGame() {
         player = null;
         player.request.session.save();
     });
-
-    console.log("Game has stopped");
+    console.log("A game session has ended");
 }
 
 module.exports = {
