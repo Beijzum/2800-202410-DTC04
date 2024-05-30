@@ -1,10 +1,11 @@
 <%- include("./templates/header", {pageName: "Game Lobby"}) %>
 <%- include("./templates/navbar", {currentPage: "game"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "game" }) %>
-<div style="margin-bottom: 100px;" id="white-space-for-fixed-game-navBar"></div>
+<div style="margin-bottom: 102px;" id="white-space-for-fixed-game-navBar"></div>
 <%- include("./templates/postGameModalWin", {currentPage: "game" }) %>
 <%- include("./templates/postGameModalLose", {currentPage: "game" }) %>
-<div id="statusMenu"></div>
+<div id="statusMenu" style="position: fixed;" class="w-screen"></div>
+<div style="margin-bottom: 180px;" id="white-space-for-fixed-game-Alias"></div>
 <div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
 <script src="windowHandler.js"></script>
