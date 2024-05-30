@@ -5,6 +5,7 @@ const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
 const { Socket, Server } = require("socket.io");
+const database = require("./database");
 
 // PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
 var currentPhase, gameRunning = false, promptIndex, round, playerCount = 0;
@@ -34,6 +35,8 @@ function runGame(io) {
     const game = io.of("/game");
 
     game.on("connection", (socket) => {
+        // solo testing game
+        // socket.request.session.game = true;
 
         connectedClients++;
 
@@ -246,7 +249,7 @@ function runGame(io) {
         game.emit("gameReady");
     }
 
-    function stopGame() {
+    function stopGame(outcome) {
         // reset global variables
         currentPhase = null;
         gameRunning = false;
@@ -257,6 +260,22 @@ function runGame(io) {
         combinedList.length = 0;
         clearInterval(timer);
         timer = null;
+
+        if(outcome){ 
+            playerList.forEach(player => {
+                let userID = player.username;
+                console.log("user: " + userID);
+                if (outcome === "win"){
+                    database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { winCount: 1 } });
+                    console.log("win +1");
+                }
+                else if (outcome === "lose"){
+                    database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { loseCount: 1 } });
+                    console.log("lose +1");
+                }
+            });
+        }
+            
         
         // clear everyones game session at end of game
         playerList.forEach(player => {
@@ -273,11 +292,11 @@ function runGame(io) {
 
     function handleGameEnd() {
         if (getAlivePlayerCount() < getAliveAICount()) {
-            stopGame();
+            stopGame("lose");
             let postModalHTML = ejs.render(postGameModalLose);
             game.emit("gameLose", postModalHTML);
         } else if (getAliveAICount() === 0) {
-            stopGame();
+            stopGame("win");
             let postModalHTML = ejs.render(postGameModalWin);
             game.emit("gameWin", postModalHTML);
         }
