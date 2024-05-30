@@ -82,15 +82,20 @@ app.post("/createAccount", async (req, res) => {
         console.log(validationResult.error.message);
         res.status(400).json({ errors: validationResult.error.details });
     } else {
-        const hash = randomBytes(12).toString('hex');
-        let errorList = await database.signUpUser({ ...req.body, hash });
-        if (errorList?.length) {
-            res.status(400).json({ errors: errorList });
-        } else {
-            const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-            await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
-            res.json({redirectUrl: `/registerSuccess?h=${hash}`});
-            return;
+        try {   
+            const hash = randomBytes(12).toString('hex');
+            let errorList = await database.signUpUser({ ...req.body, hash });
+            if (errorList?.length) {
+                res.status(400).json({ errors: errorList });
+            } else {
+                const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+                await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
+                res.json({redirectUrl: `/registerSuccess?h=${hash}`});
+                return;
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ "errors": "Error accessing database" });
         }
     }
 });
@@ -101,11 +106,16 @@ app.post("/resendReg", async (req, res) => {
     const doc = await database.client.db(process.env.MONGODB_DATABASE).collection("unverifiedUsers").findOne({ "hash": hash });
 
     const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-    if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
-        res.redirect(`/registerSuccess?h=${hash}`);
-    } else {
-        // This should show some error, or clientside should handle this case.
-        res.redirect("/");
+    try {
+        if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
+            res.redirect(`/registerSuccess?h=${hash}`);
+        } else {
+            // This should show some error, or clientside should handle this case.
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ "error": "Error sending email" });
     }
 });
 
@@ -115,7 +125,14 @@ app.post("/loginAccount", async (req, res) => {
         console.log(validationResult.error.message);
         res.status(400).json({ message: validationResult.error.message });
     } else {
-        let loginResult = await database.loginUser(req.body);
+        let loginResult;
+        try {        
+            loginResult = await database.loginUser(req.body);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: "Error accessing database" });
+            return;
+        }
         if (loginResult.message === undefined) {
             req.session.username = loginResult.user.username;
             req.session.profilePic = loginResult.user.profilePictureUrl;
@@ -145,7 +162,14 @@ app.post("/forgotpass", async (req, res) => {
         return;
     }
 
-    let user = await database.findUser({ "email": userEmail });
+    let user;
+    try {    
+        user = await database.findUser({ "email": userEmail });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ "error": "Error accessing database" });
+        return;
+    }
 
     if (!user) {
         res.status(404).send({ "error": "No account with specified email" });
@@ -154,12 +178,16 @@ app.post("/forgotpass", async (req, res) => {
 
     const hash = randomBytes(12).toString('hex');
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
-
-    if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
-        await database.writeResetDoc(user, hash)
-        res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
-    } else {
-        res.status(500).send({ "error": "Error with sending email" })
+    try {
+        if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
+            await database.writeResetDoc(user, hash)
+            res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
+        } else {
+            res.status(500).send({ "error": "Error with sending email" })
+        }
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ "error": "Error with sending email" });
     }
 });
 
