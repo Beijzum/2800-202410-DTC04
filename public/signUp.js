@@ -36,6 +36,7 @@ function displayErrors(errors) {
     let errorContainer = document.getElementById("errorContainer");
     errorContainer.innerHTML = ""; // Clear previous errors
     errors.forEach(error => {
+        console.log("reached displayErrors")
         let errorDiv = document.createElement("div");
         errorDiv.className = "error";
         errorDiv.textContent = error.message || `${error.usernameField || ""} ${error.emailField || ""}`;
