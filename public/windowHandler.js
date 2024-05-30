@@ -13,7 +13,6 @@ closeModalButton.addEventListener("click", () => {
     deadModal.close();
 });
 
-
 // handler for joining game
 socket.on("gameReady", () => {
     gameReady = true;
@@ -26,6 +25,8 @@ socket.on("idAssigned", () => {
 });
 
 // handlers for changing screen
+socket.on("killedByAI", () => { deadModal.showModal(); });
+
 socket.on("noGameRunning", (newHTML) => {
     timeDisplay.innerHTML = "No Game Found";
     document.getElementById("gameMenu").innerHTML = newHTML;
