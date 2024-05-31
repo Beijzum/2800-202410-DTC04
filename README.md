@@ -1,6 +1,37 @@
-## Deadnet
+## Table of Contents
 
-Dead Net is a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI.
+- [Table of Contents](#table-of-contents)
+- [Dead Net](#dead-net)
+- [Project Description](#project-description)
+- [How to Install](#how-to-install)
+- [Technologies Used](#technologies-used)
+  - [Front end](#front-end)
+  - [Back end](#back-end)
+  - [Database](#database)
+  - [Artificial Intelligence](#artificial-intelligence)
+- [Features](#features)
+  - [Customizable player profiles](#customizable-player-profiles)
+  - [Leaderboards](#leaderboards)
+  - [Chatroom](#chatroom)
+  - [Prompt game mode](#prompt-game-mode)
+- [How to Start Playing](#how-to-start-playing)
+  - [Account creation](#account-creation)
+  - [Confirm your account](#confirm-your-account)
+  - [Log into your account](#log-into-your-account)
+  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+- [How to Play the Game](#how-to-play-the-game)
+  - [Writing phase](#writing-phase)
+  - [Voting phase](#voting-phase)
+  - [Results phase](#results-phase)
+- [Licensing](#licensing)
+- [References](#references)
+  - [Sources](#sources)
+- [List of file contents](#list-of-file-contents)
+- [About Us](#about-us)
+
+## Dead Net
+
+Dead Net is a game where players must use their AI-detecting skills to distinguish between humans and AI chat bots and combat the rise of malicious AI in the future.
 
 ## Project Description
 
@@ -10,21 +41,23 @@ In the future, we believe that there will be an increase of bad actors programmi
 
 Instructions on how to assemble this project's development environment on your computer.
 
-1. Download and install Visual Studio Code
-2. Clone the repository
+1. Download and install Visual Studio Code from [here](https://code.visualstudio.com/).
+2. Download and install Node.js from [nodejs.org](https://nodejs.org/).
+3. Download and install Git from [git-scm.com](https://git-scm.com/).
+4. Clone the repository
     ```sh
     git clone https://github.com/Beijzum/2800-202410-DTC04.git
     ```
-3. Go to cmd/terminal and locate the directory of the cloned project
-4. Open the command terminal and type:
+5. Go to cmd/terminal and locate the directory of the cloned project
+6. Open the command terminal and type:
     ```sh
     npm install
     ```
-5. Create a MongoDb server and grab the relevant information
-6. Create Cloudinary server and grab the relevant information
-7. Create a GeminiAPI key
-8. Create an .env file in the project directory
-    ```sh
+7. Create a MongoDb server and grab the relevant information
+8. Create Cloudinary server and grab the relevant information
+9. Create a GeminiAPI key
+10. Create an .env file in the project directory
+    ```js
     PORT=3000 (or any other number)
     MONGO_URI=[MongoDB URi]
     GEMINI_API_KEY=[Your Gemini API]
@@ -40,20 +73,20 @@ Instructions on how to assemble this project's development environment on your c
     CLOUDINARY_CLOUD_SECRET=Cloudinary_is_Cool (Recommended to use a UID Generator)
     COURIER_TOKEN=Cloudinary_is_always_Cool (Recommended to use a UID Generator)
     ```
-9. Open the command terminal while in the project directory and type
-    ```
+11. Open the command terminal while in the project directory and type
+    ```sh
     nodemon server.js
     or
     npm run dev
     ```
-10. Go to your local browser (Chrome, Edge, Firefox. etc.) and go to
+12. Go to your local browser (Chrome, Edge, Firefox. etc.) and go to
     localhost:3000 (your chosen port number)
 
 ## Technologies Used
 
 The technologies that we used for the app.
 
-### Front end:
+### Front end
 
 1. ejs: Server-side rendering of HTML templates.
 2. flowbite: Tailwind CSS component library.
@@ -63,7 +96,7 @@ The technologies that we used for the app.
 6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes.
 7. vite: A frontend build tool.
 
-### Back end:
+### Back end
 
 1. @google/generative-ai: Google’s generative AI.
 2. @trycourier/courier: Sending notifications via Courier.
@@ -93,6 +126,12 @@ GeminiAI, Google’s generative AI, is one of our main features in this web app.
 
 We have also programmed the AI to receive instructions, which essentially creates personalities for the AI. Some instructions we created for the chatbots can replicate human language and speech patterns. Other chatbots will have instructions that make it easier to detect, so that players of all levels can enjoy the game.
 
+We also used AI to generate our 200 in-game prompts. Each team member had to meticuously comb through the prompts for any potential issues such as confusing wording or obscure topics.
+
+AI chatbots have a limit to how many requests you can make within a timeframe. For Gemini AI, we found that there is a hard limit of 40 requests per day. That is why we had to pivot to the prompt game mode during our app development process because our initial plan was to have players and AIs converse with each other to discover their identities. Each AI response is 1 request and a full game would have used up the daily limit.
+
+Gemini AI has safety settings that prevent the bot from responding in any way related to the following four categories: harassment, hate speech, sexually explicit, and dangerous content. It will respond with an error message that describes why it cannot make a specific response to a prompt. We had to try/catch those response errors to prevent the bot from crashing the server and displaying a very AI-generated response.
+
 ## Features
 
 Features found in the app.
@@ -117,7 +156,7 @@ In this game mode, players receive a prompt and they have to make a response to 
 
 Instructions on how to get started on playing the game.
 
-### Account creation:
+### Account creation
 
 You must register an account using a valid email. Emails must be a valid email (e.g. email@email.com)
 
@@ -135,7 +174,7 @@ You must be logged in to play Dead Net.
 
 Once you click on the "Play" button in the landing page or in the navbar, you will be redirected to a chat lobby where you can socialize with other players while you wait for the game to start. Once a minimum of **three** players is in the lobby and they have pressed the ready button, they will be redirected to a game instance after a countdown.
 
-## Playing the Game
+## How to Play the Game
 
 Instructions for playing the game.
 
@@ -157,6 +196,8 @@ Afterwards, the game will continue into the next round with a new random prompt 
 
 ## Licensing
 
+This project is licensed under the MIT License. You can find it [here.](./LICENSE)
+
 ## References
 
 List of documentation for the technologies that we used.
@@ -168,6 +209,15 @@ List of documentation for the technologies that we used.
 5. [MonogDB](https://www.mongodb.com/docs/)
 6. [MongoDB with NodeJS](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
 7. [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+
+### Sources
+
+Other sources we used for our project.
+
+1. How to create a realtime chat room [https://www.youtube.com/watch?v=jD7FnbI76Hg]
+2. ChatGPT used to create 200 random prompts and default AI responses [https://chatgpt.com]
+3. Navbar class templates [https://flowbite.com/docs/components/navbar/]
+4. Fisher-Yates shuffling algorithm [https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array]
 
 ## List of file contents
 
