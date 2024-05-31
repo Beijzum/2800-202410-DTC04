@@ -4,21 +4,20 @@ const router = express.Router();
 const database = require("./database");
 
 router.get("/", async (req, res) => {
-    let top10Players = await database.getLeaderboard();
     if (req.session.username) {
         let userData = await database.findUser({ username: req.session.username });
         res.render("index", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, userExist: { isTrue : true }, sessionData: req.session });
-    } else { res.render("index", { authenticated: req.session.username !== undefined, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }) };
+    } else { res.render("index", { authenticated: req.session.username !== undefined, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }); }
 });
 
 router.get("/game", (req, res) => {
     // redirect to login if unauthenticated
-    if (req.session.username) res.render("game", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("game", { authenticated: true, url: req.origin }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/victory", (req, res) => {
-    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
@@ -37,18 +36,18 @@ router.get("/leaderboard", async (req, res) => {
     if (req.session.username) {
         let userData = await database.findUser({ username: req.session.username });
         res.render("leaderboard", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue: true }, sessionData: req.session });
-    } else { res.render("leaderboard", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0, loseCount: 0 }, userExist: { isTrue: false } }) };
+    } else { res.render("leaderboard", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0, loseCount: 0 }, userExist: { isTrue: false } }); }
 });
 
 
 router.get("/login", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("login", { authenticated: false });
-})
+});
 
 router.get("/forgotpass", (req, res) => {
     if (req.session.username) res.redirect("/index");
-    else res.render("forgotpass", {authenticated: false})
+    else res.render("forgotpass", {authenticated: false});
 });
 
 router.get("/reset", async (req, res) => {
@@ -97,7 +96,7 @@ router.get("/registerSuccess", (req, res) => {
 router.get("/signUp", (req, res) => {
     if (req.session.username) res.redirect("/index");
     else res.render("signUp", { authenticated: false });
-})
+});
 
 router.get("/profile", async (req, res) => {
     if (!req.session.username) {
@@ -107,13 +106,13 @@ router.get("/profile", async (req, res) => {
     let userData = await database.findUser({ username: req.session.username });
     res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl, email: userData.email } });
 
-})
+});
 
 router.get("/logout", (req, res) => {
     req.session.destroy();
     req.session = null;
     res.redirect("/");
-})
+});
 
 router.get("/changePass", (req, res) => {
     if (!req.session.username) {
@@ -140,6 +139,6 @@ router.get("/privacy", async (req, res) => {
 
 router.get("*", (req, res) => {
     res.status(404).render("404", { authenticated: req.session.username !== undefined });
-})
+});
 
 module.exports = router;
