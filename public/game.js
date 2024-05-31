@@ -5,6 +5,7 @@ winSound.volume = 0.1;
 loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
+    if (!playing) return;
     let currentView = gameMenu.children[0];
     switch (currentView.id) {
         case "writeView":
@@ -102,8 +103,6 @@ socket.on("retrieveResponse", () => {
     socket.emit("submitResponse", responseArea.value);
 });
 
-
-
 /**
  * Handles the game view for the vote phase.
  */
@@ -113,6 +112,9 @@ function handleVoteView() {
     let voted = false;
     let selected = false;
     let responseCards = document.querySelectorAll(".responseCard");
+
+    // check if player previously voted
+    socket.emit("checkVote");
 
     responseCards.forEach((card) => {
 
@@ -154,5 +156,14 @@ function handleVoteView() {
             hideButtons(false);
             selected = true;
         });
+    });
+    
+    socket.once("disableVote", (voteTarget) => {
+        console.log(voteTarget);
+        let votedCard = document.getElementById(voteTarget);
+        if (!votedCard) return;
+        voted = true;
+        votedCard.className = votedCard.className.replace("bg-white", "bg-gray-200");
+        votedCard.className += " opacity-75";
     });
 }
