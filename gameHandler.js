@@ -47,7 +47,7 @@ function runGame(io) {
 
         // first person to join the lobby before game has started signals to server to start game
         if (socket.request.session.game && !gameRunning) startGame();
-        
+
         // assign new socket to old id if they were originally a player
         let gameSession = playerList.find(session => session.username === socket.request.session.username);
         if (gameSession) {
@@ -55,16 +55,16 @@ function runGame(io) {
             socket.request.session.game = true;
         }
         socket.emit("idAssigned");
-  
+
         // player connects to game lobby
         socket.on("joinGame", () => {
-            
+
             // if no game running then do nothing
             if (!gameRunning) {
                 renderCurrentPhase();
                 return;
             }
-            
+
             // navigated to screen but not part of game
             if (!socket.request.session.game) {
                 renderUI("spectate");
@@ -113,7 +113,7 @@ function runGame(io) {
             let statusBarHTML;
             if (status === "alive")
                 statusBarHTML = ejs.render(statusBarTemplate, { status: "alive", player: gameSession });
-            else 
+            else
                 statusBarHTML = ejs.render(statusBarTemplate, { status: status });
 
             socket.emit("updateStatus", statusBarHTML);
@@ -155,7 +155,7 @@ function runGame(io) {
     ee.on("updatePlayerCount", (updateValue) => {
         if (gameRunning) return;
         playerCount += updateValue;
-    })
+    });
 
     // GAME CONTROL FLOW SECTION
 
@@ -173,7 +173,7 @@ function runGame(io) {
         prepareNextPhase(61, "runTransition"); // Original duration: 61
 
         // get AIs response
-        for(let i = 0; i < AIs.length; i++) {
+        for (let i = 0; i < AIs.length; i++) {
             if (AIs[i].dead === true) continue;
             let AIResponse = (await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex])).response.text();
             AIs[i].response = AIResponse;
@@ -182,7 +182,7 @@ function runGame(io) {
 
     // transition screen logic
     ee.on("runTransition", () => {
-        currentPhase = "TRANSITION"
+        currentPhase = "TRANSITION";
         if (!gameRunning) return;
 
         // retrieve inputs from players that did not press submit
@@ -211,7 +211,7 @@ function runGame(io) {
         let majorityVotedPlayer = getMajorityVotedPlayer();
         killPlayer(majorityVotedPlayer); // will do nothing if no majority
         updatePlayerList();
-        let resultHTML = ejs.render(resultTemplate, { 
+        let resultHTML = ejs.render(resultTemplate, {
             eliminatedPlayer: majorityVotedPlayer, remainingPlayers: combinedList,
             voteCount: majorityVotedPlayer?.votes
         });
@@ -222,7 +222,7 @@ function runGame(io) {
     // wait screen logic
     ee.on("runWait", async () => {
         currentPhase = "WAIT";
-        
+
         let waitHTML = ejs.render(waitTemplate);
         game.emit("changeView", waitHTML);
 
@@ -264,20 +264,20 @@ function runGame(io) {
         clearInterval(timer);
         timer = null;
 
-        if(outcome){ 
+        if (outcome) {
             playerList.forEach(player => {
                 let userID = player.username;
-                if (outcome === "win"){
+                if (outcome === "win") {
                     database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { winCount: 1 } });
                     console.log(`User: ${userID} +1 win`);
                 }
-                else if (outcome === "lose"){
+                else if (outcome === "lose") {
                     database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { loseCount: 1 } });
                     console.log(`User: ${userID} +1 lose`);
                 }
             });
         }
-            
+
         // clear everyones game session at end of game
         playerList.forEach(player => {
             let socket = game.sockets.get(player.originalSocketId);
@@ -285,7 +285,7 @@ function runGame(io) {
             reloadSession(socket);
             socket.request.session.game = false;
             socket.request.session.save();
-            
+
         });
         playerList.length = 0;
         console.log("A game session has ended");
@@ -348,7 +348,7 @@ function runGame(io) {
 
     function getMajorityVotedPlayer() {
         let mostVotedPlayer = combinedList[0];
-        
+
         // find most voted
         combinedList.forEach(player => {
             if (player.votes > mostVotedPlayer.votes)
@@ -448,7 +448,8 @@ function createAIs(numberToMake) {
         let randomAvatar = pool.avatars[Math.floor(Math.random() * pool.avatars.length)];
 
         let name = randomFirstName + randomLastName + randomNumber;
-        let AI = {chatBot: chatBot, id: name, alias: name, bot: true,
+        let AI = {
+            chatBot: chatBot, id: name, alias: name, bot: true,
             aliasPicture: randomAvatar, votes: 0, dead: false
         };
 
@@ -471,7 +472,7 @@ function createGameSession(socket) {
         votes: 0,
         dead: false,
         response: "",
-    }
+    };
     return session;
 }
 
@@ -503,4 +504,4 @@ module.exports = {
     runGame: runGame,
     reloadSession: reloadSession,
     eventEmitter: ee
-}
+};
