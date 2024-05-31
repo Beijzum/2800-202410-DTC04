@@ -1,6 +1,35 @@
-## Deadnet
+## Table of Contents
+- [Table of Contents](#table-of-contents)
+- [Dead Net](#dead-net)
+- [Project Description](#project-description)
+- [How to Install](#how-to-install)
+- [Technologies Used](#technologies-used)
+  - [Front end:](#front-end)
+  - [Back end:](#back-end)
+  - [Database](#database)
+  - [Artificial Intelligence](#artificial-intelligence)
+- [Features](#features)
+  - [Customizable player profiles](#customizable-player-profiles)
+  - [Leaderboards](#leaderboards)
+  - [Chatroom](#chatroom)
+  - [Prompt game mode](#prompt-game-mode)
+- [How to Start Playing](#how-to-start-playing)
+  - [Account creation](#account-creation)
+  - [Confirm your account](#confirm-your-account)
+  - [Log into your account](#log-into-your-account)
+  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+- [How to Play the Game](#how-to-play-the-game)
+  - [Writing phase](#writing-phase)
+  - [Voting phase](#voting-phase)
+  - [Results phase](#results-phase)
+- [Licensing](#licensing)
+- [References](#references)
+- [List of file contents](#list-of-file-contents)
+- [About Us](#about-us)
 
-Dead Net is a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI.
+## Dead Net
+
+Dead Net is a game where players must learn to distinguish between human and AI chat bots to combat the rise of malicious AI in the future.
 
 ## Project Description
 
@@ -117,7 +146,7 @@ In this game mode, players receive a prompt and they have to make a response to 
 
 Instructions on how to get started on playing the game.
 
-### Account creation:
+### Account creation
 
 You must register an account using a valid email. Emails must be a valid email (e.g. email@email.com)
 
@@ -135,7 +164,7 @@ You must be logged in to play Dead Net.
 
 Once you click on the "Play" button in the landing page or in the navbar, you will be redirected to a chat lobby where you can socialize with other players while you wait for the game to start. Once a minimum of **three** players is in the lobby and they have pressed the ready button, they will be redirected to a game instance after a countdown.
 
-## Playing the Game
+## How to Play the Game
 
 Instructions for playing the game.
 
