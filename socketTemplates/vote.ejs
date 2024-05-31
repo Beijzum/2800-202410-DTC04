@@ -6,7 +6,6 @@
     <label for="responses" class="text-sm p-2 font-semibold">Responses</label>
     <div id="responses" class="m-2">
         <% for(let i = 0; i < players.length; i++) { %>
-            <!-- Passes list of sockets -->
             <div id="<%= players[i].id ? players[i].id : players[i].originalSocketId %>" class="responseCard flex flex-col bg-white rounded-lg p-2 m-2 intense-shadow select-none">
                 <div class="flex justify-between mb-1">
                     <div class="flex items-center">
