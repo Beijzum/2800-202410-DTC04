@@ -11,7 +11,6 @@ const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
 const { randomBytes, sign } = require("crypto");
-const { logoutUser } = require('./database');
 // set port
 const port = process.env.PORT || 3000;
 
@@ -66,7 +65,7 @@ app.get("/logout", async (req, res) => {
     try {
         if (req.session.username) {
             console.log(`Logging out user: ${req.session.username}`);
-            await database.logoutUser(req.session.username); // Call the logoutUser function
+            await database.setLoggedInStatus(req.session.username, false); // Call the logoutUser function
 
             req.session.destroy(err => {
                 if (err) {

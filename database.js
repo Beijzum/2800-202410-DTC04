@@ -103,22 +103,6 @@ async function loginUser(requestBody) {
     });
 }
 
-
-/**
- * Logs out a user.
- *  
- * @param {String} userId userId of the user to logout
- * @returns query result from users collection
- */
-async function logoutUser(username) {
-    try {
-        console.log("reached logoutUser in database.js")
-        await setLoggedInStatus(username, false);
-    } catch (e) {
-        console.error(e);
-    }
-}
-
 /**
  * Sets the loggedIn status of a user.
  * 
@@ -139,7 +123,7 @@ function setLoggedInStatus(username, status) {
                 reject(new Error(errorMessage));
             } else {
                 console.log(`User ${username} loggedIn status set to ${status}`);
-                resolve();
+                resolve(result);
             }
         } catch (e) {
             console.error("Set LoggedIn Status Error: ", e);
@@ -324,6 +308,5 @@ module.exports = {
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser,
-    logoutUser: logoutUser,
     setLoggedInStatus: setLoggedInStatus
 };
