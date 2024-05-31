@@ -1,35 +1,36 @@
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Dead Net](#dead-net)
-- [Project Description](#project-description)
-- [Project Link](#project-link)
-- [How to Install](#how-to-install)
-- [Technologies Used](#technologies-used)
-  - [Front end](#front-end)
-  - [Back end](#back-end)
-  - [Database](#database)
-  - [Deployment](#deployment)
-  - [Artificial Intelligence](#artificial-intelligence)
-- [Features](#features)
-  - [Customizable player profiles](#customizable-player-profiles)
-  - [Leaderboards](#leaderboards)
-  - [Chatroom](#chatroom)
-  - [Prompt game mode](#prompt-game-mode)
-- [How to Start Playing](#how-to-start-playing)
-  - [Account creation](#account-creation)
-  - [Confirm your account](#confirm-your-account)
-  - [Log into your account](#log-into-your-account)
-  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
-- [How to Play the Game](#how-to-play-the-game)
-  - [Writing phase](#writing-phase)
-  - [Voting phase](#voting-phase)
-  - [Results phase](#results-phase)
-- [Licensing](#licensing)
-- [References](#references)
-  - [Sources](#sources)
-- [List of file contents](#list-of-file-contents)
-- [About Us](#about-us)
+-   [Table of Contents](#table-of-contents)
+-   [Dead Net](#dead-net)
+-   [Project Description](#project-description)
+-   [Project Link](#project-link)
+-   [How to Install](#how-to-install)
+-   [Technologies Used](#technologies-used)
+    -   [Front end](#front-end)
+    -   [Back end](#back-end)
+    -   [Database](#database)
+    -   [Deployment](#deployment)
+    -   [Artificial Intelligence](#artificial-intelligence)
+-   [Features](#features)
+    -   [Customizable player profiles](#customizable-player-profiles)
+    -   [Leaderboards](#leaderboards)
+    -   [Chatroom](#chatroom)
+    -   [Prompt game mode](#prompt-game-mode)
+-   [How to Start Playing](#how-to-start-playing)
+    -   [Account creation](#account-creation)
+    -   [Confirm your account](#confirm-your-account)
+    -   [Log into your account](#log-into-your-account)
+    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+-   [How to Play the Game](#how-to-play-the-game)
+    -   [Writing phase](#writing-phase)
+    -   [Voting phase](#voting-phase)
+    -   [Results phase](#results-phase)
+-   [Licensing](#licensing)
+-   [References](#references)
+    -   [Sources](#sources)
+-   [List of file contents](#list-of-file-contents)
+-   [Testing document](#testing-document)
+-   [About Us](#about-us)
 
 ## Dead Net
 
@@ -269,11 +270,11 @@ Root Directory:
 -   server.js
 -   socketConstants.js
 -   tailwind.config.js
+-   Tree.txt
 -   websocket.js
--   documentation
-    -   bugsList.md
-    -   gameDoc.md
+
 -   public
+
     -   chatModal.js
     -   chatroom.js
     -   forgotpass.js
@@ -283,7 +284,6 @@ Root Directory:
     -   login.js
     -   memes.js
     -   navbar.js
-    -   postGameModal.js
     -   profile.js
     -   registerSuccess.js
     -   reset.js
@@ -321,47 +321,30 @@ Root Directory:
         -   deadPicture.gif
         -   defaultProfilePicture.webp
         -   defeat.jpg
-        -   game1.png
-        -   game2.png
-        -   game3.png
-        -   game4.png
-        -   game5.png
         -   heli.gif
         -   heli.png
         -   imHuman.jpg
-        -   lobby1.png
-        -   lobby2.png
         -   logo.png
         -   meme0.png
         -   meme1.jpg
         -   meme2.gif
-        -   muteMusicIcon.png
         -   noGameRunning.gif
         -   playerListIcon.png
-        -   playMusicIcon.png
         -   trapCard.jpg
         -   victory.jpg
         -   voteTransitionAnimation.gif
         -   waitTransitionAnimation.gif
     -   sfx
-        -   button_sound_effect_1.mp3
-        -   button_sound_effect_2.mp3
-        -   button_sound_effect_3.mp3
-        -   emergency_sound_effect.mp3
         -   gameLose.mp3
         -   gameWin.mp3
         -   heliAudio.mp3
-        -   jazz.mp3
-        -   lobby_music_1.mp3
-        -   lobby_music_2.mp3
         -   nextGen.mp3
         -   no.mp3
         -   robot.mp3
-        -   suspicious.mp3
         -   trapCard.mp3
-        -   vote_intense_music_1.mp3
-        -   vote_music_1.mp3
+
 -   socketTemplates
+
     -   noGame.ejs
     -   result.ejs
     -   statusBar.ejs
@@ -369,6 +352,7 @@ Root Directory:
     -   vote.ejs
     -   wait.ejs
     -   write.ejs
+
 -   views
     -   404.ejs
     -   defeat.ejs
@@ -390,22 +374,28 @@ Root Directory:
     -   verify.ejs
     -   victory.ejs
     -   votingScreenSample.ejs
--   templates
-    -   chatBar.ejs
-    -   credentialField.ejs
-    -   footer.ejs
-    -   formSubmitButton.ejs
-    -   gameNavbar.ejs
-    -   header.ejs
-    -   inGameNavbarElements.ejs
-    -   leaderboardEntry.ejs
-    -   lobbyGameNavbarElements.ejs
-    -   navbar.ejs
-    -   navbarItem.ejs
-    -   postGameModalLose.ejs
-    -   postGameModalWin.ejs
-    -   responseCard.ejs
-    -   websocketImport.ejs
+    -   templates
+        -   chatBar.ejs
+        -   credentialField.ejs
+        -   footer.ejs
+        -   formSubmitButton.ejs
+        -   gameNavbar.ejs
+        -   header.ejs
+        -   inGameNavbarElements.ejs
+        -   leaderboardEntry.ejs
+        -   lobbyGameNavbarElements.ejs
+        -   navbar.ejs
+        -   navbarItem.ejs
+        -   postGameModalLose.ejs
+        -   postGameModalWin.ejs
+        -   responseCard.ejs
+        -   websocketImport.ejs
+
+## Testing document
+
+This is the document we used to log our tests for the project.
+
+https://docs.google.com/spreadsheets/d/1ja54lqljkccx13j9kEcxPC7THLX6paNgrziuIq8B4dI/edit?usp=sharing
 
 ## About Us
 
