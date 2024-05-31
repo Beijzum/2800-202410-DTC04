@@ -37,4 +37,4 @@ async function sendEmailWithLink(email, name, link, template) {
 
 module.exports = {
     sendEmailWithLink
-}
+};

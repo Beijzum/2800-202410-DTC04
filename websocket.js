@@ -107,7 +107,7 @@ function runSocket(io) {
         socket.on("forceJoin", async () => {
             addClientToGame(socket);
             socket.join("readyList");
-        })
+        });
     });
     
     // Delegate game logic sockets to external module
@@ -115,10 +115,8 @@ function runSocket(io) {
     
     /**
      * Updates the ready message for all clients.
-     * 
-     * @param {Socket} _ client socket - unsused
      */
-    function updateReadyMessage(_) {
+    function updateReadyMessage() {
         if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) {
             io.emit("updateReadyMessage", "Waiting for Game to Start...");
             return;
@@ -136,8 +134,8 @@ function runSocket(io) {
 const dayjs = require("dayjs");
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
-dayjs.extend(utc)
-dayjs.extend(timezone)
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function removeClientFromGame(socket) {
     gameHandler.reloadSession(socket);
@@ -165,9 +163,9 @@ function formatMessage(username, profilePic, text) {
         profilePic,
         text,
         time: dayjs().tz('America/Vancouver').format("h:mm a")
-    }
+    };
 }
 
 module.exports = {
     runSocket: runSocket
-}
+};

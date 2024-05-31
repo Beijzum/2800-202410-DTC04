@@ -1,6 +1,8 @@
 let gameMenu = document.getElementById("gameMenu");
-// let winSound = new Audio("sfx/gameWin.mp3")
-// let loseSound = new Audio("sfx/gameLose.mp3")
+let winSound = new Audio("sfx/gameWin.mp3");
+let loseSound = new Audio("sfx/gameLose.mp3");
+winSound.volume = 0.1;
+loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
@@ -18,12 +20,12 @@ socket.on("changeView", () => {
 });
 
 socket.on('gameWin', () => {
-    // winSound.play();
+    winSound.play();
     document.getElementById('dialogBoxWin').showModal();
 });
 
 socket.on('gameLose', () => {
-    // loseSound.play();
+    loseSound.play();
     document.getElementById('dialogBoxLose').showModal();
 });
 
@@ -68,7 +70,7 @@ function handleWriteView() {
     }
 
     if (!playing) {
-        disableInputs("You Are Spectating")
+        disableInputs("You Are Spectating");
         return;
     }
 
@@ -79,12 +81,12 @@ function handleWriteView() {
         e.preventDefault();
         disableInputs("Response Received");
         socket.emit("submitResponse", responseArea.value);
-    })
+    });
 
     socket.on("retrieveResponse", () => {
         if (!playing) return;
         socket.emit("submitResponse", responseArea.value);
-    })
+    });
 }
 
 /**
@@ -130,7 +132,7 @@ function handleVoteView() {
         cancelButton.addEventListener("click", () => {
             selected = false;
             hideButtons(true);
-        })
+        });
 
         card.addEventListener("click", function (e) {
             if (voted || e.target === cancelButton || selected) return;

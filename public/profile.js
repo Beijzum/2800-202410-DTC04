@@ -1,5 +1,7 @@
 document.getElementById('uploadProfilePicForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    let resultMessage = document.getElementById("savedChangesMessage");
+    resultMessage.classList.add("hidden");
 
     const form = e.target;
     const formData = new FormData(form);
@@ -9,14 +11,14 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
         body: formData,
         credentials: 'include'
     });
-
+    
     const result = await response.json();
-    let resultMessage = document.getElementById("savedChangesMessage");
 
     if (response.ok) {
         resultMessage.innerHTML = result.message;
         if (resultMessage.classList.contains("hidden"))
             resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("red", "green");
     } else {
         resultMessage.innerHTML = result.error;
         if (resultMessage.classList.contains("hidden"))
@@ -26,29 +28,25 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
 });
 
 // preview picture upon upload
-document.getElementById("imageInput").addEventListener("change", function() {
-    if (!this.files) return;
+document.getElementById("imageInput").addEventListener("change", function () {
+    let resultMessage = document.getElementById("savedChangesMessage");
+    resultMessage.classList.add("hidden");
+    if (!this.files[0]) return;
+    if (this.files[0]?.size > 5 * 1024 * 1024) {
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("green", "red");
+        resultMessage.innerHTML = "File is too big! Please upload a file smaller than 5MB.";
+        return;
+    }
     let fileReader = new FileReader();
     let profilePicture = document.getElementById("profilePicture");
-    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); }
+    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); };
     fileReader.readAsDataURL(this.files[0]);
-})
+});
 
 document.querySelector("#changePass").addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const response = await fetch(e.target.href);
-    const htmlString = await response.text();
-
-    const parser = new DOMParser();
-    const htmlDocument = parser.parseFromString(htmlString, "text/html");
-    const modal = htmlDocument.querySelector("dialog");
-
-    if (!modal) {
-        console.error("No dialog element found in the fetched HTML");
-    }
-
-    document.body.appendChild(modal);
+    const modal = document.querySelector("#changePassModal");
     modal.showModal();
 
     modal.addEventListener("click", (event) => {
@@ -58,11 +56,11 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         }
     });
 
-    const form = modal.querySelector("form"); 
+    const form = modal.querySelector("form");
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         const data = e.target;
 
         let resp = await fetch(data.action, {
@@ -88,7 +86,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         submitButton.classList.add("transition", "bg-green-500");
         submitButton.value = "Success!";
 
-        setTimeout(() => {modal.remove()}, 500) // deletes the modal after 0.5 seconds
+        setTimeout(() => { modal.close(); }, 500); // deletes the modal after 0.5 seconds
 
     });
 });
