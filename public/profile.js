@@ -52,7 +52,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
     modal.addEventListener("click", (event) => {
         // If the clicked target is the dialog itself instead of it's content, close the dialog
         if (event.target === modal) {
-            modal.remove();
+            modal.close();
         }
     });
 
