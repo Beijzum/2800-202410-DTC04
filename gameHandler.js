@@ -87,9 +87,17 @@ function runGame(io) {
 
         // CLIENT LISTENER SECTION
 
+        socket.on("checkResponse", () => {
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession || playerSession.response === null) return;
+            socket.emit("disableResponse", playerSession.response);
+        });
+
         // when player submit response
         socket.on("submitResponse", (response) => {
-            playerList.find(player => player.originalSocketId === socket.id).response = response;
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
+            if (playerSession.response === null) playerSession.response = response;
         });
 
         socket.on("submitVote", (socketId) => {
@@ -163,8 +171,10 @@ function runGame(io) {
     ee.on("runWrite", async () => {
         currentPhase = "WRITE";
         if (!gameRunning) return;
-
         game.emit("roundUpdate", round);
+
+        // clear everyones response field
+        playerList.forEach(player => { player.response = null; });
 
         // render prompt and screen to connected clients
         promptIndex = Math.floor(Math.random() * pool.prompts.length);
@@ -475,7 +485,7 @@ function createGameSession(socket) {
         aliasPicture: randomAvatar,
         votes: 0,
         dead: false,
-        response: "",
+        response: null
     };
     return session;
 }
