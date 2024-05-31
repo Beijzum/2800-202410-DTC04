@@ -44,10 +44,9 @@ musicButton.addEventListener("click", () => {
     if (indexMusic.paused) {
         indexMusic.play();
         indexMusic.loop = true;
-        musicIcon.src = "images/playMusicIcon.png"
+        musicIcon.src = "images/playMusicIcon.png";
     } else {
         indexMusic.pause();
         musicIcon.src = "images/muteMusicIcon.png";
     }
 });
-
