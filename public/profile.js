@@ -30,6 +30,14 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
 // preview picture upon upload
 document.getElementById("imageInput").addEventListener("change", function () {
     if (!this.files) return;
+    if (this.files[0].size > 5 * 1024 * 1024) {
+        let resultMessage = document.getElementById("savedChangesMessage");
+        if (resultMessage.classList.contains("hidden"))
+            resultMessage.classList.toggle("hidden");
+        resultMessage.className = resultMessage.className.replace("green", "red");
+        resultMessage.innerHTML = "File is too big! Please upload a file smaller than 5MB.";
+        return;
+    }
     let fileReader = new FileReader();
     let profilePicture = document.getElementById("profilePicture");
     fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); };
