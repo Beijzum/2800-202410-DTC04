@@ -175,8 +175,12 @@ function runGame(io) {
         // get AIs response
         for (let i = 0; i < AIs.length; i++) {
             if (AIs[i].dead === true) continue;
-            let AIResponse = (await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex])).response.text();
-            AIs[i].response = AIResponse;
+            try {
+                let AIResponse = (await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex])).response.text();
+                AIs[i].response = AIResponse;
+            } catch(e) {
+                AIs[i].response = pool.stockResponses[Math.floor(Math.random() * pool.stockResponses.length)];
+            }
         }
     });
 
