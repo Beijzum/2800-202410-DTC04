@@ -42,12 +42,12 @@ router.get("/leaderboard", async (req, res) => {
 
 
 router.get("/login", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("login", { authenticated: false });
 })
 
 router.get("/forgotpass", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("forgotpass", {authenticated: false})
 });
 
@@ -95,7 +95,7 @@ router.get("/registerSuccess", (req, res) => {
 });
 
 router.get("/signUp", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("signUp", { authenticated: false });
 })
 
