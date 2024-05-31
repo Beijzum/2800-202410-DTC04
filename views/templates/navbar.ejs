@@ -15,12 +15,12 @@
             <% if (authenticated) { %>
                 <% if (currentPage === "/") { %>
                 <a href="/profile" class="flex items-center">
-                    <img class="w-10 h-10 rounded-full m-3" src="<%= sessionData.profilePic %>">
+                    <img class="w-10 h-10 rounded-full m-3" src="<%= sessionData.profilePic || "images/defaultProfilePicture.webp" %>">
                     <p class="font-semibold text-gray-200"><%= sessionData.username %></p>
                 </a>
                 <% } else { %>
                 <a href="/profile" class="flex flex-col items-center md:hidden">
-                    <img class="w-8 h-8 rounded-full" src="<%= sessionData.profilePic %>">
+                    <img class="w-8 h-8 rounded-full" src="<%= sessionData.profilePic || "images/defaultProfilePicture.webp" %>">
                     <p class="font-semibold text-sm text-gray-200"><%= sessionData.username %></p>
                 </a>
                 <% } %>
