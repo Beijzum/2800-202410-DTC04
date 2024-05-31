@@ -127,6 +127,8 @@ We also used AI to generate our 200 in-game prompts. Each team member had to met
 
 AI chatbots have a limit to how many requests you can make within a timeframe. For Gemini AI, we found that there is a hard limit of 40 requests per day. That is why we had to pivot to the prompt game mode during our app development process because our initial plan was to have players and AIs converse with each other to discover their identities. Each AI response is 1 request and a full game would have used up the daily limit.
 
+Gemini AI has safety settings that prevent the bot from responding in any way related to the following four categories: harassment, hate speech, sexually explicit, and dangerous content. It will respond with an error message that describes why it cannot make a specific response to a prompt. We had to try/catch those response errors to prevent the bot from crashing the server and displaying a very AI-generated response.
+
 ## Features
 
 Features found in the app.
