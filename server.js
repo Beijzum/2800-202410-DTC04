@@ -237,7 +237,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
     const userCollection = databaseServer.collection('users');
 
     let buf64 = req.file.buffer.toString('base64');
-    stream = cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
+    cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
         try {
             await userCollection.updateOne(
                 { username: req.session.username },
