@@ -172,11 +172,11 @@ router.get("/howToPlay", (req, res) => {
 });
 
 router.get("/privacy", async (req, res) => {
-    res.render("privacy", { authenticated: req.session.username !== undefined });
+    res.render("privacy", { authenticated: req.session.username !== undefined, sessionData: req.session });
 });
 
 router.get("*", (req, res) => {
-    res.status(404).render("404", { authenticated: req.session.username !== undefined });
+    res.status(404).render("404", { authenticated: req.session.username !== undefined, sessionData: req.session });
 });
 
 module.exports = router;

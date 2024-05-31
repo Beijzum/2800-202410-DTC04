@@ -35,8 +35,21 @@ readyButton.addEventListener("click", () => {
     }
 });
 
+socket.on("cancelReady", () => {
+    if (!ready) return;
+    ready = false;
+    readyButton.className = readyButton.className.replace(/zinc-200/g, "sky-700");
+    // switch hover background color
+    readyButton.className = readyButton.className.replace(/zinc-100/g, "sky-600");
+    // switch border color
+    readyButton.className = readyButton.className.replace(/zinc-400/g, "sky-500");
+    // switch hover border color
+    readyButton.className = readyButton.className.replace(/zinc-300/g, "sky-400");
+    readyButton.className = readyButton.className.replace("text-gray-700", "text-white");
+    readyButton.innerHTML = "Ready";
+});
+
 socket.on("updateReadyMessage", (readyMessage) => {
-    // if (!ready) return;
     navbarMessage.innerHTML = readyMessage;
 });
 
