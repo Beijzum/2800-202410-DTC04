@@ -36,7 +36,7 @@ document.addEventListener("click", (e) => {
 });
 
 // click event on the player list icon
-document.querySelector("#playerListButton").addEventListener("click", async function(e) {
+document.querySelector("#playerListButton").addEventListener("click", async function() {
     // so user's don't randomly click it
     if (this.style.display === "none") {
         return;
