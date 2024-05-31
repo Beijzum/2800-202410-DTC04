@@ -27,9 +27,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_CLOUD_SECRET
 });
 
-const multer = require('multer')
-const multerStorage = multer.memoryStorage()
-const upload = multer({ storage: multerStorage })
+const multer = require('multer');
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage });
 
 // session configuration
 
@@ -66,7 +66,7 @@ app.get("/logout", (req, res) => {
     req.session.destroy();
     req.session = null;
     res.redirect("/");
-})
+});
 
 // POST ROUTES SECTION
 
@@ -176,10 +176,10 @@ app.post("/forgotpass", async (req, res) => {
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
 
     if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
-        await database.writeResetDoc(user, hash)
+        await database.writeResetDoc(user, hash);
         res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
     } else {
-        res.status(500).send({ "error": "Error with sending email" })
+        res.status(500).send({ "error": "Error with sending email" });
     }
 });
 
@@ -199,7 +199,7 @@ app.post("/reset", async (req, res) => {
         res.redirect("/login");
     } catch (e) {
         console.error(e);
-        res.status(500).send({ "error": "Error accessing database" })
+        res.status(500).send({ "error": "Error accessing database" });
     }
 });
 
