@@ -4,7 +4,13 @@ const firstNamesPool = [
     'goofy', 'strange', 'nice', 'cringe', 'sad',
     'high', 'stoned', 'hammered', 'drunk', 'zoned',
     'dank', 'kris', 'bulma', 'goku', 'cold', 'zeek',
-    'elusive', 'vintage', 'tacky', 'rancid', 'greasy'
+    'elusive', 'vintage', 'tacky', 'rancid', 'greasy',
+    'god', 'dog', 'cold', 'suspicious', 'old',
+    'power', 'aquatic', 'explosive', 'amazing', 'spicy',
+    'crazy', 'starry', 'immature', 'green', 'yapping',
+    'toxic', 'dancing', 'purple', 'stellar', 'holy',
+    'taken', 'heroic', 'depressed', 'smart', 'tired',
+    'stinky', 'cheerful', 'lonely', 'meek', 'blue'
 ];
 
 
@@ -14,7 +20,13 @@ const lastNamesPool = [
     'loser', 'unicorn', 'fairy', 'robot', 'human',
     'cat', 'demon', 'angel', 'dog', 'cowboy',
     'dragon', 'wizard', 'bisnix', 'connor', 'saiyan',
-    'lizard', 'turtle', 'goblin', 'knight', 'vampire'
+    'lizard', 'turtle', 'goblin', 'knight', 'vampire',
+    'donkey', 'kirin', 'cryptid', 'animal', 'star',
+    'idol', 'singer', 'programmer', 'student', 'adult',
+    'hedgehog', 'tortoise', 'hero', 'loner', 'shutIn',
+    'frog', 'llama', 'alien', 'goat', 'rabbit',
+    'paper', 'teacher', 'demon', 'devil', 'hunter',
+    'yapper', 'dancer', 'clock', 'angel', 'weapon'
 ];
 
 // path to anonymized images
@@ -272,7 +284,6 @@ const prompts = [
 
 // stock responses generated with ChatGPT 3.5 using "I don't know", "I'm too lazy", and "No thanks"
 const stockResponses = [
-    // Variations of "I don't know"
     "IDK",
     "No clue",
     "Beats me",
