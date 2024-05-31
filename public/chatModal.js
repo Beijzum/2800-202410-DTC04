@@ -20,13 +20,13 @@ socket.on("updatePlayerList", (players) => {
         playerList.innerHTML += `
         <div class="flex items-center px-10 py-1 border-b hover:bg-zinc-800 border-zinc-700 text-center gap-1">
         <img src=${player.aliasPicture} class="w-8 h-8 rounded-full p-1">
-        <p class="font-bold break-all text-zinc-200">${player.alias}</p>
+        <p class="font-bold break-normal text-zinc-200">${player.alias}</p>
         </div>`;
         else
         playerList.innerHTML += `
         <div class="flex items-center px-10 py-1 border-b hover:bg-red-900 bg-red-950 opacity-75 border-zinc-700 text-center gap-1">
         <img src=${player.aliasPicture} class="w-8 h-8 rounded-full p-1">
-        <p class="font-bold break-all text-zinc-100">${player.alias} <span class="text-red-600 ml-3">BANNED</span></p>
+        <p class="font-bold break-normal text-zinc-100">${player.alias} <span class="text-red-600 ml-3">BANNED</span></p>
         </div>`;
     });
 });
