@@ -5,9 +5,8 @@ const database = require("./database");
 
 router.get("/", async (req, res) => {
     if (req.session.username) {
-        let userData = await database.findUser({ username: req.session.username });
-        res.render("index", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, userExist: { isTrue : true }, sessionData: req.session });
-    } else { res.render("index", { authenticated: req.session.username !== undefined, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }) };
+        res.render("index", { authenticated: true, sessionData: req.session });
+    } else res.render("index", { authenticated: false });
 });
 
 router.get("/game", (req, res) => {
@@ -33,10 +32,10 @@ router.get("/lobby", (req, res) => {
 
 router.get("/leaderboard", async (req, res) => {
     let top10Players = await database.getLeaderboard();
-    if (req.session.username) {
-        let userData = await database.findUser({ username: req.session.username });
-        res.render("leaderboard", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue: true }, sessionData: req.session, sessionData: req.session });
-    } else { res.render("leaderboard", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0, loseCount: 0 }, userExist: { isTrue: false } }) };
+    if (req.session.username)
+        res.render("leaderboard", { authenticated: true, topUsers: top10Players, sessionData: req.session });
+    else 
+        res.render("leaderboard", { authenticated: false, topUsers: top10Players });
 });
 
 
