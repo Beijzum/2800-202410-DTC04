@@ -2,11 +2,13 @@
 
 Dead Net is a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI.
 
-## About the Project
+## Project Description
 
 In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
 
 ## How to Install
+
+Instructions on how to assemble this project's development environment on your computer.
 
 1. Download and install Visual Studio Code
 2. Clone the repository
@@ -153,17 +155,6 @@ If there are still AIs present in the game, then the AIs will randomly choose a 
 
 Afterwards, the game will continue into the next round with a new random prompt until the humans or AIs claim victory.
 
-## About Us
-
-Team Name: DTC-04
-Team Members :
-
--   Jason Chow - jchow149@my.bcit.ca
--   Jonathan Liu - jliu483@my.bcit.ca
--   Alex Park - spark329@my.bcit.ca
--   Richard Maceda - rmaceda1@my.bcit.ca
--   Jaiden Duncan
-
 ## Contributing/Suggestions
 
 ## Contributing
@@ -181,15 +172,17 @@ Don't forget to give the project a star! Thanks again!
 
 ## Licensing
 
-## Refenrences
+## References
 
-[NodeJs](https://nodejs.org/docs/latest/api/)
-[GeminiAI](https://ai.google.dev/gemini-api/docs)
-[Sockets.io](https://socket.io/docs/v4/)
-[ExpressEJS](https://expressjs.com/en/api.html)
-[MonogDB](https://www.mongodb.com/docs/)
-[MongoDB with NodeJs](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
-[Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+List of documentation for the technologies that we used.
+
+1. [NodeJS](https://nodejs.org/docs/latest/api/)
+2. [GeminiAI](https://ai.google.dev/gemini-api/docs)
+3. [Sockets.io](https://socket.io/docs/v4/)
+4. [ExpressEJS](https://expressjs.com/en/api.html)
+5. [MonogDB](https://www.mongodb.com/docs/)
+6. [MongoDB with NodeJS](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
+7. [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
 
 ## List of file contents
 
@@ -351,3 +344,14 @@ Root Directory:
     -   postGameModalWin.ejs
     -   responseCard.ejs
     -   websocketImport.ejs
+
+## About Us
+
+Team Name: DTC-04
+Team Members :
+
+-   Jason Chow - jchow149@my.bcit.ca
+-   Jonathan Liu - jliu483@my.bcit.ca
+-   Alex Park - spark329@my.bcit.ca
+-   Richard Maceda - rmaceda1@my.bcit.ca
+-   Jaiden Duncan
