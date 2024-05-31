@@ -1,35 +1,35 @@
 ## Table of Contents
 
--   [Table of Contents](#table-of-contents)
--   [Dead Net](#dead-net)
--   [Project Description](#project-description)
--   [Project Link](#project-link)
--   [How to Install](#how-to-install)
--   [Technologies Used](#technologies-used)
-    -   [Front end](#front-end)
-    -   [Back end](#back-end)
-    -   [Database](#database)
-    -   [Deployment](#deployment)
-    -   [Artificial Intelligence](#artificial-intelligence)
--   [Features](#features)
-    -   [Customizable player profiles](#customizable-player-profiles)
-    -   [Leaderboards](#leaderboards)
-    -   [Chatroom](#chatroom)
-    -   [Prompt game mode](#prompt-game-mode)
--   [How to Start Playing](#how-to-start-playing)
-    -   [Account creation](#account-creation)
-    -   [Confirm your account](#confirm-your-account)
-    -   [Log into your account](#log-into-your-account)
-    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
--   [How to Play the Game](#how-to-play-the-game)
-    -   [Writing phase](#writing-phase)
-    -   [Voting phase](#voting-phase)
-    -   [Results phase](#results-phase)
--   [Licensing](#licensing)
--   [References](#references)
-    -   [Sources](#sources)
--   [List of file contents](#list-of-file-contents)
--   [About Us](#about-us)
+- [Table of Contents](#table-of-contents)
+- [Dead Net](#dead-net)
+- [Project Description](#project-description)
+- [Project Link](#project-link)
+- [How to Install](#how-to-install)
+- [Technologies Used](#technologies-used)
+  - [Front end](#front-end)
+  - [Back end](#back-end)
+  - [Database](#database)
+  - [Deployment](#deployment)
+  - [Artificial Intelligence](#artificial-intelligence)
+- [Features](#features)
+  - [Customizable player profiles](#customizable-player-profiles)
+  - [Leaderboards](#leaderboards)
+  - [Chatroom](#chatroom)
+  - [Prompt game mode](#prompt-game-mode)
+- [How to Start Playing](#how-to-start-playing)
+  - [Account creation](#account-creation)
+  - [Confirm your account](#confirm-your-account)
+  - [Log into your account](#log-into-your-account)
+  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+- [How to Play the Game](#how-to-play-the-game)
+  - [Writing phase](#writing-phase)
+  - [Voting phase](#voting-phase)
+  - [Results phase](#results-phase)
+- [Licensing](#licensing)
+- [References](#references)
+  - [Sources](#sources)
+- [List of file contents](#list-of-file-contents)
+- [About Us](#about-us)
 
 ## Dead Net
 
@@ -237,10 +237,13 @@ List of documentation for the technologies that we used.
 
 Other sources we used for our project.
 
-1. [How to create a realtime chat room](https://www.youtube.com/watch?v=jD7FnbI76Hg)
-2. [ChatGPT used to create 200 random prompts and default AI responses](https://chatgpt.com)
-3. [Navbar class templates](https://flowbite.com/docs/components/navbar/)
-4. [Fisher-Yates shuffling algorithm](https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array)
+1. BCIT COMP 2537 Lectures/Assignments
+2. BCIT COMP 2800 Lectures/Resources
+3. [How to create a realtime chat room](https://www.youtube.com/watch?v=jD7FnbI76Hg)
+4. [ChatGPT used to create 200 random prompts and default AI responses](https://chatgpt.com)
+5. [Navbar class templates](https://flowbite.com/docs/components/navbar/)
+6. [Fisher-Yates shuffling algorithm](https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array)
+7. [Cloudinary image transformation](https://cloudinary.com/documentation/image_transformations)
 
 ## List of file contents
 
@@ -256,6 +259,7 @@ Root Directory:
 -   gameHandler.js
 -   geminiAI.js
 -   joiValidation.js
+-   LICENSE
 -   middleware.js
 -   package-lock.json
 -   package.json
