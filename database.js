@@ -4,6 +4,7 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
+const session = require("express-session");
 
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
@@ -17,6 +18,21 @@ const client = new MongoClient(databaseLink, {
         deprecationErrors: true,
     }
 });
+
+const sessionConfig = session({
+    secret: process.env.NODE_SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        maxAge:  60 * 1000 // 1 minute
+        // 12 * 60 * 60 * 1000
+    },
+    store: storage,
+    unset: "destroy"
+});
+
+
 
 /**
  * Registers an unverified user to the database.
@@ -297,5 +313,6 @@ module.exports = {
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser,
-    setLoggedInStatus: setLoggedInStatus
+    setLoggedInStatus: setLoggedInStatus,
+    sessionConfig: sessionConfig
 };
