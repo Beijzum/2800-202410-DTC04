@@ -45,7 +45,16 @@ function runSocket(io) {
         // When disconnect
         socket.on("disconnect", () => {
             io.emit("systemMessage", formatMessage("", "", `${socket.request.session.username} has disconnected`));
-            updateReadyMessage(socket);
+            
+            // stop countdown if leaver drops player count to less than 3
+            if (io.sockets.adapter.rooms.get("readyList")?.size < 3 && readyTimer) {
+                clearInterval(readyTimer);
+                readyTimer = null;
+                updateReadyMessage(socket);
+                // move everyone out of ready list
+                io.sockets.adapter.rooms.get("readyList").forEach(client => io.sockets.sockets.get(client).leave("readyList"));
+                io.emit("cancelReady");
+            }
             userList.delete(socket.request.session.username); // update user list
             io.emit("updateUserList", Array.from(userList.entries())); // notify client
         });
@@ -56,18 +65,19 @@ function runSocket(io) {
             gameHandler.eventEmitter.emit("updatePlayerCount", 1);
             addClientToGame(socket);
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
-
-            if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
-                io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
+            
+            if (io.sockets.adapter.rooms.get("lobby")?.size >= 3) {
+                if (readyTimer) return;
+                io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList")?.size}/${io.sockets.adapter.rooms.get("lobby")?.size})`);
             } else {
-                socket.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
+                socket.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby")?.size}/3)`);
             }
 
-            if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
+            if (io.sockets.adapter.rooms.get("lobby")?.size < 3) return;
 
-            if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
+            if (io.sockets.adapter.rooms.get("readyList")?.size / io.sockets.adapter.rooms.get("lobby")?.size >= 0.5) {
                 if (readyTimer) return;
-                countdown = 10;
+                countdown = 60;
                 io.emit("readyTimerUpdate", countdown);
                 readyTimer = setInterval(async () => {
                     countdown--;
@@ -94,7 +104,7 @@ function runSocket(io) {
             removeClientFromGame(socket);
             socket.leave("readyList");
             if (readyTimer) {
-                if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size < 0.5) {
+                if (io.sockets.adapter.rooms.get("readyList")?.size / io.sockets.adapter.rooms.get("lobby")?.size < 0.5) {
                     clearInterval(readyTimer);
                     readyTimer = null;
                     updateReadyMessage(socket);
@@ -122,10 +132,10 @@ function runSocket(io) {
             return;
         }
 
-        if (io.sockets.adapter.rooms.get("lobby").size < 3)
-            io.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby").size}/3)`);
+        if (io.sockets.adapter.rooms.get("lobby")?.size < 3)
+            io.emit("updateReadyMessage", `Not Enough Players to Start (${io.sockets.adapter.rooms.get("lobby")?.size}/3)`);
         else
-            io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList").size}/${io.sockets.adapter.rooms.get("lobby").size})`);
+            io.emit("updateReadyMessage", `Waiting for other players (${io.sockets.adapter.rooms.get("readyList")?.size}/${io.sockets.adapter.rooms.get("lobby")?.size})`);
     }
 
 }
