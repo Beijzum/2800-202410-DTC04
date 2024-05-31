@@ -11,14 +11,8 @@ socket.on("changeView", () => {
         case "voteView":
             handleVoteView();
             break;
-        case "resultView":
-            handleResultView();
-            break;
-        case "waitView":
-            handleWaitView();
-            break;
         default:
-            // transitional screen, dont need to do anything
+            // transition, resultView, and waitView do not have logic
             break;
     }
 });
@@ -144,12 +138,4 @@ function handleVoteView() {
             selected = true;
         });
     });
-}
-
-function handleResultView() {
-    // for now empty, reserved for roles where there could be an veto role
-}
-
-function handleWaitView() {
-    // for now empty, reserved for roles where dead players can choose someone to take down with them
 }
