@@ -56,7 +56,8 @@ async function signUpUser(requestBody) {
                 winCount: 0,
                 loseCount: 0,
                 dateCreated: new Date(),
-                hash: requestBody.hash
+                hash: requestBody.hash,
+                loggedIn: false
             };
 
             await users.insertOne(writeQuery);
@@ -80,8 +81,13 @@ async function loginUser(requestBody) {
         try {
             let result = await findUser({ email: requestBody.email });
             if (result) {
+                if (result.loggedIn) {
+                    res({ message: "User is already logged in" });
+                    return;
+                }
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
+                    await setLoggedInStatus(result.username, true);
                     res({ user: result });
                     return;
                 } else {
@@ -96,6 +102,47 @@ async function loginUser(requestBody) {
         }
     });
 }
+
+
+/**
+ * Logs out a user.
+ *  
+ * @param {String} userId userId of the user to logout
+ * @returns query result from users collection
+ */
+async function logoutUser(username) {
+    try {
+        console.log("reached logoutUser in database.js")
+        await setLoggedInStatus(username, false);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * Sets the loggedIn status of a user.
+ * 
+ * @param {String} username username of the user to update
+ * @param {Boolean} status status to set
+ * @returns query result from users collection
+ */
+async function setLoggedInStatus(username, status) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
+
+        const result = await users.updateOne({ username: username }, { $set: { loggedIn: status } });
+        if (result.matchedCount === 0) {
+            console.error(`No user found with username: ${username}`);
+        } else {
+            console.log(`User ${username} loggedIn status set to ${status}`);
+        }
+    } catch (e) {
+        console.error("Set LoggedIn Status Error: ", e);
+    }
+}
+
+
 
 /**
  * Finds a user in the database.
@@ -269,5 +316,7 @@ module.exports = {
     writeResetDoc: writeResetDoc,
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
-    promoteUnverifiedUser: promoteUnverifiedUser
+    promoteUnverifiedUser: promoteUnverifiedUser,
+    logoutUser: logoutUser,
+    setLoggedInStatus: setLoggedInStatus
 };
