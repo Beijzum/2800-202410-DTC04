@@ -22,8 +22,9 @@ function runSocket(io) {
     const userList = new Map(); // used to keep track of connected users
 
     let readyTimer = null, countdown;
-    // when a user connects to the server
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
+
+        if (socket.request.session.game) removeClientFromGame(socket);
 
         // Player joins chatroom lobby
         socket.on("joinLobby", () => {
@@ -34,11 +35,6 @@ function runSocket(io) {
             userList.set(socket.request.session.username, socket.request.session.profilePic);
             // userList.add({username: socket.request.session.username, profilePicture: socket.request.session.profilePic}); // update user list
             io.emit("updateUserList", Array.from(userList.entries())); // notify client
-
-            // handle players that just returned back to lobby, ADD SHOWING MODAL WHEN SESSION HAS A WIN/LOSE STATE THAT WILL BE ADDED IN GAME HANDLER
-            if (socket.request.session.game) {
-                removeClientFromGame(socket);
-            }
         });
 
         // when users message
@@ -57,7 +53,8 @@ function runSocket(io) {
         // Triggered when a user readies up
         socket.on("ready", async () => {
             socket.join("readyList");
-
+            gameHandler.eventEmitter.emit("updatePlayerCount", 1);
+            addClientToGame(socket);
             if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) return;
 
             if (io.sockets.adapter.rooms.get("lobby").size >= 3) {
@@ -69,30 +66,32 @@ function runSocket(io) {
             if (io.sockets.adapter.rooms.get("lobby").size < 3) return;
 
             if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size >= 0.5) {
-                // TODO: cleanup this crime against humanity
                 if (readyTimer) return;
                 countdown = 10;
                 io.emit("readyTimerUpdate", countdown);
-                readyTimer = setInterval(() => {
+                readyTimer = setInterval(async () => {
                     countdown--;
-                    if (countdown <= 0) {
-                        clearInterval(readyTimer);
-                        readyTimer = null;
-                        addClientToGame(socket)
-                        .then(()=> io.emit("startGame"))
-                    } else io.emit("readyTimerUpdate", countdown);
-                }, 1000);
-            } else {
-                if (readyTimer) {
+                    if (countdown > 0) {
+                        io.emit("readyTimerUpdate", countdown);
+                        return;
+                    }
+
                     clearInterval(readyTimer);
-                    readyTimer = null;
-                    updateReadyMessage(socket);
-                }
+                    io.emit("startGame");
+                }, 1000);
+
+            } else {
+                if (!readyTimer) return;
+                clearInterval(readyTimer);
+                readyTimer = null;
+                updateReadyMessage(socket);
             }
         });
 
         // Triggered when a user un-readies
         socket.on("unready", () => {
+            gameHandler.eventEmitter.emit("updatePlayerCount", -1);
+            removeClientFromGame(socket);
             socket.leave("readyList");
             if (readyTimer) {
                 if (io.sockets.adapter.rooms.get("readyList").size / io.sockets.adapter.rooms.get("lobby").size < 0.5) {
@@ -106,9 +105,9 @@ function runSocket(io) {
 
         // Triggers when the game starts
         socket.on("forceJoin", async () => {
+            addClientToGame(socket);
             socket.join("readyList");
-            await addClientToGame(socket);
-        })
+        });
     });
     
     // Delegate game logic sockets to external module
@@ -116,10 +115,8 @@ function runSocket(io) {
     
     /**
      * Updates the ready message for all clients.
-     * 
-     * @param {Socket} _ client socket - unsused
      */
-    function updateReadyMessage(_) {
+    function updateReadyMessage() {
         if (!io.sockets.adapter.rooms.get("lobby") || !io.sockets.adapter.rooms.get("readyList")) {
             io.emit("updateReadyMessage", "Waiting for Game to Start...");
             return;
@@ -137,28 +134,18 @@ function runSocket(io) {
 const dayjs = require("dayjs");
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
-dayjs.extend(utc)
-dayjs.extend(timezone)
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-/**
- * Unsets the game session for a client.
- * 
- * @param {Socket} socket client to remove from game
- */
-async function removeClientFromGame(socket) {
-    await gameHandler.reloadSession(socket);
-    socket.request.session.game = null;
+function removeClientFromGame(socket) {
+    gameHandler.reloadSession(socket);
+    socket.request.session.game = false;
     socket.request.session.save();
 }
 
-/**
- * Sets the game session for a client.
- * 
- * @param {Socket} socket client to add to game
- */
-async function addClientToGame(socket) {
-    await gameHandler.reloadSession(socket);
-    socket.request.session.game = {};
+function addClientToGame(socket) {
+    gameHandler.reloadSession(socket);
+    socket.request.session.game = true;
     socket.request.session.save();
 }
 
@@ -176,9 +163,9 @@ function formatMessage(username, profilePic, text) {
         profilePic,
         text,
         time: dayjs().tz('America/Vancouver').format("h:mm a")
-    }
+    };
 }
 
 module.exports = {
     runSocket: runSocket
-}
+};

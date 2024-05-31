@@ -431,4 +431,4 @@ module.exports = {
     firstNames: firstNamesPool,
     lastNames: lastNamesPool,
     stockResponses: stockResponses
-}
+};

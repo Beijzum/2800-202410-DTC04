@@ -19,21 +19,21 @@ readyButton.addEventListener("click", () => {
         socket.emit("ready");
     } else {
         // undo all the changes did when ready was pressed
-         // switch background color
-         readyButton.className = readyButton.className.replace(/zinc-200/g, "sky-700");
-         // switch hover background color
-         readyButton.className = readyButton.className.replace(/zinc-100/g, "sky-600");
-         // switch border color
-         readyButton.className = readyButton.className.replace(/zinc-400/g, "sky-500");
-         // switch hover border color
-         readyButton.className = readyButton.className.replace(/zinc-300/g, "sky-400");
-         readyButton.className = readyButton.className.replace("text-gray-700", "text-white");
-         readyButton.innerHTML = "Ready";
+        // switch background color
+        readyButton.className = readyButton.className.replace(/zinc-200/g, "sky-700");
+        // switch hover background color
+        readyButton.className = readyButton.className.replace(/zinc-100/g, "sky-600");
+        // switch border color
+        readyButton.className = readyButton.className.replace(/zinc-400/g, "sky-500");
+        // switch hover border color
+        readyButton.className = readyButton.className.replace(/zinc-300/g, "sky-400");
+        readyButton.className = readyButton.className.replace("text-gray-700", "text-white");
+        readyButton.innerHTML = "Ready";
         //  navbarMessage.innerHTML = "Waiting for Game to Start...";
-         ready = false;
+        ready = false;
         socket.emit("unready");
     }
-})
+});
 
 socket.on("updateReadyMessage", (readyMessage) => {
     // if (!ready) return;
@@ -46,5 +46,5 @@ socket.on("startGame", () => {
 });
 
 socket.on("readyTimerUpdate", (seconds) => {
-    navbarMessage.innerHTML = `Starting in ${seconds}...`
+    navbarMessage.innerHTML = `Starting in ${seconds}...`;
 });

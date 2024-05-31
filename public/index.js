@@ -33,15 +33,20 @@ function logButtonPressed(key) {
     else last10ButtonsPressed.push(key);
 }
 
-let winsElement = document.querySelector("#wins");
-let wins = winsElement.innerHTML.trim();
-let userExist = document.querySelector("#userExist").innerHTML.trim();
+// For Main Page Lobby Music 
+let indexMusic = new Audio("sfx/lobby_music_2.mp3");
+indexMusic.volume = 0.04;
 
-// Convert wins to a number for comparison
-wins = Number(wins);
+const musicButton = document.querySelector("#index-music");
+const musicIcon = document.querySelector("#music-icon");
 
-if (wins === 0 && userExist === "false") {
-    document.querySelector("#userScores").style.display = "none";
-} else {
-    document.querySelector("#userScores").style.display = "flex";
-}
+musicButton.addEventListener("click", () => {
+    if (indexMusic.paused) {
+        indexMusic.play();
+        indexMusic.loop = true;
+        musicIcon.src = "images/playMusicIcon.png";
+    } else {
+        indexMusic.pause();
+        musicIcon.src = "images/muteMusicIcon.png";
+    }
+});

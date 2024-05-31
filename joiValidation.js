@@ -20,11 +20,11 @@ const signUpSchema = joi.object({
 const loginSchema = joi.object({
     email: emailSchema,
     password: joi.string().required()
-})
+});
 
 module.exports = {
     signUpSchema: signUpSchema,
     loginSchema: loginSchema,
     emailSchema: emailSchema,
     passwordSchema: passwordSchema
-}
+};

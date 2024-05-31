@@ -1,48 +1,80 @@
 <%- include("./templates/header", {pageName: "How to play"}) %>
 <%- include("./templates/navbar", {currentPage: "howToPlay"}) %>
 
-<div style="max-width: 600px; margin: 0 auto;">
-    <div class="text-center my-5">
-        <p><span style="font-weight: bold;">Dead Net</span> is a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI.</p> <br>
-        <p>The aim of this game is to learn the difference between human and AI behaviour, so that it can help you detect AI-generated content in your daily life.</p> <br>
-        <p>Vote the player that is most likely to be an AI and win!</p>
-    </div>
-    <div class="text-center my-5">
-        <img id="lobby1" src="/images/lobby1.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 1</span>: Press the ready button in the pre-game chat lobby. </p> <br>
-        <p>The amount of players determines how many AI chatbots will spawn in the game</p> <br>
-        <p>An additional bot will spawn for every three players.</p>
-    </div>
-    <div class="text-center my-5">
-        <img id="lobby2" src="/images/lobby2.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 2</span>: Wait for other players. The game will start when all players are ready.</p> <br>
-        <p>Every player will be given a <span style="font-weight: bold;">random</span> name and display picture to prevent people from recognizing each other.</p>
-    </div>
-    <div class="text-center my-5">
-        <img id="game1" src="/images/game1.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 3</span>: A random prompt will show up. You will have 1 minute to type your own response to that prompt.</p> <br>
-        <p>You can only send <span style="font-weight: bold;">one</span> response. Think carefully!</p>
-    </div>
-    <div class="text-center my-5">
-        <img id="game2" src="/images/game2.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 4</span>: Press on a player's response to activate the voting buttons for that player.</p> <br>
-        <p>
-            <span style="color: green; font-weight: bold;">Green</span> means to vote against the selected player. <br>
-            <span style="color: red; font-weight: bold;">Red</span> means to cancel your selection, which allows you to pick another player.
-        </p>
-    </div>
-    <div class="text-center my-5">
-        <img id="game3" src="/images/game3.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 5</span>: A faded box means you have voted against that player.</p>
-    </div>
-    <div class="text-center my-5">
-        <img id="game4" src="/images/game4.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 6</span>: 
-            The results page shows the most voted player with <span style="color: green; font-weight: bold;">green</span> checkmarks. The most voted player gets <span style="color: red; font-weight: bold;">banned!</span></p>
-    </div>
-    <div class="text-center my-5">
-        <img id="game5" src="/images/game5.png" class="mx-auto p-2 border border-gray-800">
-        <p><span style="font-weight: bold;">Step 7</span>: Spot the AI(s) and achieve victory for humankind!</p>
+<div style="display: flex; justify-content: center;">
+    <div style="max-width: 600px;">
+        <div class="my-5">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Dead Net</span> is a game where players must distinguish between
+                    human and AI chat bots to combat the rise of malicious AI.</p> <br>
+                <p>The aim of this game is to learn the difference between human and AI behaviour, so that it can help
+                    you detect AI-generated content in your daily life.</p> <br>
+                <p><span style="font-weight: bold;">Vote</span> the player that is most likely to be an AI and win!</p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="lobby1" src="/images/lobby1.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 1</span>: Press the ready button in the pre-game chat lobby.
+                </p> <br>
+                <p>The amount of players determines how many AI chatbots will spawn in the game</p> <br>
+                <p>An additional bot will spawn for every three players.</p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="lobby2" src="/images/lobby2.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 2</span>: Wait for other players. The game will start when all
+                    players are ready.</p> <br>
+                <p>Every player will be given a <span style="font-weight: bold;">random</span> name and display picture
+                    to prevent people from recognizing each other.</p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="game1" src="/images/game1.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 3</span>: A random prompt will show up. You will have 1 minute
+                    to type your own response to that prompt.</p> <br>
+                <p>You can only send <span style="font-weight: bold;">one</span> response. Think carefully!</p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="game2" src="/images/game2.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 4</span>: Click on a player's response to activate the <span style="font-weight: bold;">voting</span>
+                    buttons for that player.</p> <br>
+                <p>
+                    <span style="color: green; font-weight: bold;">Green</span> means to vote against the selected
+                    player. <br>
+                    <span style="color: red; font-weight: bold;">Red</span> means to cancel your selection, which allows
+                    you to pick another player.
+                </p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="game3" src="/images/game3.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 5</span>: A faded box means you have voted against that player.
+                </p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="game4" src="/images/game4.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 6</span>:
+                    The results page shows the most voted player with <span
+                        style="color: green; font-weight: bold;">green</span> checkmarks. The most voted player gets
+                    <span style="color: red; font-weight: bold;">banned!</span></p> <br>
+                    <p>If you don't vote all the AI out, then they will <span style="color: red; font-weight: bold;">eliminate</span> one random player at the end of the round.
+                        Choose wisely!</p>
+            </div>
+        </div>
+        <div class="my-5">
+            <img id="game5" src="/images/game5.png" class="mx-auto p-2 border border-gray-800">
+            <div class="ml-2 text-left">
+                <p><span style="font-weight: bold;">Step 7</span>: Spot the AI(s) and achieve <span style="color: green; font-weight: bold;">victory</span> for humankind!</p>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -8,7 +8,7 @@ const MongoStore = require("connect-mongo");
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
     crypto: { secret: process.env.MONGODB_SESSION_SECRET }
-})
+});
 
 const client = new MongoClient(databaseLink, {
     serverApi: {
@@ -32,11 +32,11 @@ async function signUpUser(requestBody) {
             // check if email and username are taken
             let existingUserWithSameName = await findUser({username: requestBody.username});
             if (existingUserWithSameName){
-                errorList.push({usernameField: `Username "${existingUserWithSameName.username}" is taken`});
+                errorList.push({usernameField: `Username "${existingUserWithSameName.username}" is taken.`});
             }
             let existingUserWithSameEmail = await findUser({email: requestBody.email});
             if (existingUserWithSameEmail) {
-                errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account`});
+                errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account.`});
             }
             if (errorList.length !== 0) {
                 res(errorList);
@@ -57,7 +57,7 @@ async function signUpUser(requestBody) {
                 loseCount: 0,
                 dateCreated: new Date(),
                 hash: requestBody.hash
-            }
+            };
 
             await users.insertOne(writeQuery);
             console.log(`${requestBody.username} has successfully been registered`);
@@ -270,4 +270,4 @@ module.exports = {
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser
-}
+};

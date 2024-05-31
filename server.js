@@ -20,9 +20,6 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-// requirements for cloudinary
-const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
-
 const cloudinary = require('cloudinary');
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -31,9 +28,8 @@ cloudinary.config({
 });
 
 const multer = require('multer');
-const e = require('cors');
-const multerStorage = multer.memoryStorage()
-const upload = multer({ storage: multerStorage })
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage });
 
 // session configuration
 
@@ -70,17 +66,32 @@ app.get("/logout", (req, res) => {
     req.session.destroy();
     req.session = null;
     res.redirect("/");
-})
-
-
+});
 
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
     let validationResult = joiValidation.signUpSchema.validate(req.body);
     if (validationResult.error) {
-        console.log(validationResult.error.message);
-        res.status(400).json({ errors: validationResult.error.details });
+        const errorDetails = validationResult.error.details;
+        const errors = errorDetails.map(detail => {
+            let message;
+            switch (detail.context.key) {
+                case 'email':
+                    message = 'Invalid email format';
+                    break;
+                case 'password':
+                    message = 'Password must be at least 5 characters long and include at least one lowercase letter, one uppercase letter, one special character (@#$%^&+!.=), and one number';
+                    break;
+                case 'username':
+                    message = 'Username must be between 5 and 20 characters and contain only alphanumeric characters';
+                    break;
+                default:
+                    message = detail.message;
+            }
+            return { field: detail.context.key, message: message };
+        });
+        res.status(400).json({ errors: errors });
     } else {
         try {   
             const hash = randomBytes(12).toString('hex');
@@ -90,7 +101,7 @@ app.post("/createAccount", async (req, res) => {
             } else {
                 const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
                 await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
-                res.json({redirectUrl: `/registerSuccess?h=${hash}`});
+                res.json({ redirectUrl: `/registerSuccess?h=${hash}` });
                 return;
             }
         } catch (error) {
@@ -99,7 +110,6 @@ app.post("/createAccount", async (req, res) => {
         }
     }
 });
-
 
 app.post("/resendReg", async (req, res) => {
     const { hash } = req.body;
@@ -122,8 +132,22 @@ app.post("/resendReg", async (req, res) => {
 app.post("/loginAccount", async (req, res) => {
     let validationResult = joiValidation.loginSchema.validate(req.body);
     if (validationResult.error) {
-        console.log(validationResult.error.message);
-        res.status(400).json({ message: validationResult.error.message });
+        const errorDetails = validationResult.error.details;
+        const errors = errorDetails.map(detail => {
+            let message;
+            switch (detail.context.key) {
+                case 'email':
+                    message = 'Invalid email format';
+                    break;
+                case 'password':
+                    message = 'Password must be at least 5 characters long and include at least one lowercase letter, one uppercase letter, one special character (@#$%^&+!.=), and one number';
+                    break;
+                default:
+                    message = detail.message;
+            }
+            return { field: detail.context.key, message: message };
+        });
+        res.status(400).json({ errors: errors });
     } else {
         let loginResult;
         try {        
@@ -142,10 +166,6 @@ app.post("/loginAccount", async (req, res) => {
         }
     }
 });
-
-
-
-
 
 app.post("/forgotpass", async (req, res) => {
     if (req.session.username) {
@@ -180,10 +200,10 @@ app.post("/forgotpass", async (req, res) => {
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
     try {
         if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
-            await database.writeResetDoc(user, hash)
+            await database.writeResetDoc(user, hash);
             res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
         } else {
-            res.status(500).send({ "error": "Error with sending email" })
+            res.status(500).send({ "error": "Error with sending email" });
         }
     } catch (e) {
         console.error(e);
@@ -207,7 +227,7 @@ app.post("/reset", async (req, res) => {
         res.redirect("/login");
     } catch (e) {
         console.error(e);
-        res.status(500).send({ "error": "Error accessing database" })
+        res.status(500).send({ "error": "Error accessing database" });
     }
 });
 
@@ -266,9 +286,9 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             req.session.profilePic = result.secure_url;
-    })
-    .then(() => res.status(200).send({message: "Profile Picture Updated!"}))
-    .catch((error) => {
+        })
+        .then(() => res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: result.secure_url }))
+        .catch((error) => {
         console.error(error);
 
         if (error.message.includes("Invalid api")) {
@@ -298,16 +318,16 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
 
         res.status(error.http_code || 500).send({error: "Unexpected error occurred"});
     });
+
 });
 
-
-
+// Start the server
 startServer();
 
 async function startServer() {
     let connection = await database.client.connect();
     if (connection.topology.isConnected()) {
-        const server = app.listen(port, () => {
+        server.listen(port, () => {
             console.log(`Database succesfully connected, now listening to port ${port}`);
         });
 

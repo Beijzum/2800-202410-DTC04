@@ -28,13 +28,13 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
 });
 
 // preview picture upon upload
-document.getElementById("imageInput").addEventListener("change", function() {
+document.getElementById("imageInput").addEventListener("change", function () {
     if (!this.files) return;
     let fileReader = new FileReader();
     let profilePicture = document.getElementById("profilePicture");
-    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); }
+    fileReader.onload = (event) => { profilePicture.setAttribute("src", event.target.result); };
     fileReader.readAsDataURL(this.files[0]);
-})
+});
 
 document.querySelector("#changePass").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -60,11 +60,11 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         }
     });
 
-    const form = modal.querySelector("form"); 
+    const form = modal.querySelector("form");
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         const data = e.target;
 
         let resp = await fetch(data.action, {
@@ -90,7 +90,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         submitButton.classList.add("transition", "bg-green-500");
         submitButton.value = "Success!";
 
-        setTimeout(() => {modal.remove()}, 500) // deletes the modal after 0.5 seconds
+        setTimeout(() => { modal.remove(); }, 500); // deletes the modal after 0.5 seconds
 
     });
 });
