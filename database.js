@@ -72,8 +72,7 @@ async function signUpUser(requestBody) {
                 winCount: 0,
                 loseCount: 0,
                 dateCreated: new Date(),
-                hash: requestBody.hash,
-                loggedIn: false
+                hash: requestBody.hash
             };
 
             await users.insertOne(writeQuery);
@@ -96,14 +95,15 @@ async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
             let result = await findUser({ email: requestBody.email });
+            let sessionResult = checkSessionExists(result, result.sessionID);
             if (result) {
-                if (result.loggedIn) {
+                if (sessionResult) {
                     res({ message: "User is already logged in" });
                     return;
                 }
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
-                    await setLoggedInStatus(result, true);
+                    updateSessionID(result, result.id);
                     res({ user: result });
                     return;
                 } else {
@@ -137,8 +137,32 @@ async function setLoggedInStatus(user, status) {
     }
 }
 
+async function updateSessionID(user, sessionID) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
 
+        await users.updateOne({ username: user.username }, { $set: { sessionID: sessionID } });
+    }
+    catch (e) {
+        console.error("Set Session ID Error: ", e);
+    }
+}
 
+async function checkSessionExists(user, sessionID) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
+
+        let result = await users.findOne({ username: user.username });
+        if (result.sessionID === sessionID) {
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error("Check Session ID Error: ", e);
+    }
+}
 
 /**
  * Finds a user in the database.
@@ -288,7 +312,8 @@ async function promoteUnverifiedUser(doc) {
             email: doc.email,
             password: doc.password,
             winCount: doc.winCount,
-            loseCount: doc.loseCount
+            loseCount: doc.loseCount,
+            sessionID: doc.sessionID
         };
 
         await userCollection.insertOne(write);
@@ -314,5 +339,6 @@ module.exports = {
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser,
     setLoggedInStatus: setLoggedInStatus,
-    sessionConfig: sessionConfig
+    sessionConfig: sessionConfig,
+    updateSessionID: updateSessionID
 };

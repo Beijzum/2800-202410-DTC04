@@ -119,6 +119,7 @@ router.get("/verify", async (req, res) => {
     }
 
     if (promotionWasSuccessful) {
+        database.updateSessionID(loginResult, req.session.id);
         req.session.username = user.username;
         res.render("verify", {authenticated: true, sessionData: req.session});
     } else {
