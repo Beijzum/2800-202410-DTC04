@@ -1,35 +1,35 @@
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Dead Net](#dead-net)
-- [Project Description](#project-description)
-- [Project Link](#project-link)
-- [How to Install](#how-to-install)
-- [Technologies Used](#technologies-used)
-  - [Front end](#front-end)
-  - [Back end](#back-end)
-  - [Database](#database)
-  - [Deployment](#deployment)
-  - [Artificial Intelligence](#artificial-intelligence)
-- [Features](#features)
-  - [Customizable player profiles](#customizable-player-profiles)
-  - [Leaderboards](#leaderboards)
-  - [Chatroom](#chatroom)
-  - [Prompt game mode](#prompt-game-mode)
-- [How to Start Playing](#how-to-start-playing)
-  - [Account creation](#account-creation)
-  - [Confirm your account](#confirm-your-account)
-  - [Log into your account](#log-into-your-account)
-  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
-- [How to Play the Game](#how-to-play-the-game)
-  - [Writing phase](#writing-phase)
-  - [Voting phase](#voting-phase)
-  - [Results phase](#results-phase)
-- [Licensing](#licensing)
-- [References](#references)
-  - [Sources](#sources)
-- [List of file contents](#list-of-file-contents)
-- [About Us](#about-us)
+-   [Table of Contents](#table-of-contents)
+-   [Dead Net](#dead-net)
+-   [Project Description](#project-description)
+-   [Project Link](#project-link)
+-   [How to Install](#how-to-install)
+-   [Technologies Used](#technologies-used)
+    -   [Front end](#front-end)
+    -   [Back end](#back-end)
+    -   [Database](#database)
+    -   [Deployment](#deployment)
+    -   [Artificial Intelligence](#artificial-intelligence)
+-   [Features](#features)
+    -   [Customizable player profiles](#customizable-player-profiles)
+    -   [Leaderboards](#leaderboards)
+    -   [Chatroom](#chatroom)
+    -   [Prompt game mode](#prompt-game-mode)
+-   [How to Start Playing](#how-to-start-playing)
+    -   [Account creation](#account-creation)
+    -   [Confirm your account](#confirm-your-account)
+    -   [Log into your account](#log-into-your-account)
+    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+-   [How to Play the Game](#how-to-play-the-game)
+    -   [Writing phase](#writing-phase)
+    -   [Voting phase](#voting-phase)
+    -   [Results phase](#results-phase)
+-   [Licensing](#licensing)
+-   [References](#references)
+    -   [Sources](#sources)
+-   [List of file contents](#list-of-file-contents)
+-   [About Us](#about-us)
 
 ## Dead Net
 
@@ -100,41 +100,41 @@ The technologies that we used for the app.
 
 Technologies used in the front end.
 
-1. ejs: Server-side rendering of HTML templates.
-2. flowbite: Tailwind CSS component library.
-3. tailwind: CSS framework.
-4. tailwindcss: Tailwind CSS framework.
-5. postcss: Transforms styles with JavaScript plugins.
-6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes.
-7. vite: A frontend build tool.
+1. ejs (3.1.10): Server-side rendering of HTML templates.
+2. flowbite (2.3.0): Tailwind CSS component library.
+3. tailwind (4.0.0): CSS framework.
+4. tailwindcss (3.4.3): Tailwind CSS framework.
+5. postcss (8.4.38): Transforms styles with JavaScript plugins.
+6. autoprefixer (10.4.19): PostCSS plugin to parse CSS and add vendor prefixes.
+7. vite (5.2.11): A frontend build tool.
 
 ### Back end
 
 Technologies used in the back end.
 
-1. @google/generative-ai: Google’s generative AI.
-2. @trycourier/courier: Sending notifications via Courier.
-3. bcrypt: Hashing passwords.
-4. cloudinary: Managing and optimizing media assets.
-5. connect-mongo: MongoDB session store for Express.
-6. cors: Enables CORS (Cross-Origin Resource Sharing).
-7. dayjs: Formatting dates.
-8. dotenv: Loading environment variables from a .env file.
-9. events: Node.js module for event-driven programming.
-10. express: Web framework for Node.js.
-11. express-session: Middleware for managing sessions in Express.
-12. fs: Node.js module for filesystem operations.
-13. http: Node.js module for HTTP server and client functionality.
-14. joi: Data validation library.
-15. multer: Handles multipart/form-data, which is used for file uploads.
-16. nodemon: Restarts the server when file changes are detected.
-17. socket.io: Real-time, bidirectional communication between web clients and servers.
+1.  @google/generative-ai (0.9.0): Google’s generative AI.
+2.  @trycourier/courier (6.1.1): Sending notifications via Courier.
+3.  bcrypt (5.1.1): Hashing passwords.
+4.  cloudinary (2.2.0): Managing and optimizing media assets.
+5.  connect-mongo (5.1.0): MongoDB session store for Express.
+6.  cors (2.8.5): Enables CORS (Cross-Origin Resource Sharing).
+7.  dayjs (1.11.11): Formatting dates.
+8.  dotenv (16.4.5): Loading environment variables from a .env file.
+9.  events (3.3.0): Node.js module for event-driven programming.
+10. express (4.19.2): Web framework for Node.js.
+11. express-session (1.18.0): Middleware for managing sessions in Express.
+12. fs (0.0.1-security): Node.js module for filesystem operations.
+13. http (0.0.1-security): Node.js module for HTTP server and client functionality.
+14. joi (17.13.1): Data validation library.
+15. multer (1.4.5-lts.1): Handles multipart/form-data, which is used for file uploads.
+16. nodemon (3.1.0): Restarts the server when file changes are detected.
+17. socket.io (4.7.5): Real-time, bidirectional communication between web clients and servers.
 
 ### Database
 
 Technologies used for our database.
 
-1. mongodb: MongoDB driver for Node.js.
+1. mongodb (6.6.1): MongoDB driver for Node.js.
 
 ### Deployment
 
@@ -237,8 +237,8 @@ List of documentation for the technologies that we used.
 
 Other sources we used for our project.
 
-1. BCIT COMP 2537 Lectures/Assignments
-2. BCIT COMP 2800 Lectures/Resources
+1. BCIT COMP 2537 Lectures/Assignments/Resources
+2. BCIT COMP 2800 Lectures/Asignments/Resources
 3. [How to create a realtime chat room](https://www.youtube.com/watch?v=jD7FnbI76Hg)
 4. [ChatGPT used to create 200 random prompts and default AI responses](https://chatgpt.com)
 5. [Navbar class templates](https://flowbite.com/docs/components/navbar/)
