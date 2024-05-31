@@ -77,7 +77,7 @@ function runSocket(io) {
 
             if (io.sockets.adapter.rooms.get("readyList")?.size / io.sockets.adapter.rooms.get("lobby")?.size >= 0.5) {
                 if (readyTimer) return;
-                countdown = 60;
+                countdown = 10;
                 io.emit("readyTimerUpdate", countdown);
                 readyTimer = setInterval(async () => {
                     countdown--;
