@@ -65,8 +65,9 @@ app.get("/logout", async (req, res) => {
     console.log(`Logging out user: ${req.session.username}`);
     try {
         if (req.session.username) { // make sure session still exists
+            const user = await database.findUser({ "username": req.session.username }); // get user object
             
-            await database.setLoggedInStatus(req.session.username, false); // set user's logged in status to false
+            await database.setLoggedInStatus(user, false); // set user's logged in status to false
 
             req.session.destroy(err => { // destroy the session
                 if (err) {

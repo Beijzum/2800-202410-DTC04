@@ -87,7 +87,7 @@ async function loginUser(requestBody) {
                 }
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
-                    await setLoggedInStatus(result.username, true);
+                    await setLoggedInStatus(result, true);
                     res({ user: result });
                     return;
                 } else {
@@ -110,12 +110,12 @@ async function loginUser(requestBody) {
  * @param {Boolean} status status to set
  * @returns query result from users collection
  */
-async function setLoggedInStatus(username, status) {
+async function setLoggedInStatus(user, status) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
         let users = database.collection("users");
 
-        await users.updateOne({ username: username }, { $set: { loggedIn: status } });
+        await users.updateOne({ username: user.username }, { $set: { loggedIn: status } });
     } catch (e) {
         console.error("Set LoggedIn Status Error: ", e);
     }
