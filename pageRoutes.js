@@ -162,15 +162,6 @@ router.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-router.get("/changePass", (req, res) => {
-    if (!req.session.username) {
-        res.redirect("/");
-        return;
-    }
-
-    res.render("changePassModal", {name: req.session.username});
-});
-
 router.get("/memes", (req, res) => {
     if (req.session.username) res.render("memes", { authenticated: true });
     else res.render("memes", { authenticated: false });

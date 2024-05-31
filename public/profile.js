@@ -46,20 +46,7 @@ document.getElementById("imageInput").addEventListener("change", function () {
 });
 
 document.querySelector("#changePass").addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const response = await fetch(e.target.href);
-    const htmlString = await response.text();
-
-    const parser = new DOMParser();
-    const htmlDocument = parser.parseFromString(htmlString, "text/html");
-    const modal = htmlDocument.querySelector("dialog");
-
-    if (!modal) {
-        console.error("No dialog element found in the fetched HTML");
-    }
-
-    document.body.appendChild(modal);
+    const modal = document.querySelector("#changePassModal");
     modal.showModal();
 
     modal.addEventListener("click", (event) => {
@@ -99,7 +86,7 @@ document.querySelector("#changePass").addEventListener("click", async (e) => {
         submitButton.classList.add("transition", "bg-green-500");
         submitButton.value = "Success!";
 
-        setTimeout(() => { modal.remove(); }, 500); // deletes the modal after 0.5 seconds
+        setTimeout(() => { modal.close(); }, 500); // deletes the modal after 0.5 seconds
 
     });
 });

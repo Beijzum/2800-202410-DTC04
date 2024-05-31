@@ -1,9 +1,18 @@
 document.getElementById("signUpForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    let username = document.getElementById("usernameField").value;
-    let email = document.getElementById("emailField").value;
-    let password = document.getElementById("passwordField").value;
+    const form = new FormData(e.target);
+
+    let username = form.get("usernameField");
+    let email = form.get("emailField");
+    let password = form.get("passwordField");
+    let repeatPassword = form.get("repeatPasswordField");
+    let consent = form.get("privacy");
+
+    if (password !== repeatPassword) {
+        displayErrors([{field: "repeatPassword", message: "Passwords do not match." }]);
+        return;
+    }
 
     let response = await fetch(e.target.action, {
         method: "POST",
@@ -15,6 +24,7 @@ document.getElementById("signUpForm").addEventListener("submit", async (e) => {
             username: username,
             email: email,
             password: password,
+            consent: consent
         })
     });
 
@@ -48,12 +58,22 @@ function displayErrors(errors) {
         errorContainer.appendChild(errorDiv);
 
         // Add error border to the corresponding input field
-        if (error.field === 'username') {
-            document.getElementById("usernameField").classList.replace("border-gray-300", "border-red-500");
-        } else if (error.field === 'email') {
-            document.getElementById("emailField").classList.replace("border-gray-300", "border-red-500");
-        } else if (error.field === 'password') {
-            document.getElementById("passwordField").classList.replace("border-gray-300", "border-red-500");
+        switch (error.field) {
+            case 'username':
+                document.getElementById("usernameField").classList.replace("border-gray-300", "border-red-500");
+                break;
+            case 'email':
+                document.getElementById("emailField").classList.replace("border-gray-300", "border-red-500");
+                break;
+                case 'repeatPassword':
+                    document.getElementById("repeatPasswordField").classList.replace("border-gray-300", "border-red-500");
+                    // break intentionally omitted
+            case 'password':
+                document.getElementById("passwordField").classList.replace("border-gray-300", "border-red-500");
+                break;
+            case "privacy":
+                document.getElementById("privacy").classList.replace("bg-gray-300", "bg-red-500");
+                break;
         }
 
         if (error.usernameField) {

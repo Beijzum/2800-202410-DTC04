@@ -10,7 +10,7 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
-const { randomBytes } = require("crypto");
+const { randomBytes, sign } = require("crypto");
 
 // set port
 const port = process.env.PORT || 3000;
@@ -71,7 +71,8 @@ app.get("/logout", (req, res) => {
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
-    let validationResult = joiValidation.signUpSchema.validate(req.body);
+    let { consent, ...signUp } = req.body;
+    let validationResult = joiValidation.signUpSchema.validate(signUp);
     if (validationResult.error) {
         const errorDetails = validationResult.error.details;
         const errors = errorDetails.map(detail => {
@@ -92,6 +93,8 @@ app.post("/createAccount", async (req, res) => {
             return { field: detail.context.key, message: message };
         });
         res.status(400).json({ errors: errors });
+    } else if (consent !== "on") {
+        res.status(400).json({ errors: [{ field: "privacy", message: "You must agree to the privacy policy." }] });
     } else {
         try {   
             const hash = randomBytes(12).toString('hex');

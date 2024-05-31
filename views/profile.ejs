@@ -22,9 +22,9 @@
 
     <div class="flex flex-col mx-2">
         <p class="text-lg font-semibold text-center bg-slate-400 py-4 mt-4 px-4 rounded-lg">Email: <%= data.email %></p>
-        <a href="/changePass" id="changePass"
+        <button id="changePass"
         class="shadow-2xl intense-shadow text-slate-200 text-center bg-zinc-800 hover:bg-zinc-700 font-medium rounded-lg mx-auto p-5 py-4 mt-4 w-full">Change
-        Password</a>
+        Password</button>
         <form id="uploadProfilePicForm" action="/uploadProfilePic" method="POST" enctype="multipart/form-data">
             <input type="file" name="image" id="imageInput" class="hidden" enctype="multipart/form-data" required />
             <button type="submit"
@@ -38,7 +38,14 @@
 
 </div>
 
-
+<dialog class="rounded-lg" id="changePassModal">
+    <p id="errorMessage" class="block font-semibold w-full text-red-500 px-4 pt-2"></p>
+    <form action="/changePass" class="px-4 py-2">
+        <label for="passwordField" class="block font-bold w-full">Password</label>
+        <input type="password" id="passwordField" name="passwordField" placeholder="New Password" class="w-full p-2 py-2.5 text-md bg-zinc-200 rounded-xl border-2 border-gray-300 focus:border-gray-500 focus:bg-zinc-300 outline-none">
+        <input type="submit" id="submit" value="Change password" class="text-white cursor-pointer text-center bg-zinc-800 hover:bg-zinc-700 font-medium rounded-lg py-2.5 mx-auto my-5 p-5 w-full">
+    </form>
+</dialog>
 
 
 <%- include("./templates/footer", {pageScript: "profile.js" }) %>
