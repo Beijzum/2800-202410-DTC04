@@ -2,7 +2,7 @@
 <%- include("./templates/navbar", {currentPage: "signUp"}) %>
 <div class="max-w-lg flex flex-col justify-center mx-auto " 
     style="margin-top: 5rem;"> 
-    <div id="errorContainer" class="text-red-400 p-3 m-2"></div>
+    <div id="errorContainer" class="text-red-400 px-3 mx-2"></div>
     <form id="signUpForm" class="flex flex-col items-center m-3" action="/createAccount">
         <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username <span class='text-red-400'>*</span>"}) %>
         <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email <span class='text-red-400'>*</span>"}) %>
