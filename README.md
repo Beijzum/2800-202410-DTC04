@@ -339,4 +339,4 @@ Team Members :
 -   Jonathan Liu - jliu483@my.bcit.ca
 -   Alex Park - spark329@my.bcit.ca
 -   Richard Maceda - rmaceda1@my.bcit.ca
--   Jaiden Duncan
+-   Jaiden Duncan - jduncan77@my.bcit.ca
