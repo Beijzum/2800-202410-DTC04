@@ -32,4 +32,9 @@
         }
     </style>
 </head>
-<body class="bg-zinc-200 offset-nav relative " >
+<!-- remove offset only on home page -->
+<% if (pageName === "Home") { %>
+    <body class="bg-zinc-200">
+<% } else { %>
+    <body class="bg-zinc-200 offset-nav relative">
+<% } %>
