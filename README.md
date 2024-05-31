@@ -16,8 +16,10 @@ In the future, we believe that there will be an increase of bad actors programmi
     ```
 4. Create a MongoDb Server
 5. Create Cloudinary Server
-6. Create an .env file 
+6. Create a GeminiAPI
+7. Create an .env file in the project directory
     ```sh
+    PORT=3000
     MONGO_URI=[MongoDB URi]
     GEMINI_API_KEY=[Your Gemini API]
     MONGODB_PROTOCOL=mongodb+srv
@@ -32,9 +34,11 @@ In the future, we believe that there will be an increase of bad actors programmi
     CLOUDINARY_CLOUD_SECRET=Cloudinary_is_Cool (Recommended to use a UID Generator)
     COURIER_TOKEN=Cloudinary_is_always_Cool (Recommended to use a UID Generator)
     ```
-7. Open Terminal while in the project directory and type
-```nodemon server.js```
-8. Go to your Local Browswer (Chrome, Edge, Firefox. etc..) and go to 
+8. Open Terminal while in the project directory and type
+    ```
+    nodemon server.js
+    ```
+9. Go to your Local Browswer (Chrome, Edge, Firefox. etc..) and go to 
 localhost:3000
 
 ## Technologies Used
@@ -67,9 +71,13 @@ localhost:3000
 16. nodemon: Restarts the server when file changes are detected.
 17. socket.io: Real-time, bidirectional communication between web clients and servers.
 
+## Artificial Intelligence
+GeminiAI is part of the core mechanics of the game flow. It is used to generate the responses from the list of Prompts given to the user during the Write phase of the game. In the GeminiAI.js you can see how the personality type of the AI
+is made. We have created strings that contain prompts of how the personality must think and type their response and is then sent to GeminiAI as a prompt. 
+
+
 ### Database
 1. mongodb: MongoDB driver for Node.js.
-
 
 ## How to Start Playing 
 
@@ -93,17 +101,12 @@ The same process of writing prompts and voting will repeat until all players are
 
 ## About Us
 Team Name: DTC-04
-Team Members: 
-- Jason Chow
-- Jonathan Liu
-- Alex Park
-- Richard Maceda
+Team Members : 
+- Jason Chow - jchow149@my.bcit.ca
+- Jonathan Liu - jliu483@my.bcit.ca
+- Alex Park - spark329@my.bcit.ca
+- Richard Maceda - rmaceda1@my.bcit.ca
 - Jaiden Duncan
-
-
-## Licensing 
-TBA
-
 
 ## Contributing/Suggestions
 
@@ -118,6 +121,17 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## Licensing
+
+## Refenrences
+[NodeJs](https://nodejs.org/docs/latest/api/)
+[GeminiAI](https://ai.google.dev/gemini-api/docs)
+[Sockets.io](https://socket.io/docs/v4/)
+[ExpressEJS](https://expressjs.com/en/api.html)
+[MonogDB](https://www.mongodb.com/docs/)
+[MongoDB with NodeJs](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
+[Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
 
 
 ## List of file contents
@@ -283,9 +297,3 @@ Root Directory:.
             postGameModalWin.ejs
             responseCard.ejs
             websocketImport.ejs
-
-## FAQ
-TBA
-
-## More details to come
-TBA
