@@ -4,50 +4,48 @@ const router = express.Router();
 const database = require("./database");
 
 router.get("/", async (req, res) => {
-    let top10Players = await database.getLeaderboard();
     if (req.session.username) {
-        let userData = await database.findUser({ username: req.session.username });
-        res.render("index", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, userExist: { isTrue : true }, sessionData: req.session });
-    } else { res.render("index", { authenticated: req.session.username !== undefined, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }) };
+        res.render("index", { authenticated: true, sessionData: req.session });
+    } else res.render("index", { authenticated: false });
 });
 
 router.get("/game", (req, res) => {
     // redirect to login if unauthenticated
-    if (req.session.username) res.render("game", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("game", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/victory", (req, res) => {
-    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/defeat", (req, res) => {
-    if (req.session.username) res.render("defeat", { authenticated: true, url: req.origin }); // Pass authentication and url to view
+    if (req.session.username) res.render("defeat", { authenticated: true, url: req.origin, sessionData: req.session}); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/lobby", (req, res) => {
-    if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin }); // Pass authentication and url to view
+    if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/leaderboard", async (req, res) => {
     let top10Players = await database.getLeaderboard();
-    if (req.session.username) {
-        let userData = await database.findUser({ username: req.session.username });
-        res.render("leaderboard", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue: true }, sessionData: req.session });
-    } else { res.render("leaderboard", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0, loseCount: 0 }, userExist: { isTrue: false } }) };
+    if (req.session.username)
+        res.render("leaderboard", { authenticated: true, topUsers: top10Players, sessionData: req.session });
+    else 
+        res.render("leaderboard", { authenticated: false, topUsers: top10Players });
 });
 
 
 router.get("/login", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("login", { authenticated: false });
 })
 
 router.get("/forgotpass", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("forgotpass", {authenticated: false})
 });
 
@@ -74,7 +72,7 @@ router.get("/verify", async (req, res) => {
 
     if (await database.promoteUnverifiedUser(user)) {
         req.session.username = user.username;
-        res.render("verify", {authenticated: true});
+        res.render("verify", {authenticated: true, sessionData: req.session});
     } else {
         /* 
          * Should render an error page, but I'm assuming at this point
@@ -95,7 +93,7 @@ router.get("/registerSuccess", (req, res) => {
 });
 
 router.get("/signUp", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("signUp", { authenticated: false });
 })
 
@@ -105,7 +103,7 @@ router.get("/profile", async (req, res) => {
         return;
     }
     let userData = await database.findUser({ username: req.session.username });
-    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl, email: userData.email } });
+    res.render("profile", { authenticated: true, sessionData: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl, email: userData.email } });
 
 })
 
@@ -125,12 +123,12 @@ router.get("/changePass", (req, res) => {
 });
 
 router.get("/memes", (req, res) => {
-    if (req.session.username) res.render("memes", { authenticated: true });
+    if (req.session.username) res.render("memes", { authenticated: true, sessionData: req.session });
     else res.render("memes", { authenticated: false });
 });
 
 router.get("/howToPlay", (req, res) => {
-    if (req.session.username) res.render("howToPlay", { authenticated: true });
+    if (req.session.username) res.render("howToPlay", { authenticated: true, sessionData: req.session });
     else res.render("howToPlay", { authenticated: false });
 });
 
