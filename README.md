@@ -93,7 +93,7 @@ Features found in the app.
 
 GeminiAI, Google’s generative AI, is one of our main features in this web app. AI chatbots are used as core game mechanic in our game flow. They are used to create AI-generated responses depending on the prompt it is given during the course of the game.
 
-We have also programmed the AI to receive instructions, which essentially creates personalities for the AI. Some instructions we created for the chatbots can replicate human language and speech patterns. Other chatbots will have instructions that make it easier to detect, so that players of all levels can enjoy the game. 
+We have also programmed the AI to receive instructions, which essentially creates personalities for the AI. Some instructions we created for the chatbots can replicate human language and speech patterns. Other chatbots will have instructions that make it easier to detect, so that players of all levels can enjoy the game.
 
 ### Customizable player profiles
 
@@ -193,165 +193,161 @@ Don't forget to give the project a star! Thanks again!
 
 ## List of file contents
 
-Root Directory:.
-| .env
-| .gitignore
-| .jshintrc
-| database.js
-| emailNotification.js
-| gameHandler.js
-| geminiAI.js
-| joiValidation.js
-| middleware.js
-| package-lock.json
-| package.json
-| pageRoutes.js
-| postcss.config.js
-| README.md
-| server.js
-| socketConstants.js
-| tailwind.config.js
-| websocket.js
-|  
-+---documentation
-| bugsList.md
-| gameDoc.md
-|  
-+---public
-| | chatModal.js
-| | chatroom.js
-| | forgotpass.js
-| | game.js
-| | index.js
-| | lobby.js
-| | login.js
-| | memes.js
-| | navbar.js
-| | postGameModal.js
-| | profile.js
-| | registerSuccess.js
-| | reset.js
-| | signUp.js
-| | style.css
-| | windowHandler.js
-| |  
-| +---images
-| | 01bg.gif
-| | 404.gif
-| | avatar0.jpg
-| | avatar1.jpg
-| | avatar10.jpg
-| | avatar11.jpg
-| | avatar12.png
-| | avatar13.png
-| | avatar14.jpg
-| | avatar15.jpg
-| | avatar16.jpg
-| | avatar17.jpg
-| | avatar18.jpg
-| | avatar19.jpg
-| | avatar2.jpg
-| | avatar20.jpg
-| | avatar21.png
-| | avatar22.png
-| | avatar23.png
-| | avatar24.png
-| | avatar3.jpg
-| | avatar4.jpg
-| | avatar5.jpg
-| | avatar6.jpg
-| | avatar7.jpg
-| | avatar8.jpg
-| | avatar9.jpg
-| | deadPicture.gif
-| | defaultProfilePicture.webp
-| | defeat.jpg
-| | game1.png
-| | game2.png
-| | game3.png
-| | game4.png
-| | game5.png
-| | heli.gif
-| | heli.png
-| | imHuman.jpg
-| | lobby1.png
-| | lobby2.png
-| | logo.png
-| | meme0.png
-| | meme1.jpg
-| | meme2.gif
-| | muteMusicIcon.png
-| | noGameRunning.gif
-| | playerListIcon.png
-| | playMusicIcon.png
-| | trapCard.jpg
-| | victory.jpg
-| | voteTransitionAnimation.gif
-| | waitTransitionAnimation.gif
-| |  
-| \---sfx
-| button_sound_effect_1.mp3
-| button_sound_effect_2.mp3
-| button_sound_effect_3.mp3
-| emergency_sound_effect.mp3
-| gameLose.mp3
-| gameWin.mp3
-| heliAudio.mp3
-| jazz.mp3
-| lobby_music_1.mp3
-| lobby_music_2.mp3
-| nextGen.mp3
-| no.mp3
-| robot.mp3
-| suspicious.mp3
-| trapCard.mp3
-| vote_intense_music_1.mp3
-| vote_music_1.mp3
-|  
-+---socketTemplates
-| noGame.ejs
-| result.ejs
-| statusBar.ejs
-| transition.ejs
-| vote.ejs
-| wait.ejs
-| write.ejs
-|  
-\---views
-| 404.ejs
-| defeat.ejs
-| error.ejs
-| forgotpass.ejs
-| forgotPassSuccess.ejs
-| game.ejs
-| howToPlay.ejs
-| index.ejs
-| leaderboard.ejs
-| lobby.ejs
-| login.ejs
-| memes.ejs
-| privacy.ejs
-| profile.ejs
-| registerSuccess.ejs
-| reset.ejs
-| signUp.ejs
-| verify.ejs
-| victory.ejs
-| votingScreenSample.ejs
-|  
- \---templates
-chatBar.ejs
-credentialField.ejs
-footer.ejs
-formSubmitButton.ejs
-gameNavbar.ejs
-header.ejs
-inGameNavbarElements.ejs
-leaderboardEntry.ejs
-lobbyGameNavbarElements.ejs
-navbar.ejs
-navbarItem.ejs
-postGameModalLose.ejs
-postGameModalWin.ejs
-responseCard.ejs
-websocketImport.ejs
+This is the file structure for our project.
+
+Root Directory:
+
+-   .env
+-   .gitignore
+-   .jshintrc
+-   database.js
+-   emailNotification.js
+-   gameHandler.js
+-   geminiAI.js
+-   joiValidation.js
+-   middleware.js
+-   package-lock.json
+-   package.json
+-   pageRoutes.js
+-   postcss.config.js
+-   README.md
+-   server.js
+-   socketConstants.js
+-   tailwind.config.js
+-   websocket.js
+-   documentation
+    -   bugsList.md
+    -   gameDoc.md
+-   public
+    -   chatModal.js
+    -   chatroom.js
+    -   forgotpass.js
+    -   game.js
+    -   index.js
+    -   lobby.js
+    -   login.js
+    -   memes.js
+    -   navbar.js
+    -   postGameModal.js
+    -   profile.js
+    -   registerSuccess.js
+    -   reset.js
+    -   signUp.js
+    -   style.css
+    -   windowHandler.js
+    -   images
+        -   01bg.gif
+        -   404.gif
+        -   avatar0.jpg
+        -   avatar1.jpg
+        -   avatar10.jpg
+        -   avatar11.jpg
+        -   avatar12.png
+        -   avatar13.png
+        -   avatar14.jpg
+        -   avatar15.jpg
+        -   avatar16.jpg
+        -   avatar17.jpg
+        -   avatar18.jpg
+        -   avatar19.jpg
+        -   avatar2.jpg
+        -   avatar20.jpg
+        -   avatar21.png
+        -   avatar22.png
+        -   avatar23.png
+        -   avatar24.png
+        -   avatar3.jpg
+        -   avatar4.jpg
+        -   avatar5.jpg
+        -   avatar6.jpg
+        -   avatar7.jpg
+        -   avatar8.jpg
+        -   avatar9.jpg
+        -   deadPicture.gif
+        -   defaultProfilePicture.webp
+        -   defeat.jpg
+        -   game1.png
+        -   game2.png
+        -   game3.png
+        -   game4.png
+        -   game5.png
+        -   heli.gif
+        -   heli.png
+        -   imHuman.jpg
+        -   lobby1.png
+        -   lobby2.png
+        -   logo.png
+        -   meme0.png
+        -   meme1.jpg
+        -   meme2.gif
+        -   muteMusicIcon.png
+        -   noGameRunning.gif
+        -   playerListIcon.png
+        -   playMusicIcon.png
+        -   trapCard.jpg
+        -   victory.jpg
+        -   voteTransitionAnimation.gif
+        -   waitTransitionAnimation.gif
+    -   sfx
+        -   button_sound_effect_1.mp3
+        -   button_sound_effect_2.mp3
+        -   button_sound_effect_3.mp3
+        -   emergency_sound_effect.mp3
+        -   gameLose.mp3
+        -   gameWin.mp3
+        -   heliAudio.mp3
+        -   jazz.mp3
+        -   lobby_music_1.mp3
+        -   lobby_music_2.mp3
+        -   nextGen.mp3
+        -   no.mp3
+        -   robot.mp3
+        -   suspicious.mp3
+        -   trapCard.mp3
+        -   vote_intense_music_1.mp3
+        -   vote_music_1.mp3
+-   socketTemplates
+    -   noGame.ejs
+    -   result.ejs
+    -   statusBar.ejs
+    -   transition.ejs
+    -   vote.ejs
+    -   wait.ejs
+    -   write.ejs
+-   views
+    -   404.ejs
+    -   defeat.ejs
+    -   error.ejs
+    -   forgotpass.ejs
+    -   forgotPassSuccess.ejs
+    -   game.ejs
+    -   howToPlay.ejs
+    -   index.ejs
+    -   leaderboard.ejs
+    -   lobby.ejs
+    -   login.ejs
+    -   memes.ejs
+    -   privacy.ejs
+    -   profile.ejs
+    -   registerSuccess.ejs
+    -   reset.ejs
+    -   signUp.ejs
+    -   verify.ejs
+    -   victory.ejs
+    -   votingScreenSample.ejs
+-   templates
+    -   chatBar.ejs
+    -   credentialField.ejs
+    -   footer.ejs
+    -   formSubmitButton.ejs
+    -   gameNavbar.ejs
+    -   header.ejs
+    -   inGameNavbarElements.ejs
+    -   leaderboardEntry.ejs
+    -   lobbyGameNavbarElements.ejs
+    -   navbar.ejs
+    -   navbarItem.ejs
+    -   postGameModalLose.ejs
+    -   postGameModalWin.ejs
+    -   responseCard.ejs
+    -   websocketImport.ejs
