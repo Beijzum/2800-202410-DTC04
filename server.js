@@ -2,7 +2,6 @@ require('dotenv').config();
 
 // import externals
 const express = require('express');
-const session = require("express-session");
 const cors = require("cors");
 const app = express();
 const socketManager = require("./websocket.js");
@@ -32,19 +31,20 @@ const upload = multer({ storage: multerStorage });
 
 // session configuration
 
-const sessionConfig = session({
-    secret: process.env.NODE_SESSION_SECRET,
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        maxAge: 12 * 60 * 60 * 1000
-    },
-    store: database.mongoSessionStorage,
-    unset: "destroy"
-});
+// const sessionConfig = session({
+//     secret: process.env.NODE_SESSION_SECRET,
+//     resave: true,
+//     saveUninitialized: false,
+//     cookie: {
+//         secure: false,
+//         maxAge:  60 * 1000 // 1 minute
+//         // 12 * 60 * 60 * 1000
+//     },
+//     store: database.mongoSessionStorage,
+//     unset: "destroy"
+// });
 
-app.use(sessionConfig);
+app.use(database.sessionConfig);
 
 // set up ejs
 app.set("view engine", "ejs");
@@ -61,30 +61,29 @@ app.use(require("./pageRoutes"));
 
 // GET ROUTES SECTION
 
-app.get("/logout", async (req, res) => {
-    console.log(`Logging out user: ${req.session.username}`);
-    try {
-        if (req.session.username) { // make sure session still exists
-            const user = await database.findUser({ "username": req.session.username }); // get user object
+// app.use(async (req, res, next) => {
+//     if (req.session.userId) {
+//         const now = new Date();
+//         const sessionExpiry = new Date(req.session.cookie.expires);
+        
+//         // Check if the session has expired
+//         if (now > sessionExpiry) {
+//             // Set loggedIn status to false in the database
+//             await database.setLoggedInStatus(req.session.username, false);
             
-            await database.setLoggedInStatus(user, false); // set user's logged in status to false
+//             // Destroy the session
+//             req.session.destroy(err => {
+//                 if (err) {
+//                     console.error('Failed to destroy session:', err);
+//                     return next(err);
+//                 }
+//                 console.log('Session destroyed due to expiration.');
+//             });
+//         }
+//     }
+//     next();
+// });
 
-            req.session.destroy(err => { // destroy the session
-                if (err) {
-                    console.error('Error destroying session:', err);
-                    return res.status(500).send("Internal Server Error");
-                }
-                console.log('Session destroyed');
-                res.redirect("/"); // redirect to home page
-            });
-        } else {
-            res.redirect("/");
-        }
-    } catch (error) {
-        console.error('Logout error:', error);
-        res.status(500).send("Internal Server Error");
-    }
-});
 
 
 // POST ROUTES SECTION
@@ -356,7 +355,7 @@ async function startServer() {
 
         // connect to websocket server
         const io = new Server(server);
-        io.engine.use(sessionConfig);
+        io.engine.use(database.sessionConfig);
         socketManager.runSocket(io);
     }
     else console.log("Error, could not connect to database, to try again, restart the server.");
