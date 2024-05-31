@@ -87,15 +87,15 @@ The technologies that we used for the app.
 
 1. mongodb: MongoDB driver for Node.js.
 
-## Features
-
-Features found in the app.
-
 ### Artificial Intelligence
 
 GeminiAI, Google’s generative AI, is one of our main features in this web app. AI chatbots are used as core game mechanic in our game flow. They are used to create AI-generated responses depending on the prompt it is given during the course of the game.
 
 We have also programmed the AI to receive instructions, which essentially creates personalities for the AI. Some instructions we created for the chatbots can replicate human language and speech patterns. Other chatbots will have instructions that make it easier to detect, so that players of all levels can enjoy the game.
+
+## Features
+
+Features found in the app.
 
 ### Customizable player profiles
 
@@ -154,21 +154,6 @@ The most voted player will be **eliminated** from the game. If players vote all 
 If there are still AIs present in the game, then the AIs will randomly choose a player to eliminate from the game. The AIs will win when there are more AIs than humans.
 
 Afterwards, the game will continue into the next round with a new random prompt until the humans or AIs claim victory.
-
-## Contributing/Suggestions
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## Licensing
 
