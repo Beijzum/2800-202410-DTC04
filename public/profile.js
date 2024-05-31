@@ -29,9 +29,10 @@ document.getElementById('uploadProfilePicForm').addEventListener('submit', async
 
 // preview picture upon upload
 document.getElementById("imageInput").addEventListener("change", function () {
-    if (!this.files) return;
-    if (this.files[0].size > 5 * 1024 * 1024) {
-        let resultMessage = document.getElementById("savedChangesMessage");
+    let resultMessage = document.getElementById("savedChangesMessage");
+    resultMessage.classList.add("hidden");
+    if (!this.files[0]) return;
+    if (this.files[0]?.size > 5 * 1024 * 1024) {
         if (resultMessage.classList.contains("hidden"))
             resultMessage.classList.toggle("hidden");
         resultMessage.className = resultMessage.className.replace("green", "red");
