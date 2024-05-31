@@ -25,6 +25,7 @@
   - [Results phase](#results-phase)
 - [Licensing](#licensing)
 - [References](#references)
+  - [Sources](#sources)
 - [List of file contents](#list-of-file-contents)
 - [About Us](#about-us)
 
@@ -208,6 +209,15 @@ List of documentation for the technologies that we used.
 5. [MonogDB](https://www.mongodb.com/docs/)
 6. [MongoDB with NodeJS](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
 7. [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+
+### Sources
+
+Other sources we used for our project.
+
+1. How to create a realtime chat room [https://www.youtube.com/watch?v=jD7FnbI76Hg]
+2. ChatGPT used to create 200 random prompts and default AI responses [https://chatgpt.com]
+3. Navbar class templates [https://flowbite.com/docs/components/navbar/]
+4. Fisher-Yates shuffling algorithm [https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array]
 
 ## List of file contents
 
