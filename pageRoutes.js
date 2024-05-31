@@ -51,27 +51,75 @@ router.get("/forgotpass", (req, res) => {
 });
 
 router.get("/reset", async (req, res) => {
-    const user = await database.getResetDoc(req.query.id);
+    const { id } = req.query;
+
+    if (!id) {
+        res.redirect("/");
+        return;
+    }
+
+    let user;
+    try {   
+        user = await database.getResetDoc(id);
+    } catch (error) {
+        res.status(404).render("error", {authenticated: false,
+            errorTitle: "Reset  password error",
+            errorCode: 404,
+            errorMessage: "Could not find a user to reset password."
+        });
+        return;
+    }
 
     if (!user) {
         res.redirect("/");
         return;
     }
 
-    res.render("reset", {authenticated: false, hash: req.query.id});
+    res.render("reset", {authenticated: false, hash: id});
 });
 
 router.get("/verify", async (req, res) => {
     const { v } = req.query;
-    const user = await database.client.db(process.env.MONGODB_DATABASE)
-    .collection("unverifiedUsers").findOne({ "hash": v });
+
+    if (!v) {
+        res.redirect("/");
+    }
+
+    let user;
+    try {
+        user = await database.client.db(process.env.MONGODB_DATABASE)
+        .collection("unverifiedUsers").findOne({ "hash": v });
+    } catch (error) {
+        res.status(500).render("error", {authenticated: false,
+            errorTitle: "Database error",
+            errorCode: 500,
+            errorMessage: "An error occurred while trying to validate your account. Please try again later."
+        });
+        return;
+    }
     
     if (!user) {
-        res.redirect("/");
+        res.status(404).render("error", {authenticated: false,
+            errorTitle: "Validation error",
+            errorCode: 404,
+            errorMessage: "Could not find a user to validate."
+        });
         return;
     }
 
-    if (await database.promoteUnverifiedUser(user)) {
+    let promotionWasSuccessful;
+
+    try {
+        promotionWasSuccessful = await database.promoteUnverifiedUser(user);
+    } catch (error) {
+        res.status(500).render("error", {authenticated: false,
+            errorTitle: "Database error",
+            errorCode: 500,
+            errorMessage: "An error occurred while trying to validate your account. Please contact support at bcit.deadnet@gmail.com."
+        });
+    }
+
+    if (promotionWasSuccessful) {
         req.session.username = user.username;
         res.render("verify", {authenticated: true});
     } else {
