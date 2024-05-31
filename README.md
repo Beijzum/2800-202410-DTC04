@@ -1,33 +1,35 @@
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Dead Net](#dead-net)
-- [Project Description](#project-description)
-- [How to Install](#how-to-install)
-- [Technologies Used](#technologies-used)
-  - [Front end](#front-end)
-  - [Back end](#back-end)
-  - [Database](#database)
-  - [Artificial Intelligence](#artificial-intelligence)
-- [Features](#features)
-  - [Customizable player profiles](#customizable-player-profiles)
-  - [Leaderboards](#leaderboards)
-  - [Chatroom](#chatroom)
-  - [Prompt game mode](#prompt-game-mode)
-- [How to Start Playing](#how-to-start-playing)
-  - [Account creation](#account-creation)
-  - [Confirm your account](#confirm-your-account)
-  - [Log into your account](#log-into-your-account)
-  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
-- [How to Play the Game](#how-to-play-the-game)
-  - [Writing phase](#writing-phase)
-  - [Voting phase](#voting-phase)
-  - [Results phase](#results-phase)
-- [Licensing](#licensing)
-- [References](#references)
-  - [Sources](#sources)
-- [List of file contents](#list-of-file-contents)
-- [About Us](#about-us)
+-   [Table of Contents](#table-of-contents)
+-   [Dead Net](#dead-net)
+-   [Project Description](#project-description)
+-   [Project Link](#project-link)
+-   [How to Install](#how-to-install)
+-   [Technologies Used](#technologies-used)
+    -   [Front end](#front-end)
+    -   [Back end](#back-end)
+    -   [Database](#database)
+    -   [Deployment](#deployment)
+    -   [Artificial Intelligence](#artificial-intelligence)
+-   [Features](#features)
+    -   [Customizable player profiles](#customizable-player-profiles)
+    -   [Leaderboards](#leaderboards)
+    -   [Chatroom](#chatroom)
+    -   [Prompt game mode](#prompt-game-mode)
+-   [How to Start Playing](#how-to-start-playing)
+    -   [Account creation](#account-creation)
+    -   [Confirm your account](#confirm-your-account)
+    -   [Log into your account](#log-into-your-account)
+    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+-   [How to Play the Game](#how-to-play-the-game)
+    -   [Writing phase](#writing-phase)
+    -   [Voting phase](#voting-phase)
+    -   [Results phase](#results-phase)
+-   [Licensing](#licensing)
+-   [References](#references)
+    -   [Sources](#sources)
+-   [List of file contents](#list-of-file-contents)
+-   [About Us](#about-us)
 
 ## Dead Net
 
@@ -36,6 +38,14 @@ Dead Net is a game where players must use their AI-detecting skills to distingui
 ## Project Description
 
 In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
+
+## Project Link
+
+The link to our deployed project on Render.
+
+`Render will have a delayed response if there is a long period of page inactivity.`
+
+https://two800-202410-dtc04.onrender.com/
 
 ## How to Install
 
@@ -88,6 +98,8 @@ The technologies that we used for the app.
 
 ### Front end
 
+Technologies used in the front end.
+
 1. ejs: Server-side rendering of HTML templates.
 2. flowbite: Tailwind CSS component library.
 3. tailwind: CSS framework.
@@ -97,6 +109,8 @@ The technologies that we used for the app.
 7. vite: A frontend build tool.
 
 ### Back end
+
+Technologies used in the back end.
 
 1. @google/generative-ai: Google’s generative AI.
 2. @trycourier/courier: Sending notifications via Courier.
@@ -118,7 +132,15 @@ The technologies that we used for the app.
 
 ### Database
 
+Technologies used for our database.
+
 1. mongodb: MongoDB driver for Node.js.
+
+### Deployment
+
+Technologies used for our project deployment.
+
+1. Render: Web host for hosting full-stack applications.
 
 ### Artificial Intelligence
 
@@ -209,15 +231,16 @@ List of documentation for the technologies that we used.
 5. [MonogDB](https://www.mongodb.com/docs/)
 6. [MongoDB with NodeJS](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
 7. [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+8. [joiValidation](https://joi.dev/api/?v=17.13.0)
 
 ### Sources
 
 Other sources we used for our project.
 
-1. How to create a realtime chat room [https://www.youtube.com/watch?v=jD7FnbI76Hg]
-2. ChatGPT used to create 200 random prompts and default AI responses [https://chatgpt.com]
-3. Navbar class templates [https://flowbite.com/docs/components/navbar/]
-4. Fisher-Yates shuffling algorithm [https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array]
+1. [How to create a realtime chat room](https://www.youtube.com/watch?v=jD7FnbI76Hg)
+2. [ChatGPT used to create 200 random prompts and default AI responses](https://chatgpt.com)
+3. [Navbar class templates](https://flowbite.com/docs/components/navbar/)
+4. [Fisher-Yates shuffling algorithm](https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array)
 
 ## List of file contents
 
