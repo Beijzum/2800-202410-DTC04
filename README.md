@@ -3,11 +3,13 @@
 - [Table of Contents](#table-of-contents)
 - [Dead Net](#dead-net)
 - [Project Description](#project-description)
+- [Project Link](#project-link)
 - [How to Install](#how-to-install)
 - [Technologies Used](#technologies-used)
   - [Front end](#front-end)
   - [Back end](#back-end)
   - [Database](#database)
+  - [Deployment](#deployment)
   - [Artificial Intelligence](#artificial-intelligence)
 - [Features](#features)
   - [Customizable player profiles](#customizable-player-profiles)
@@ -36,6 +38,14 @@ Dead Net is a game where players must use their AI-detecting skills to distingui
 ## Project Description
 
 In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
+
+## Project Link
+
+The link to our deployed project on Render.
+
+`Render will have a delayed response if there is a long period of page inactivity.`
+
+https://two800-202410-dtc04.onrender.com/
 
 ## How to Install
 
@@ -88,37 +98,49 @@ The technologies that we used for the app.
 
 ### Front end
 
-1. ejs: Server-side rendering of HTML templates.
-2. flowbite: Tailwind CSS component library.
-3. tailwind: CSS framework.
-4. tailwindcss: Tailwind CSS framework.
-5. postcss: Transforms styles with JavaScript plugins.
-6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes.
-7. vite: A frontend build tool.
+Technologies used in the front end.
+
+1. ejs (3.1.10): Server-side rendering of HTML templates.
+2. flowbite (2.3.0): Tailwind CSS component library.
+3. tailwind (4.0.0): CSS framework.
+4. tailwindcss (3.4.3): Tailwind CSS framework.
+5. postcss (8.4.38): Transforms styles with JavaScript plugins.
+6. autoprefixer (10.4.19): PostCSS plugin to parse CSS and add vendor prefixes.
+7. vite (5.2.11): A frontend build tool.
 
 ### Back end
 
-1. @google/generative-ai: Google’s generative AI.
-2. @trycourier/courier: Sending notifications via Courier.
-3. bcrypt: Hashing passwords.
-4. cloudinary: Managing and optimizing media assets.
-5. connect-mongo: MongoDB session store for Express.
-6. cors: Enables CORS (Cross-Origin Resource Sharing).
-7. dayjs: Formatting dates.
-8. dotenv: Loading environment variables from a .env file.
-9. events: Node.js module for event-driven programming.
-10. express: Web framework for Node.js.
-11. express-session: Middleware for managing sessions in Express.
-12. fs: Node.js module for filesystem operations.
-13. http: Node.js module for HTTP server and client functionality.
-14. joi: Data validation library.
-15. multer: Handles multipart/form-data, which is used for file uploads.
-16. nodemon: Restarts the server when file changes are detected.
-17. socket.io: Real-time, bidirectional communication between web clients and servers.
+Technologies used in the back end.
+
+1.  @google/generative-ai (0.9.0): Google’s generative AI.
+2.  @trycourier/courier (6.1.1): Sending notifications via Courier.
+3.  bcrypt (5.1.1): Hashing passwords.
+4.  cloudinary (2.2.0): Managing and optimizing media assets.
+5.  connect-mongo (5.1.0): MongoDB session store for Express.
+6.  cors (2.8.5): Enables CORS (Cross-Origin Resource Sharing).
+7.  dayjs (1.11.11): Formatting dates.
+8.  dotenv (16.4.5): Loading environment variables from a .env file.
+9.  events (3.3.0): Node.js module for event-driven programming.
+10. express (4.19.2): Web framework for Node.js.
+11. express-session (1.18.0): Middleware for managing sessions in Express.
+12. fs (0.0.1-security): Node.js module for filesystem operations.
+13. http (0.0.1-security): Node.js module for HTTP server and client functionality.
+14. joi (17.13.1): Data validation library.
+15. multer (1.4.5-lts.1): Handles multipart/form-data, which is used for file uploads.
+16. nodemon (3.1.0): Restarts the server when file changes are detected.
+17. socket.io (4.7.5): Real-time, bidirectional communication between web clients and servers.
 
 ### Database
 
-1. mongodb: MongoDB driver for Node.js.
+Technologies used for our database.
+
+1. mongodb (6.6.1): MongoDB driver for Node.js.
+
+### Deployment
+
+Technologies used for our project deployment.
+
+1. Render: Web host for hosting full-stack applications.
 
 ### Artificial Intelligence
 
@@ -209,15 +231,19 @@ List of documentation for the technologies that we used.
 5. [MonogDB](https://www.mongodb.com/docs/)
 6. [MongoDB with NodeJS](https://learn.mongodb.com/learning-paths/using-mongodb-with-nodejs?_ga=2.245863168.561494376.1717162913-1483954595.1714368702)
 7. [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+8. [joiValidation](https://joi.dev/api/?v=17.13.0)
 
 ### Sources
 
 Other sources we used for our project.
 
-1. How to create a realtime chat room [https://www.youtube.com/watch?v=jD7FnbI76Hg]
-2. ChatGPT used to create 200 random prompts and default AI responses [https://chatgpt.com]
-3. Navbar class templates [https://flowbite.com/docs/components/navbar/]
-4. Fisher-Yates shuffling algorithm [https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array]
+1. BCIT COMP 2537 Lectures/Assignments/Resources
+2. BCIT COMP 2800 Lectures/Assignments/Resources
+3. [How to create a realtime chat room](https://www.youtube.com/watch?v=jD7FnbI76Hg)
+4. [ChatGPT used to create 200 random prompts and default AI responses](https://chatgpt.com)
+5. [Navbar class templates](https://flowbite.com/docs/components/navbar/)
+6. [Fisher-Yates shuffling algorithm](https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array)
+7. [Cloudinary image transformation](https://cloudinary.com/documentation/image_transformations)
 
 ## List of file contents
 
@@ -233,6 +259,7 @@ Root Directory:
 -   gameHandler.js
 -   geminiAI.js
 -   joiValidation.js
+-   LICENSE
 -   middleware.js
 -   package-lock.json
 -   package.json
