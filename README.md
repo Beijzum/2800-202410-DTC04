@@ -1,36 +1,36 @@
 ## Table of Contents
 
--   [Table of Contents](#table-of-contents)
--   [Dead Net](#dead-net)
--   [Project Description](#project-description)
--   [Project Link](#project-link)
--   [How to Install](#how-to-install)
--   [Technologies Used](#technologies-used)
-    -   [Front end](#front-end)
-    -   [Back end](#back-end)
-    -   [Database](#database)
-    -   [Deployment](#deployment)
-    -   [Artificial Intelligence](#artificial-intelligence)
--   [Features](#features)
-    -   [Customizable player profiles](#customizable-player-profiles)
-    -   [Leaderboards](#leaderboards)
-    -   [Chatroom](#chatroom)
-    -   [Prompt game mode](#prompt-game-mode)
--   [How to Start Playing](#how-to-start-playing)
-    -   [Account creation](#account-creation)
-    -   [Confirm your account](#confirm-your-account)
-    -   [Log into your account](#log-into-your-account)
-    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
--   [How to Play the Game](#how-to-play-the-game)
-    -   [Writing phase](#writing-phase)
-    -   [Voting phase](#voting-phase)
-    -   [Results phase](#results-phase)
--   [Licensing](#licensing)
--   [References](#references)
-    -   [Sources](#sources)
--   [List of file contents](#list-of-file-contents)
--   [Testing document](#testing-document)
--   [About Us](#about-us)
+- [Table of Contents](#table-of-contents)
+- [Dead Net](#dead-net)
+- [Project Description](#project-description)
+- [Project Link](#project-link)
+- [How to Install](#how-to-install)
+- [Technologies Used](#technologies-used)
+  - [Front end](#front-end)
+  - [Back end](#back-end)
+  - [Database](#database)
+  - [Deployment](#deployment)
+  - [Artificial Intelligence](#artificial-intelligence)
+- [Features](#features)
+  - [Customizable player profiles](#customizable-player-profiles)
+  - [Leaderboards](#leaderboards)
+  - [Chatroom](#chatroom)
+  - [Prompt game mode](#prompt-game-mode)
+- [How to Start Playing](#how-to-start-playing)
+  - [Account creation](#account-creation)
+  - [Confirm your account](#confirm-your-account)
+  - [Log into your account](#log-into-your-account)
+  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+- [How to Play the Game](#how-to-play-the-game)
+  - [Writing phase](#writing-phase)
+  - [Voting phase](#voting-phase)
+  - [Results phase](#results-phase)
+- [Licensing](#licensing)
+- [References](#references)
+  - [Sources](#sources)
+- [List of file contents](#list-of-file-contents)
+- [Testing document](#testing-document)
+- [Contact Us](#contact-us)
 
 ## Dead Net
 
@@ -397,7 +397,7 @@ This is the document we used to log our tests for the project.
 
 https://docs.google.com/spreadsheets/d/1ja54lqljkccx13j9kEcxPC7THLX6paNgrziuIq8B4dI/edit?usp=sharing
 
-## About Us
+## Contact Us
 
 Team Name: DTC-04
 Team Members :
