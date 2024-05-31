@@ -1,6 +1,8 @@
 let gameMenu = document.getElementById("gameMenu");
-// let winSound = new Audio("sfx/gameWin.mp3")
-// let loseSound = new Audio("sfx/gameLose.mp3")
+let winSound = new Audio("sfx/gameWin.mp3")
+let loseSound = new Audio("sfx/gameLose.mp3")
+winSound.volume = 0.5;
+loseSound.volume = 0.5;
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
@@ -24,12 +26,12 @@ socket.on("changeView", () => {
 });
 
 socket.on('gameWin', () => {
-    // winSound.play();
+    winSound.play();
     document.getElementById('dialogBoxWin').showModal();
 });
 
 socket.on('gameLose', () => {
-    // loseSound.play();
+    loseSound.play();
     document.getElementById('dialogBoxLose').showModal();
 });
 
