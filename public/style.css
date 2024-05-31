@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.about-box-header {
+    border-radius: 0.5rem 0.5rem 0px 0px;
+}
 
 .intense-shadow {
     box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
