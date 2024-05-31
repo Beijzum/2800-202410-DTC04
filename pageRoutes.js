@@ -155,10 +155,29 @@ router.get("/profile", async (req, res) => {
 
 });
 
-router.get("/logout", (req, res) => {
-    req.session.destroy();
-    req.session = null;
-    res.redirect("/");
+router.get("/logout", async (req, res) => {
+    console.log(`Logging out user: ${req.session.username}`);
+    try {
+        if (req.session.username) { // make sure session still exists
+            const user = await database.findUser({ "username": req.session.username }); // get user object
+            
+            await database.setLoggedInStatus(user, false); // set user's logged in status to false
+
+            req.session.destroy(err => { // destroy the session
+                if (err) {
+                    console.error('Error destroying session:', err);
+                    return res.status(500).send("Internal Server Error");
+                }
+                console.log('Session destroyed');
+                res.redirect("/"); // redirect to home page
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 router.get("/memes", (req, res) => {
