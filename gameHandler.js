@@ -87,10 +87,18 @@ function runGame(io) {
 
         // CLIENT LISTENER SECTION
 
+        // checks if response has already been sent
         socket.on("checkResponse", () => {
             let playerSession = playerList.find(player => player.originalSocketId === socket.id);
             if (!playerSession || playerSession.response === null) return;
             socket.emit("disableResponse", playerSession.response);
+        });
+
+        // checks if client has already voted
+        socket.on("checkVote", () => {
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
+            if (playerSession.voteTarget) socket.emit("disableVote", playerSession.voteTarget);
         });
 
         // when player submit response
@@ -100,9 +108,13 @@ function runGame(io) {
             if (playerSession.response === null) playerSession.response = response;
         });
 
+        // when player submits vote
         socket.on("submitVote", (socketId) => {
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
             let votedPlayer = combinedList.find(player => player.originalSocketId === socketId || player.id === socketId);
             votedPlayer.votes += 1;
+            playerSession.voteTarget = votedPlayer.id || votedPlayer.originalSocketId;
         });
 
         socket.on("disconnect", async () => {
@@ -211,6 +223,7 @@ function runGame(io) {
     ee.on("runVote", async () => {
         currentPhase = "VOTE";
         if (!gameRunning) return;
+        playerList.forEach(player => { player.voteTarget = null; });
         let voteHTML = ejs.render(voteTemplate, { players: combinedList, prompt: pool.prompts[promptIndex] });
         game.emit("changeView", voteHTML);
         prepareNextPhase(61, "runResult"); // Original duration: 61
@@ -485,7 +498,8 @@ function createGameSession(socket) {
         aliasPicture: randomAvatar,
         votes: 0,
         dead: false,
-        response: null
+        response: null,
+        voteTarget: null
     };
     return session;
 }
