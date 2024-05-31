@@ -5,6 +5,7 @@ Dead Net is a game where players must distinguish between human and AI chat bots
 In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
 
 ## Technologies Used
+The technologies that we used for the app.
 
 ### Front End:
 1. ejs: Server-side rendering of HTML templates.
@@ -37,6 +38,17 @@ In the future, we believe that there will be an increase of bad actors programmi
 ### Database
 1. mongodb: MongoDB driver for Node.js.
 
+## Features
+Features found in the app.
+
+### Leaderboards
+There is a leaderboard ranking for players with the highest amount of wins.
+
+### Chatroom
+Players can socialize in a pre-game chatroom if they are waiting for the game to start.
+
+### Prompt game mode
+In this game mode, players receive a prompt and they have to make a response to that prompt. All players and AIs have to respond to the prompt. Players must determine the AI responses and vote them out.
 
 ## How to Start Playing 
 
