@@ -1,7 +1,14 @@
 let menuToggleButton = document.getElementById("hamburgerButton");
+let navbarItems = document.getElementById("navbarItems");
 
 menuToggleButton.addEventListener("click", () => {
-    let navbarItems = document.getElementById("navbarItems");
-    if (navbarItems.className.includes("hidden")) navbarItems.className = navbarItems.className.replace("hidden", "block");
-    else navbarItems.className = navbarItems.className.replace("block", "hidden");
+    navbarItems.classList.toggle("hidden");
 });
+
+// only toggle the CSS when on homepage
+if (menuToggleButton.classList.contains("homepage-hamburger-button")) {
+    menuToggleButton.addEventListener("click", () => {
+        menuToggleButton.classList.toggle("border-2");
+        menuToggleButton.classList.toggle("light-opacity-background");
+    });
+}

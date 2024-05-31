@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: "quicksand";
+}
+
+.about-box-header {
+    border-radius: 0.5rem 0.5rem 0px 0px;
+}
 
 .intense-shadow {
     box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
@@ -46,8 +53,26 @@
     background-position: center;
 }
 
+.homepage-hamburger-button {
+    border-radius: 0.5rem 0.5rem 0px 0px;
+}
+
+.homepage-navlist {
+    margin-top: -14px;
+    margin-left: 12px;
+    margin-right: 12px;
+    border-radius: 0.5rem 0px 0.5rem 0.5rem;
+}
+
+.light-opacity-background {
+    background-color: rgba(0, 0, 0, 0.4);
+}
 
 @media screen and (min-width: 768px) {
+    .light-opacity-background {
+        background-color: transparent;
+    }
+
     /* For profile picture on desktop*/ 
     #pencilIcon {
         top: 88px;

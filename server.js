@@ -10,7 +10,7 @@ const database = require("./database");
 const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
-const { randomBytes } = require("crypto");
+const { randomBytes, sign } = require("crypto");
 const { logoutUser } = require('./database');
 // set port
 const port = process.env.PORT || 3000;
@@ -89,7 +89,8 @@ app.get("/logout", async (req, res) => {
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
-    let validationResult = joiValidation.signUpSchema.validate(req.body);
+    let { consent, ...signUp } = req.body;
+    let validationResult = joiValidation.signUpSchema.validate(signUp);
     if (validationResult.error) {
         const errorDetails = validationResult.error.details;
         const errors = errorDetails.map(detail => {
@@ -110,16 +111,23 @@ app.post("/createAccount", async (req, res) => {
             return { field: detail.context.key, message: message };
         });
         res.status(400).json({ errors: errors });
+    } else if (consent !== "on") {
+        res.status(400).json({ errors: [{ field: "privacy", message: "You must agree to the privacy policy." }] });
     } else {
-        const hash = randomBytes(12).toString('hex');
-        let errorList = await database.signUpUser({ ...req.body, hash });
-        if (errorList?.length) {
-            res.status(400).json({ errors: errorList });
-        } else {
-            const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-            await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
-            res.json({ redirectUrl: `/registerSuccess?h=${hash}` });
-            return;
+        try {   
+            const hash = randomBytes(12).toString('hex');
+            let errorList = await database.signUpUser({ ...req.body, hash });
+            if (errorList?.length) {
+                res.status(400).json({ errors: errorList });
+            } else {
+                const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
+                await email.sendEmailWithLink(req.body.email, req.body.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX");
+                res.json({ redirectUrl: `/registerSuccess?h=${hash}` });
+                return;
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ "errors": "Error accessing database" });
         }
     }
 });
@@ -129,11 +137,16 @@ app.post("/resendReg", async (req, res) => {
     const doc = await database.client.db(process.env.MONGODB_DATABASE).collection("unverifiedUsers").findOne({ "hash": hash });
 
     const link = `${req.protocol}://${req.get("host")}/verify?v=${hash}`;
-    if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
-        res.redirect(`/registerSuccess?h=${hash}`);
-    } else {
-        // This should show some error, or clientside should handle this case.
-        res.redirect("/");
+    try {
+        if (await email.sendEmailWithLink(doc.email, doc.username, link, "2T6THXEN274N58HG4QHDZ1R47XGX")) {
+            res.redirect(`/registerSuccess?h=${hash}`);
+        } else {
+            // This should show some error, or clientside should handle this case.
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ "error": "Error sending email" });
     }
 });
 
@@ -157,7 +170,14 @@ app.post("/loginAccount", async (req, res) => {
         });
         res.status(400).json({ errors: errors });
     } else {
-        let loginResult = await database.loginUser(req.body);
+        let loginResult;
+        try {        
+            loginResult = await database.loginUser(req.body);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: "Error accessing database" });
+            return;
+        }
         if (loginResult.message === undefined) {
             req.session.username = loginResult.user.username;
             req.session.profilePic = loginResult.user.profilePictureUrl;
@@ -183,7 +203,14 @@ app.post("/forgotpass", async (req, res) => {
         return;
     }
 
-    let user = await database.findUser({ "email": userEmail });
+    let user;
+    try {    
+        user = await database.findUser({ "email": userEmail });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ "error": "Error accessing database" });
+        return;
+    }
 
     if (!user) {
         res.status(404).send({ "error": "No account with specified email" });
@@ -192,11 +219,15 @@ app.post("/forgotpass", async (req, res) => {
 
     const hash = randomBytes(12).toString('hex');
     const link = `${req.protocol}://${req.get("host")}/reset?id=${hash}`;
-
-    if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
-        await database.writeResetDoc(user, hash);
-        res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
-    } else {
+    try {
+        if (await email.sendEmailWithLink(userEmail, user.username, link, "RDPCSGVYMQMG5SNGNKEDJ9PP9BEV")) {
+            await database.writeResetDoc(user, hash);
+            res.status(200).render("forgotPassSuccess.ejs", { email: userEmail });
+        } else {
+            res.status(500).send({ "error": "Error with sending email" });
+        }
+    } catch (e) {
+        console.error(e);
         res.status(500).send({ "error": "Error with sending email" });
     }
 });
@@ -254,20 +285,60 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
     const databaseServer = database.client.db(process.env.MONGODB_DATABASE);
     const userCollection = databaseServer.collection('users');
 
-    let buf64 = req.file.buffer.toString('base64');
-    cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64, async function (result) {
-        try {
+    if(!req.file.mimetype.includes("image")) {
+        res.status(400).send({error: "Uploaded file is an unsupported format"});
+        return;
+    }
+
+    let buf64;
+    try {
+        buf64 = req.file.buffer.toString('base64');
+    } catch (e) {
+        // This will most likely be a file too large error, but it could be something else so it's non-specific
+        console.error(e);
+        res.status(400).send({error: "Error uploading file"});
+        return;
+    }
+    let cloudinaryResponse;
+    cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64)
+    .then(async (result)  => {
             await userCollection.updateOne(
                 { username: req.session.username },
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             req.session.profilePic = result.secure_url;
-            console.log(`${req.session.username} has updated their profile picture`);
-            res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: result.secure_url });
-        } catch (error) {
-            console.error(`${req.session.username} failed to update their profile picture: `, error);
-            res.status(500).send({ error: 'Failed to Update Profile Picture' });
+            cloudinaryResponse = result;
+        })
+        .then(() => res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: cloudinaryResponse.secure_url }))
+        .catch((error) => {
+        console.error(error);
+
+        if (error.message.includes("Invalid api")) {
+            res.status(500).send({error: "Server failed to authenticate with cloudinary"});
+            return;
         }
+
+        if (error.message.includes("network")) {
+            res.status(500).send({error: "Network error occurred"});
+            return;
+        }
+
+        if (error.message.includes("rate limit")) {
+            res.status(500).send({error: "Rate limit exceeded, please try again later."});
+            return;
+        }
+
+        if (error.message.includes("File size")) {
+            res.status(400).send({error: "Uploaded file is too large"});
+            return;
+        } 
+        
+        if (error.message.includes("Unknown format") || error.message.includes("Invalid image")) {
+            res.status(400).send({error: "Uploaded file is an unsupported format"});
+            return;
+        }
+
+        res.status(error.http_code || 500).send({error: "Unexpected error occurred"});
     });
 
 });
