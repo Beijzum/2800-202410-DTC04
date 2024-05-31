@@ -1,23 +1,42 @@
 ## Deadnet
-This is a social deduction game similar to famous titles like among us or the mafia card game. The game is a type of social deduction games where users must use their reasoning and deduction skills in voting out who the AI is. 
+Dead Net is a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. 
 
 ## About the Project
-Setting the scene in the future 50 years from now, we created a what if situation regarding the Dead Net Theory(Citations Here). Assuming the continuos improvement of AI and Automation can spell the doom of humanities. We intend by developing this fun social deduction game we can start educating users how AI think and allow them to distinguish AI from Humans. By also having other human players participate we can replicate a more realistic scenario if ever an AI tries to disguise as a human. 
+In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
 
-## Installing 
-Clone the Repo
-    ```sh
-    git clone https://github.com/Beijzum/2800-202410-DTC04.git
-    ```
-Go to file explorer and locate the directory
-Open Git Bash and Type
-    ```sh
-    npm install
-    ```
-Create an .env file 
-    ```sh
-    To be Completed
-    ```
+## Technologies Used
+
+### Front End:
+1. ejs: Server-side rendering of HTML templates.
+2. flowbite: Tailwind CSS component library.
+3. tailwind: CSS framework.
+4. tailwindcss: Tailwind CSS framework.
+5. postcss: Transforms styles with JavaScript plugins.
+6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes. 
+7. vite: A frontend build tool.
+
+### Back End:
+1. @google/generative-ai: Google’s generative AI.
+2. @trycourier/courier: Sending notifications via Courier.
+3. bcrypt: Hashing passwords.
+4. cloudinary: Managing and optimizing media assets.
+5. connect-mongo: MongoDB session store for Express.
+6. cors: Enables CORS (Cross-Origin Resource Sharing).
+7. dayjs: Formatting dates.
+8. dotenv: Loading environment variables from a .env file.
+9. events: Node.js module for event-driven programming.
+10. express: Web framework for Node.js.
+11. express-session: Middleware for managing sessions in Express.
+12. fs: Node.js module for filesystem operations.
+13. http: Node.js module for HTTP server and client functionality.
+14. joi: Data validation library.
+15. multer: Handles multipart/form-data, which is used for file uploads.
+16. nodemon: Restarts the server when file changes are detected.
+17. socket.io: Real-time, bidirectional communication between web clients and servers.
+
+### Database
+1. mongodb: MongoDB driver for Node.js.
+
 
 ## How to Start Playing 
 
@@ -87,7 +106,6 @@ Root Directory:.
 |   server.js
 |   socketConstants.js
 |   tailwind.config.js
-|   Tree.txt
 |   websocket.js
 |   
 +---documentation
