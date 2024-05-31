@@ -1,31 +1,32 @@
 ## Table of Contents
-- [Table of Contents](#table-of-contents)
-- [Dead Net](#dead-net)
-- [Project Description](#project-description)
-- [How to Install](#how-to-install)
-- [Technologies Used](#technologies-used)
-  - [Front end:](#front-end)
-  - [Back end:](#back-end)
-  - [Database](#database)
-  - [Artificial Intelligence](#artificial-intelligence)
-- [Features](#features)
-  - [Customizable player profiles](#customizable-player-profiles)
-  - [Leaderboards](#leaderboards)
-  - [Chatroom](#chatroom)
-  - [Prompt game mode](#prompt-game-mode)
-- [How to Start Playing](#how-to-start-playing)
-  - [Account creation](#account-creation)
-  - [Confirm your account](#confirm-your-account)
-  - [Log into your account](#log-into-your-account)
-  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
-- [How to Play the Game](#how-to-play-the-game)
-  - [Writing phase](#writing-phase)
-  - [Voting phase](#voting-phase)
-  - [Results phase](#results-phase)
-- [Licensing](#licensing)
-- [References](#references)
-- [List of file contents](#list-of-file-contents)
-- [About Us](#about-us)
+
+-   [Table of Contents](#table-of-contents)
+-   [Dead Net](#dead-net)
+-   [Project Description](#project-description)
+-   [How to Install](#how-to-install)
+-   [Technologies Used](#technologies-used)
+    -   [Front end:](#front-end)
+    -   [Back end:](#back-end)
+    -   [Database](#database)
+    -   [Artificial Intelligence](#artificial-intelligence)
+-   [Features](#features)
+    -   [Customizable player profiles](#customizable-player-profiles)
+    -   [Leaderboards](#leaderboards)
+    -   [Chatroom](#chatroom)
+    -   [Prompt game mode](#prompt-game-mode)
+-   [How to Start Playing](#how-to-start-playing)
+    -   [Account creation](#account-creation)
+    -   [Confirm your account](#confirm-your-account)
+    -   [Log into your account](#log-into-your-account)
+    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+-   [How to Play the Game](#how-to-play-the-game)
+    -   [Writing phase](#writing-phase)
+    -   [Voting phase](#voting-phase)
+    -   [Results phase](#results-phase)
+-   [Licensing](#licensing)
+-   [References](#references)
+-   [List of file contents](#list-of-file-contents)
+-   [About Us](#about-us)
 
 ## Dead Net
 
@@ -121,6 +122,10 @@ The technologies that we used for the app.
 GeminiAI, Google’s generative AI, is one of our main features in this web app. AI chatbots are used as core game mechanic in our game flow. They are used to create AI-generated responses depending on the prompt it is given during the course of the game.
 
 We have also programmed the AI to receive instructions, which essentially creates personalities for the AI. Some instructions we created for the chatbots can replicate human language and speech patterns. Other chatbots will have instructions that make it easier to detect, so that players of all levels can enjoy the game.
+
+We also used AI to generate our 200 in-game prompts. Each team member had to meticuously comb through the prompts for any potential issues such as confusing wording or obscure topics.
+
+AI chatbots have a limit to how many requests you can make within a timeframe. For Gemini AI, we found that there is a hard limit of 40 requests per day. That is why we had to pivot to the prompt game mode during our app development process because our initial plan was to have players and AIs converse with each other to discover their identities. Each AI response is 1 request and a full game would have used up the daily limit.
 
 ## Features
 
