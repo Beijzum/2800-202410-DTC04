@@ -69,6 +69,9 @@ function handleWriteView() {
         submitButton.value = buttonMessage;
     }
 
+    // check to see if client already sent a response
+    socket.emit("checkResponse");
+
     if (!playing) {
         disableInputs("You Are Spectating");
         return;
@@ -82,12 +85,24 @@ function handleWriteView() {
         disableInputs("Response Received");
         socket.emit("submitResponse", responseArea.value);
     });
-
-    socket.on("retrieveResponse", () => {
-        if (!playing) return;
-        socket.emit("submitResponse", responseArea.value);
+    
+    // runs when client has already sent a response
+    socket.once("disableResponse", (originalResponse) => {
+        let responseArea = document.getElementById("promptResponse");
+        responseArea.value = originalResponse;
+        disableInputs("Response Received");
     });
 }
+
+// SOCKET LISTENERS ON WRITE SCREEN
+
+socket.on("retrieveResponse", () => {
+    if (!playing) return;
+    let responseArea = document.getElementById("promptResponse");
+    socket.emit("submitResponse", responseArea.value);
+});
+
+
 
 /**
  * Handles the game view for the vote phase.
