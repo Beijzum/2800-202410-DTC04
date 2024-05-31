@@ -5,6 +5,7 @@ winSound.volume = 0.1;
 loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
+    if (!playing) return;
     let currentView = gameMenu.children[0];
     switch (currentView.id) {
         case "writeView":
@@ -69,6 +70,9 @@ function handleWriteView() {
         submitButton.value = buttonMessage;
     }
 
+    // check to see if client already sent a response
+    socket.emit("checkResponse");
+
     if (!playing) {
         disableInputs("You Are Spectating");
         return;
@@ -82,12 +86,22 @@ function handleWriteView() {
         disableInputs("Response Received");
         socket.emit("submitResponse", responseArea.value);
     });
-
-    socket.on("retrieveResponse", () => {
-        if (!playing) return;
-        socket.emit("submitResponse", responseArea.value);
+    
+    // runs when client has already sent a response
+    socket.once("disableResponse", (originalResponse) => {
+        let responseArea = document.getElementById("promptResponse");
+        responseArea.value = originalResponse;
+        disableInputs("Response Received");
     });
 }
+
+// SOCKET LISTENERS ON WRITE SCREEN
+
+socket.on("retrieveResponse", () => {
+    if (!playing) return;
+    let responseArea = document.getElementById("promptResponse");
+    socket.emit("submitResponse", responseArea.value);
+});
 
 /**
  * Handles the game view for the vote phase.
@@ -98,6 +112,9 @@ function handleVoteView() {
     let voted = false;
     let selected = false;
     let responseCards = document.querySelectorAll(".responseCard");
+
+    // check if player previously voted
+    socket.emit("checkVote");
 
     responseCards.forEach((card) => {
 
@@ -139,5 +156,13 @@ function handleVoteView() {
             hideButtons(false);
             selected = true;
         });
+    });
+    
+    socket.once("disableVote", (voteTarget) => {
+        let votedCard = document.getElementById(voteTarget);
+        if (!votedCard) return;
+        voted = true;
+        votedCard.className = votedCard.className.replace("bg-white", "bg-gray-200");
+        votedCard.className += " opacity-75";
     });
 }
