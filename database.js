@@ -95,7 +95,7 @@ async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
             let result = await findUser({ email: requestBody.email });
-            let sessionResult = checkSessionExists(result, result.sessionID);
+            let sessionResult = checkSessionExists(result, requestBody.sessionID);
             if (result) {
                 if (sessionResult) {
                     res({ message: "User is already logged in" });

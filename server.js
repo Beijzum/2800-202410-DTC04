@@ -172,7 +172,7 @@ app.post("/loginAccount", async (req, res) => {
     } else {
         let loginResult;
         try {        
-            loginResult = await database.loginUser(req.body);
+            loginResult = await database.loginUser({...req.body, sessionID: req.sessionID});
         } catch (error) {
             console.error(error);
             res.status(500).send({ message: "Error accessing database" });
