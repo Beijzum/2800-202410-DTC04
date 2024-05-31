@@ -94,9 +94,9 @@ async function signUpUser(requestBody) {
 async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
-            let result = await findUser({ email: requestBody.email });
-            let sessionResult = checkSessionExists(result, result.sessionID);
+            let result = await findUser({ email: requestBody.email }); // user document
             if (result) {
+                let sessionResult = checkSessionExists(result, result.sessionID);
                 if (sessionResult) {
                     res({ message: "User is already logged in" });
                     return;
@@ -126,16 +126,16 @@ async function loginUser(requestBody) {
  * @param {Boolean} status status to set
  * @returns query result from users collection
  */
-async function setLoggedInStatus(user, status) {
-    try {
-        let database = client.db(process.env.MONGODB_DATABASE);
-        let users = database.collection("users");
-
-        await users.updateOne({ username: user.username }, { $set: { loggedIn: status } });
-    } catch (e) {
-        console.error("Set LoggedIn Status Error: ", e);
-    }
-}
+// async function setLoggedInStatus(user, status) {
+//     try {
+//         let database = client.db(process.env.MONGODB_DATABASE);
+//         let users = database.collection("users");
+        
+//         await users.updateOne({ username: user.username }, { $set: { loggedIn: status } });
+//     } catch (e) {
+//         console.error("Set LoggedIn Status Error: ", e);
+//     }
+// }
 
 async function updateSessionID(user, sessionID) {
     try {
@@ -338,7 +338,6 @@ module.exports = {
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser,
-    setLoggedInStatus: setLoggedInStatus,
     sessionConfig: sessionConfig,
     updateSessionID: updateSessionID
 };
