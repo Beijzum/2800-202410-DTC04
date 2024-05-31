@@ -4,6 +4,39 @@ Dead Net is a game where players must distinguish between human and AI chat bots
 ## About the Project
 In the future, we believe that there will be an increase of bad actors programming malicious AI to scam, defraud, and misinform the general population. We are developing a game where players must distinguish between human and AI chat bots to combat the rise of malicious AI. We believe that a gaming environment is the best way to teach people strategies on how to detect AI-generated content because games will provide consistent positive feedback to users, which helps to reinforce their behaviour regarding AI.
 
+## How to Install 
+1. Clone the Repo
+    ```sh
+    git clone https://github.com/Beijzum/2800-202410-DTC04.git
+    ```
+2. Go to cmd/terminal and locate the directory of the cloned project
+3. Open terminal and Type
+    ```sh
+    npm install
+    ```
+4. Create a MongoDb Server
+5. Create Cloudinary Server
+6. Create an .env file 
+    ```sh
+    MONGO_URI=[MongoDB URi]
+    GEMINI_API_KEY=[Your Gemini API]
+    MONGODB_PROTOCOL=mongodb+srv
+    MONGODB_USER=[MongoDB User]
+    MONGODB_PASSWORD=[MongoDB User Password]
+    MONGODB_HOST=deadnet.vfbs8jn.mongodb.net
+    MONGODB_DATABASE=userdata
+    NODE_SESSION_SECRET=Javascript_is_Cool (Recommended to use a UID Generator)
+    MONGODB_SESSION_SECRET=MongoDB_is_Cool (Recommended to use a UID Generator)
+    CLOUDINARY_CLOUD_NAME=[Cloudinary Cloud Name]
+    CLOUDINARY_CLOUD_KEY=[Cloudinary Cloud Key]
+    CLOUDINARY_CLOUD_SECRET=Cloudinary_is_Cool (Recommended to use a UID Generator)
+    COURIER_TOKEN=Cloudinary_is_always_Cool (Recommended to use a UID Generator)
+    ```
+7. Open Terminal while in the project directory and type
+```nodemon server.js```
+8. Go to your Local Browswer (Chrome, Edge, Firefox. etc..) and go to 
+localhost:3000
+
 ## Technologies Used
 
 ### Front End:
