@@ -281,7 +281,7 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
         res.status(400).send({error: "Error uploading file"});
         return;
     }
-
+    let cloudinaryResponse;
     cloudinary.uploader.upload("data:image/octet-stream;base64," + buf64)
     .then(async (result)  => {
             await userCollection.updateOne(
@@ -289,8 +289,9 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
                 { $set: { profilePictureUrl: result.secure_url } }
             );
             req.session.profilePic = result.secure_url;
+            cloudinaryResponse = result;
         })
-        .then(() => res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: result.secure_url }))
+        .then(() => res.status(200).send({ message: 'Profile Picture Updated!', imageUrl: cloudinaryResponse.secure_url }))
         .catch((error) => {
         console.error(error);
 
