@@ -5,8 +5,8 @@
 - [Project Description](#project-description)
 - [How to Install](#how-to-install)
 - [Technologies Used](#technologies-used)
-  - [Front end:](#front-end)
-  - [Back end:](#back-end)
+  - [Front end](#front-end)
+  - [Back end](#back-end)
   - [Database](#database)
   - [Artificial Intelligence](#artificial-intelligence)
 - [Features](#features)
@@ -40,21 +40,23 @@ In the future, we believe that there will be an increase of bad actors programmi
 
 Instructions on how to assemble this project's development environment on your computer.
 
-1. Download and install Visual Studio Code
-2. Clone the repository
+1. Download and install Visual Studio Code from [here](https://code.visualstudio.com/).
+2. Download and install Node.js from [nodejs.org](https://nodejs.org/).
+3. Download and install Git from [git-scm.com](https://git-scm.com/).
+4. Clone the repository
     ```sh
     git clone https://github.com/Beijzum/2800-202410-DTC04.git
     ```
-3. Go to cmd/terminal and locate the directory of the cloned project
-4. Open the command terminal and type:
+5. Go to cmd/terminal and locate the directory of the cloned project
+6. Open the command terminal and type:
     ```sh
     npm install
     ```
-5. Create a MongoDb server and grab the relevant information
-6. Create Cloudinary server and grab the relevant information
-7. Create a GeminiAPI key
-8. Create an .env file in the project directory
-    ```sh
+7. Create a MongoDb server and grab the relevant information
+8. Create Cloudinary server and grab the relevant information
+9. Create a GeminiAPI key
+10. Create an .env file in the project directory
+    ```js
     PORT=3000 (or any other number)
     MONGO_URI=[MongoDB URi]
     GEMINI_API_KEY=[Your Gemini API]
@@ -70,20 +72,20 @@ Instructions on how to assemble this project's development environment on your c
     CLOUDINARY_CLOUD_SECRET=Cloudinary_is_Cool (Recommended to use a UID Generator)
     COURIER_TOKEN=Cloudinary_is_always_Cool (Recommended to use a UID Generator)
     ```
-9. Open the command terminal while in the project directory and type
-    ```
+11. Open the command terminal while in the project directory and type
+    ```sh
     nodemon server.js
     or
     npm run dev
     ```
-10. Go to your local browser (Chrome, Edge, Firefox. etc.) and go to
+12. Go to your local browser (Chrome, Edge, Firefox. etc.) and go to
     localhost:3000 (your chosen port number)
 
 ## Technologies Used
 
 The technologies that we used for the app.
 
-### Front end:
+### Front end
 
 1. ejs: Server-side rendering of HTML templates.
 2. flowbite: Tailwind CSS component library.
@@ -93,7 +95,7 @@ The technologies that we used for the app.
 6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes.
 7. vite: A frontend build tool.
 
-### Back end:
+### Back end
 
 1. @google/generative-ai: Google’s generative AI.
 2. @trycourier/courier: Sending notifications via Courier.
@@ -192,6 +194,8 @@ If there are still AIs present in the game, then the AIs will randomly choose a 
 Afterwards, the game will continue into the next round with a new random prompt until the humans or AIs claim victory.
 
 ## Licensing
+
+This project is licensed under the MIT License. // Add MIT license thing here.
 
 ## References
 
