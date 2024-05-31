@@ -22,7 +22,7 @@ document.getElementById("forgotForm").addEventListener("submit", async (e) => {
     if (response.ok) {
         document.querySelector("main").innerHTML = await response.text();
     }
-    else if (response.status >= 400 && response.status < 500) { // TODO: handle response; check status, add error to main element
+    else if (response.status >= 400 && response.status < 500) {
         const label = document.querySelector("label");
         label.textContent = (await response.json()).error;
 
