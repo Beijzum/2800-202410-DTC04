@@ -1,8 +1,8 @@
 let gameMenu = document.getElementById("gameMenu");
 let winSound = new Audio("sfx/gameWin.mp3")
 let loseSound = new Audio("sfx/gameLose.mp3")
-winSound.volume = 0.5;
-loseSound.volume = 0.5;
+winSound.volume = 0.1;
+loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
     let currentView = gameMenu.children[0];
