@@ -10,10 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Function to hide the dialog
-    // change this function later to redirect to lobby
     const hideDialog = () => {
         window.location.href = "/lobby";
-        // dialogBox.close();
     };
 
     // Event listeners
