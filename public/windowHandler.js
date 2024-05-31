@@ -45,17 +45,17 @@ socket.on("timerUpdate", (time) => {
     let currentView = document.getElementById("gameMenu").children[0]?.id;
     if (currentView === "writeView" || currentView === "voteView") {
         let seconds = Number(time.substr(2, 2));
-        if (seconds <= 10 && Number(time[0]) === 0) 
+        if (seconds <= 10 && Number(time[0]) === 0)
             timeDisplay.className = timeDisplay.className.replace("text-white", "text-red-500");
     } else timeDisplay.className = timeDisplay.className.replace("text-red-500", "text-white");
-    
+
     timeDisplay.innerHTML = `Time Left: ${time}`;
 });
 
 socket.on("updateStatus", (newHTML) => {
     statusBar.innerHTML = newHTML;
-})
+});
 
 socket.on("notPlaying", () => {
     playing = false;
-})
+});
