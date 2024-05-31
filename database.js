@@ -126,21 +126,28 @@ async function logoutUser(username) {
  * @param {Boolean} status status to set
  * @returns query result from users collection
  */
-async function setLoggedInStatus(username, status) {
-    try {
-        let database = client.db(process.env.MONGODB_DATABASE);
-        let users = database.collection("users");
+function setLoggedInStatus(username, status) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const database = client.db(process.env.MONGODB_DATABASE);
+            const users = database.collection("users");
 
-        const result = await users.updateOne({ username: username }, { $set: { loggedIn: status } });
-        if (result.matchedCount === 0) {
-            console.error(`No user found with username: ${username}`);
-        } else {
-            console.log(`User ${username} loggedIn status set to ${status}`);
+            const result = await users.updateOne({ username: username }, { $set: { loggedIn: status } });
+            if (result.matchedCount === 0) {
+                const errorMessage = `No user found with username: ${username}`;
+                console.error(errorMessage);
+                reject(new Error(errorMessage));
+            } else {
+                console.log(`User ${username} loggedIn status set to ${status}`);
+                resolve();
+            }
+        } catch (e) {
+            console.error("Set LoggedIn Status Error: ", e);
+            reject(e);
         }
-    } catch (e) {
-        console.error("Set LoggedIn Status Error: ", e);
-    }
+    });
 }
+
 
 
 
