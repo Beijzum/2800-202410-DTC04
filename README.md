@@ -195,7 +195,7 @@ Afterwards, the game will continue into the next round with a new random prompt 
 
 ## Licensing
 
-This project is licensed under the MIT License. // Add MIT license thing here.
+This project is licensed under the MIT License. You can find it [here.](./LICENSE)
 
 ## References
 
