@@ -8,7 +8,7 @@ const MongoStore = require("connect-mongo");
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
     crypto: { secret: process.env.MONGODB_SESSION_SECRET }
-})
+});
 
 const client = new MongoClient(databaseLink, {
     serverApi: {
@@ -57,7 +57,7 @@ async function signUpUser(requestBody) {
                 loseCount: 0,
                 dateCreated: new Date(),
                 hash: requestBody.hash
-            }
+            };
 
             await users.insertOne(writeQuery);
             console.log(`${requestBody.username} has successfully been registered`);
@@ -270,4 +270,4 @@ module.exports = {
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
     promoteUnverifiedUser: promoteUnverifiedUser
-}
+};
