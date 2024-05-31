@@ -159,7 +159,6 @@ function handleVoteView() {
     });
     
     socket.once("disableVote", (voteTarget) => {
-        console.log(voteTarget);
         let votedCard = document.getElementById(voteTarget);
         if (!votedCard) return;
         voted = true;
