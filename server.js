@@ -20,9 +20,6 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-// requirements for cloudinary
-const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
-
 const cloudinary = require('cloudinary');
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -71,8 +68,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
-
-
 // POST ROUTES SECTION
 
 app.post("/createAccount", async (req, res) => {
@@ -110,8 +105,6 @@ app.post("/createAccount", async (req, res) => {
         }
     }
 });
-
-
 
 app.post("/resendReg", async (req, res) => {
     const { hash } = req.body;
@@ -156,10 +149,6 @@ app.post("/loginAccount", async (req, res) => {
         }
     }
 });
-
-
-
-
 
 app.post("/forgotpass", async (req, res) => {
     if (req.session.username) {
@@ -265,14 +254,13 @@ app.post('/uploadProfilePic', upload.single('image'), async (req, res) => {
 
 });
 
-
-
+// Start the server
 startServer();
 
 async function startServer() {
     let connection = await database.client.connect();
     if (connection.topology.isConnected()) {
-        const server = app.listen(port, () => {
+        server.listen(port, () => {
             console.log(`Database succesfully connected, now listening to port ${port}`);
         });
 
