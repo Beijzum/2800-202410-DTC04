@@ -179,8 +179,10 @@ app.post("/loginAccount", async (req, res) => {
             return;
         }
         if (loginResult.message === undefined) {
+            database.updateSessionID(loginResult.user.username, req.session.id);
             req.session.username = loginResult.user.username;
             req.session.profilePic = loginResult.user.profilePictureUrl;
+            
             res.redirect("/");
         } else {
             res.status(400).json({ message: loginResult.message });

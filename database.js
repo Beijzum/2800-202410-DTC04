@@ -25,8 +25,7 @@ const sessionConfig = session({
     saveUninitialized: false,
     cookie: {
         secure: false,
-        maxAge:  60 * 1000 // 1 minute
-        // 12 * 60 * 60 * 1000
+        maxAge:  12 * 60 * 60 * 1000 // 12 hours
     },
     store: storage,
     unset: "destroy"
@@ -96,14 +95,13 @@ async function loginUser(requestBody) {
         try {
             let result = await findUser({ email: requestBody.email });
             if (result) {
-                let sessionResult = checkSessionExists(result, requestBody.sessionID);
+                let sessionResult = await checkSessionExists(result);
                 if (sessionResult) {
                     res({ message: "User is already logged in" });
                     return;
                 }
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
-                    updateSessionID(result, result.id);
                     res({ user: result });
                     return;
                 } else {
@@ -119,43 +117,26 @@ async function loginUser(requestBody) {
     });
 }
 
-/**
- * Sets the loggedIn status of a user.
- * 
- * @param {String} username username of the user to update
- * @param {Boolean} status status to set
- * @returns query result from users collection
- */
-// async function setLoggedInStatus(user, status) {
-//     try {
-//         let database = client.db(process.env.MONGODB_DATABASE);
-//         let users = database.collection("users");
-        
-//         await users.updateOne({ username: user.username }, { $set: { loggedIn: status } });
-//     } catch (e) {
-//         console.error("Set LoggedIn Status Error: ", e);
-//     }
-// }
-
 async function updateSessionID(user, sessionID) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
         let users = database.collection("users");
-
-        await users.updateOne({ username: user.username }, { $set: { sessionID: sessionID } });
+        console.log("database.js user: ", user)
+        console.log("database.js sessionID: ", sessionID);
+        await users.updateOne({ username: user }, { $set: { sessionID: sessionID } });
     }
     catch (e) {
         console.error("Set Session ID Error: ", e);
     }
 }
 
-async function checkSessionExists(user, sessionID) {
+async function checkSessionExists(user) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
-        let users = database.collection("users");
+        let sessions = database.collection("sessions");
 
-        let result = await users.findOne({ username: user.username });
-        if (result.sessionID === sessionID) {
+        let result = await sessions.findOne({ _id: user.sessionID });
+        if (result) {
             return true;
         }
         return false;
