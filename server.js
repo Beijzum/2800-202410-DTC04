@@ -62,18 +62,19 @@ app.use(require("./pageRoutes"));
 // GET ROUTES SECTION
 
 app.get("/logout", async (req, res) => {
+    console.log(`Logging out user: ${req.session.username}`);
     try {
-        if (req.session.username) {
-            console.log(`Logging out user: ${req.session.username}`);
-            await database.setLoggedInStatus(req.session.username, false); // Call the logoutUser function
+        if (req.session.username) { // make sure session still exists
+            
+            await database.setLoggedInStatus(req.session.username, false); // set user's logged in status to false
 
-            req.session.destroy(err => {
+            req.session.destroy(err => { // destroy the session
                 if (err) {
                     console.error('Error destroying session:', err);
                     return res.status(500).send("Internal Server Error");
                 }
                 console.log('Session destroyed');
-                res.redirect("/");
+                res.redirect("/"); // redirect to home page
             });
         } else {
             res.redirect("/");
