@@ -11,7 +11,7 @@ const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
 const { randomBytes } = require("crypto");
-
+const { logoutUser } = require('./database');
 // set port
 const port = process.env.PORT || 3000;
 
@@ -62,11 +62,29 @@ app.use(require("./pageRoutes"));
 
 // GET ROUTES SECTION
 
-app.get("/logout", (req, res) => {
-    req.session.destroy();
-    req.session = null;
-    res.redirect("/");
+app.get("/logout", async (req, res) => {
+    try {
+        if (req.session.username) {
+            console.log(`Logging out user: ${req.session.username}`);
+            await database.logoutUser(req.session.username); // Call the logoutUser function
+
+            req.session.destroy(err => {
+                if (err) {
+                    console.error('Error destroying session:', err);
+                    return res.status(500).send("Internal Server Error");
+                }
+                console.log('Session destroyed');
+                res.redirect("/");
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).send("Internal Server Error");
+    }
 });
+
 
 // POST ROUTES SECTION
 
