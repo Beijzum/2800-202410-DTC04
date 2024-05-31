@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: "quicksand";
+}
+
 .about-box-header {
     border-radius: 0.5rem 0.5rem 0px 0px;
 }
