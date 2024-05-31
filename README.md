@@ -7,7 +7,7 @@ In the future, we believe that there will be an increase of bad actors programmi
 ## Technologies Used
 The technologies that we used for the app.
 
-### Front End:
+### Front end:
 1. ejs: Server-side rendering of HTML templates.
 2. flowbite: Tailwind CSS component library.
 3. tailwind: CSS framework.
@@ -16,7 +16,7 @@ The technologies that we used for the app.
 6. autoprefixer: PostCSS plugin to parse CSS and add vendor prefixes. 
 7. vite: A frontend build tool.
 
-### Back End:
+### Back end:
 1. @google/generative-ai: Google’s generative AI.
 2. @trycourier/courier: Sending notifications via Courier.
 3. bcrypt: Hashing passwords.
@@ -41,6 +41,9 @@ The technologies that we used for the app.
 ## Features
 Features found in the app.
 
+### Customizable player profiles
+Players are able to change their picture profiles, change their password, and check their stats in their profile page.
+
 ### Leaderboards
 There is a leaderboard ranking for players with the highest amount of wins.
 
@@ -51,24 +54,37 @@ Players can socialize in a pre-game chatroom if they are waiting for the game to
 In this game mode, players receive a prompt and they have to make a response to that prompt. All players and AIs have to respond to the prompt. Players must determine the AI responses and vote them out.
 
 ## How to Start Playing 
+Instructions on how to get started on playing the game.
 
-### Account Creation: 
-You must register an account using a valid email.
+### Account creation: 
+You must register an account using a valid email. Emails must be a valid email (e.g. email@email.com)
 
-### Confirm your Account
-You will receive a confirmation in your inbox, click confirm and you will be redirected to the game.
-### Play the Game 
-Click on play, which you will be directed to the lobby while waiting for other players.
+Passwords must be at least 5 characters long and include at least one lowercase letter, one uppercase letter, one special character (@#$%^&+!.=), and one number. (e.g Asd!23)
 
-### During In Game 
-You must answer the prompt given to you.
+### Confirm your account
+You will receive an email confirmation in your inbox. Click confirm and you will be redirected to a confirmation page in the web app.
 
-### Voting Phase
-You will vote out who you think is an AI. 
+### Log into your account
+You must be logged in to play Dead Net.
 
-### Cycle
-The same process of writing prompts and voting will repeat until all players are voted out or all the AI are voted out 
+### Enter the pre-game chat lobby
+Once you click on the "Play" button in the landing page or in the navbar, you will be redirected to a chat lobby where you can socialize with other players while you wait for the game to start. Once a minimum of **three** players is in the lobby and they have pressed the ready button, they will be redirected to a game instance after a countdown.
 
+## Playing the Game
+Instructions for playing the game.
+
+### Writing phase
+One random prompt will be shared with all players and AIs in the game session. Everyone will type **one** response to that prompt and submit the response before the time runs out. 
+
+### Voting phase
+Players will have to decide which response seems like the most AI-generated. You may only vote for **one** player.
+
+### Results phase
+The most voted player will be **eliminated** from the game. If players vote all the AIs out, then they win. 
+
+If there are still AIs present in the game, then the AIs will randomly choose a player to eliminate from the game. The AIs will win when there are more AIs than humans.
+
+Afterwards, the game will continue into the next round with a new random prompt until the humans or AIs claim victory.
 
 ## About Us
 Team Name: DTC-04
