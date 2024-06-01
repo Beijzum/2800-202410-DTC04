@@ -29,21 +29,6 @@ const multer = require('multer');
 const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage });
 
-// session configuration
-
-// const sessionConfig = session({
-//     secret: process.env.NODE_SESSION_SECRET,
-//     resave: true,
-//     saveUninitialized: false,
-//     cookie: {
-//         secure: false,
-//         maxAge:  60 * 1000 // 1 minute
-//         // 12 * 60 * 60 * 1000
-//     },
-//     store: database.mongoSessionStorage,
-//     unset: "destroy"
-// });
-
 app.use(database.sessionConfig);
 
 // set up ejs
@@ -58,32 +43,6 @@ app.use(middleware.originUrl);
 // set up routes
 app.use(express.static(__dirname + "/public"));
 app.use(require("./pageRoutes"));
-
-// GET ROUTES SECTION
-
-// app.use(async (req, res, next) => {
-//     if (req.session.userId) {
-//         const now = new Date();
-//         const sessionExpiry = new Date(req.session.cookie.expires);
-        
-//         // Check if the session has expired
-//         if (now > sessionExpiry) {
-//             // Set loggedIn status to false in the database
-//             await database.setLoggedInStatus(req.session.username, false);
-            
-//             // Destroy the session
-//             req.session.destroy(err => {
-//                 if (err) {
-//                     console.error('Failed to destroy session:', err);
-//                     return next(err);
-//                 }
-//                 console.log('Session destroyed due to expiration.');
-//             });
-//         }
-//     }
-//     next();
-// });
-
 
 
 // POST ROUTES SECTION
