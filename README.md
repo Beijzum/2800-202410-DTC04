@@ -361,7 +361,6 @@ Root Directory:
 
 -   views
     -   404.ejs
-    -   defeat.ejs
     -   error.ejs
     -   forgotpass.ejs
     -   forgotPassSuccess.ejs
@@ -378,8 +377,6 @@ Root Directory:
     -   reset.ejs
     -   signUp.ejs
     -   verify.ejs
-    -   victory.ejs
-    -   votingScreenSample.ejs
     -   templates
         -   chatBar.ejs
         -   credentialField.ejs
@@ -394,7 +391,6 @@ Root Directory:
         -   navbarItem.ejs
         -   postGameModalLose.ejs
         -   postGameModalWin.ejs
-        -   responseCard.ejs
         -   websocketImport.ejs
 
 ## Contact Us
