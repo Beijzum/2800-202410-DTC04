@@ -5,7 +5,6 @@ winSound.volume = 0.1;
 loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
-    if (!playing) return;
     let currentView = gameMenu.children[0];
     switch (currentView.id) {
         case "writeView":
@@ -91,7 +90,8 @@ function handleWriteView() {
     socket.once("disableResponse", (originalResponse) => {
         let responseArea = document.getElementById("promptResponse");
         responseArea.value = originalResponse;
-        disableInputs("Response Received");
+        if (originalResponse) disableInputs("Response Received");
+        else disableInputs("You Are Dead");
     });
 }
 
