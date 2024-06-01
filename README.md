@@ -1,36 +1,36 @@
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Dead Net](#dead-net)
-- [Project Description](#project-description)
-- [Project Link](#project-link)
-- [How to Install](#how-to-install)
-- [Technologies Used](#technologies-used)
-  - [Front end](#front-end)
-  - [Back end](#back-end)
-  - [Database](#database)
-  - [Deployment](#deployment)
-  - [Artificial Intelligence](#artificial-intelligence)
-- [Features](#features)
-  - [Customizable player profiles](#customizable-player-profiles)
-  - [Leaderboards](#leaderboards)
-  - [Chatroom](#chatroom)
-  - [Prompt game mode](#prompt-game-mode)
-- [How to Start Playing](#how-to-start-playing)
-  - [Account creation](#account-creation)
-  - [Confirm your account](#confirm-your-account)
-  - [Log into your account](#log-into-your-account)
-  - [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
-- [How to Play the Game](#how-to-play-the-game)
-  - [Writing phase](#writing-phase)
-  - [Voting phase](#voting-phase)
-  - [Results phase](#results-phase)
-- [Licensing](#licensing)
-- [References](#references)
-  - [Sources](#sources)
-- [List of file contents](#list-of-file-contents)
-- [Testing document](#testing-document)
-- [Contact Us](#contact-us)
+-   [Table of Contents](#table-of-contents)
+-   [Dead Net](#dead-net)
+-   [Project Description](#project-description)
+-   [Project Link](#project-link)
+-   [How to Install](#how-to-install)
+-   [Testing document](#testing-document)
+-   [Technologies Used](#technologies-used)
+    -   [Front end](#front-end)
+    -   [Back end](#back-end)
+    -   [Database](#database)
+    -   [Deployment](#deployment)
+    -   [Artificial Intelligence](#artificial-intelligence)
+-   [Features](#features)
+    -   [Customizable player profiles](#customizable-player-profiles)
+    -   [Leaderboards](#leaderboards)
+    -   [Chatroom](#chatroom)
+    -   [Prompt game mode](#prompt-game-mode)
+-   [How to Start Playing](#how-to-start-playing)
+    -   [Account creation](#account-creation)
+    -   [Confirm your account](#confirm-your-account)
+    -   [Log into your account](#log-into-your-account)
+    -   [Enter the pre-game chat lobby](#enter-the-pre-game-chat-lobby)
+-   [How to Play the Game](#how-to-play-the-game)
+    -   [Writing phase](#writing-phase)
+    -   [Voting phase](#voting-phase)
+    -   [Results phase](#results-phase)
+-   [Licensing](#licensing)
+-   [References](#references)
+    -   [Sources](#sources)
+-   [List of file contents](#list-of-file-contents)
+-   [Contact Us](#contact-us)
 
 ## Dead Net
 
@@ -92,6 +92,12 @@ Instructions on how to assemble this project's development environment on your c
     ```
 12. Go to your local browser (Chrome, Edge, Firefox. etc.) and go to
     localhost:3000 (your chosen port number)
+
+## Testing document
+
+This is the document we used to log our tests for the project.
+
+https://docs.google.com/spreadsheets/d/1ja54lqljkccx13j9kEcxPC7THLX6paNgrziuIq8B4dI/edit?usp=sharing
 
 ## Technologies Used
 
@@ -390,12 +396,6 @@ Root Directory:
         -   postGameModalWin.ejs
         -   responseCard.ejs
         -   websocketImport.ejs
-
-## Testing document
-
-This is the document we used to log our tests for the project.
-
-https://docs.google.com/spreadsheets/d/1ja54lqljkccx13j9kEcxPC7THLX6paNgrziuIq8B4dI/edit?usp=sharing
 
 ## Contact Us
 
