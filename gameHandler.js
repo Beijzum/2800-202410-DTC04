@@ -35,8 +35,6 @@ function runGame(io) {
     const game = io.of("/game");
 
     game.on("connection", (socket) => {
-        // solo testing game
-        // socket.request.session.game = true;
 
         connectedClients++;
 
