@@ -117,6 +117,14 @@ async function loginUser(requestBody) {
     });
 }
 
+
+/**
+ * Updates the sessionID of the specified user.
+ * 
+ * @param {Object} user user document to update
+ * @param {String} sessionID sessionID to set
+ * @returns true if successful, or false if not
+ */
 async function updateSessionID(user, sessionID) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
@@ -130,6 +138,14 @@ async function updateSessionID(user, sessionID) {
     }
 }
 
+/**
+ * Checks if a session exists in the database.
+ * 
+ * @param {Object} user user document to check
+ * @returns true if session exists, or false if not
+ * @throws error if an error occurs
+ * 
+ */
 async function checkSessionExists(user) {
     try {
         let database = client.db(process.env.MONGODB_DATABASE);
