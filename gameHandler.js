@@ -88,8 +88,9 @@ function runGame(io) {
         // checks if response has already been sent
         socket.on("checkResponse", () => {
             let playerSession = playerList.find(player => player.originalSocketId === socket.id);
-            if (!playerSession || playerSession.response === null) return;
-            socket.emit("disableResponse", playerSession.response);
+            if (!playerSession) return;
+            if (playerSession.response !== null) socket.emit("disableResponse", playerSession.response);
+            else if (playerSession.dead) socket.emit("disableResponse", null);
         });
 
         // checks if client has already voted
@@ -97,6 +98,7 @@ function runGame(io) {
             let playerSession = playerList.find(player => player.originalSocketId === socket.id);
             if (!playerSession) return;
             if (playerSession.voteTarget) socket.emit("disableVote", playerSession.voteTarget);
+            else if (playerSession.dead) socket.emit("disableVote", null);
         });
 
         // when player submit response
