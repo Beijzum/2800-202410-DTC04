@@ -2,7 +2,6 @@ require('dotenv').config();
 
 // import externals
 const express = require('express');
-const session = require("express-session");
 const cors = require("cors");
 const app = express();
 const socketManager = require("./websocket.js");
@@ -11,7 +10,6 @@ const joiValidation = require("./joiValidation");
 const email = require("./emailNotification.js");
 const middleware = require("./middleware.js");
 const { randomBytes, sign } = require("crypto");
-
 // set port
 const port = process.env.PORT || 3000;
 
@@ -33,19 +31,20 @@ const upload = multer({ storage: multerStorage });
 
 // session configuration
 
-const sessionConfig = session({
-    secret: process.env.NODE_SESSION_SECRET,
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        maxAge: 12 * 60 * 60 * 1000
-    },
-    store: database.mongoSessionStorage,
-    unset: "destroy"
-});
+// const sessionConfig = session({
+//     secret: process.env.NODE_SESSION_SECRET,
+//     resave: true,
+//     saveUninitialized: false,
+//     cookie: {
+//         secure: false,
+//         maxAge:  60 * 1000 // 1 minute
+//         // 12 * 60 * 60 * 1000
+//     },
+//     store: database.mongoSessionStorage,
+//     unset: "destroy"
+// });
 
-app.use(sessionConfig);
+app.use(database.sessionConfig);
 
 // set up ejs
 app.set("view engine", "ejs");
@@ -62,11 +61,30 @@ app.use(require("./pageRoutes"));
 
 // GET ROUTES SECTION
 
-app.get("/logout", (req, res) => {
-    req.session.destroy();
-    req.session = null;
-    res.redirect("/");
-});
+// app.use(async (req, res, next) => {
+//     if (req.session.userId) {
+//         const now = new Date();
+//         const sessionExpiry = new Date(req.session.cookie.expires);
+        
+//         // Check if the session has expired
+//         if (now > sessionExpiry) {
+//             // Set loggedIn status to false in the database
+//             await database.setLoggedInStatus(req.session.username, false);
+            
+//             // Destroy the session
+//             req.session.destroy(err => {
+//                 if (err) {
+//                     console.error('Failed to destroy session:', err);
+//                     return next(err);
+//                 }
+//                 console.log('Session destroyed due to expiration.');
+//             });
+//         }
+//     }
+//     next();
+// });
+
+
 
 // POST ROUTES SECTION
 
@@ -161,8 +179,10 @@ app.post("/loginAccount", async (req, res) => {
             return;
         }
         if (loginResult.message === undefined) {
+            database.updateSessionID(loginResult.user.username, req.session.id);
             req.session.username = loginResult.user.username;
             req.session.profilePic = loginResult.user.profilePictureUrl;
+            
             res.redirect("/");
         } else {
             res.status(400).json({ message: loginResult.message });
@@ -337,7 +357,7 @@ async function startServer() {
 
         // connect to websocket server
         const io = new Server(server);
-        io.engine.use(sessionConfig);
+        io.engine.use(database.sessionConfig);
         socketManager.runSocket(io);
     }
     else console.log("Error, could not connect to database, to try again, restart the server.");
