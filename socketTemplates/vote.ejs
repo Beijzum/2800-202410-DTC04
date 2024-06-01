@@ -6,19 +6,18 @@
     <label for="responses" class="text-sm p-2 font-semibold">Responses</label>
     <div id="responses" class="m-2">
         <% for(let i = 0; i < players.length; i++) { %>
-            <!-- Passes list of sockets -->
-            <div id="<%= players[i].id %>" class="responseCard flex flex-col bg-white rounded-lg p-2 m-2 intense-shadow select-none">
+            <div id="<%= players[i].id ? players[i].id : players[i].originalSocketId %>" class="responseCard flex flex-col bg-white rounded-lg p-2 m-2 intense-shadow select-none">
                 <div class="flex justify-between mb-1">
                     <div class="flex items-center">
-                        <img src="<%= players[i].request.session.game.aliasPicture %>" class="w-12 h-12 rounded-full mr-2">
-                        <p class="font-bold text-gray-800 text-sm"><%= players[i].request.session.game.alias %></p>
+                        <img src="<%= players[i].aliasPicture %>" class="w-12 h-12 rounded-full mr-2">
+                        <p class="font-bold text-gray-800 text-sm"><%= players[i].alias %></p>
                     </div>
                     <div class="buttonsDiv flex opacity-0 transition-opacity ease-in-out duration-200">
                         <button class="vote bg-green-300 m-1 px-4 rounded-lg text-green-700 border-2 border-green-800 text-lg " disabled>✓</button>
                         <button class="vote bg-red-300 m-1 px-4 rounded-lg text-red-700 border-2 border-red-800 text-xl" disabled>X</button>
                     </div>
                 </div>
-                <p class="p-1 break-all text-sm w-full text-gray-800"><%= players[i].request.session.game.response %></p>
+                <p class="p-1 break-words text-sm w-full text-gray-800"><%= players[i].response %></p>
             </div>
         <% } %>
     </div>

@@ -5,7 +5,6 @@ module.exports = {
     extend: {
       fontFamily: {
         'quicksand': ['Quicksand', 'sans-serif'],
-        'danfo': ['Danfo', 'sans-serif'],
       }
     },
   plugins: []

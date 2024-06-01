@@ -1,0 +1,22 @@
+<%- include("./templates/header", {pageName: "Leaderboard" }) %>
+<%- include("./templates/navbar", {currentPage: "Leaderboard" }) %>
+<div>
+    <p class="text-center font-bold text-xl p-2">Top Players</p>
+    <div id="leaderboard" class="relative overflow-x-auto shadow-md rounded-lg bg-zinc-900 m-2">
+        <table class="w-full text-sm text-zinc-300">
+            <thead class="text-xs text-gray-400 uppercase bg-zinc-700">
+                <tr>
+                    <th scope="col" class="px-3 py-2">Player</th>
+                    <th scope="col" class="px-3 py-2">Win Rate</th>
+                    <th scope="col" class="px-3 py-2">Games Played</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0; i < topUsers.length; i++) { %>
+                    <%- include("./templates/leaderboardEntry", {userEntry: topUsers[i]}) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include("./templates/footer", {pageScript: "index.js" }) %>

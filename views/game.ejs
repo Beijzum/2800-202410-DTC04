@@ -1,9 +1,24 @@
 <%- include("./templates/header", {pageName: "Game Lobby"}) %>
 <%- include("./templates/navbar", {currentPage: "game"}) %>
 <%- include("./templates/gameNavbar", {currentPage: "game" }) %>
-<%- include("./templates/postGameModal", {currentPage: "game" , winOrLose: "You win!" , color: "green" , imageUrl: "/images/victory.jpg" }) %>
-<div id="statusMenu"></div>
+<div style="margin-bottom: 102px;" id="white-space-for-fixed-game-navBar"></div>
+<%- include("./templates/postGameModalWin", {currentPage: "game" }) %>
+<%- include("./templates/postGameModalLose", {currentPage: "game" }) %>
+<div id="statusMenu" style="position: fixed;" class="w-screen"></div>
+<div style="margin-bottom: 180px;" id="white-space-for-fixed-game-Alias"></div>
 <div id="gameMenu"></div>
 <%- include("./templates/websocketImport"), { url } %>
+<dialog id="eliminatedModal" class="bg-zinc-200 rounded-lg p-3">
+    <img src="images/deadPicture.gif" class="rounded-full w-64 h-64 mx-auto border-8 border-zinc-800">
+    <p class="text-center font-semibold text-xl mt-3">The AIs Have <span class="text-red-700">Eliminated</span> You...</p>
+    <button id="closeEliminatedModal" class="block mx-auto mt-3 text-gray-200 bg-zinc-800 outline-none p-2 px-5 rounded-lg">Close</button>
+</dialog>
+<dialog id="playerListModal" class="rounded-lg bg-gray-900">
+    <div id="modalContent" class="flex flex-col justify-center">
+        <p class="text-white font-bold text-xl bg-zinc-800 border-b border-gray-600 p-2 text-center sticky top-0 left-0 right-0">Players</p>
+        <div id="playerList" class=""></div>
+        <button id="closeModal" class="mx-auto py-1 px-6 mt-3 mb-3 bg-gray-300 outline-none border-2 border-gray-400 rounded-lg hover:bg-gray-400 hover:border-gray-300">Close</button>
+    </div>
+</dialog>
 <script src="windowHandler.js"></script>
 <%- include("./templates/footer", {pageScript: "game.js"}) %>

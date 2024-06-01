@@ -2,11 +2,16 @@
 <%- include("./templates/navbar", {currentPage: "signUp"}) %>
 <div class="max-w-lg flex flex-col justify-center mx-auto " 
     style="margin-top: 5rem;"> 
-    <div id="errorContainer" class="text-red-400"></div>
+    <div id="errorContainer" class="text-red-400 px-3 mx-2"></div>
     <form id="signUpForm" class="flex flex-col items-center m-3" action="/createAccount">
-        <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username"}) %>
-        <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email"}) %>
-        <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password"}) %>
+        <%- include("./templates/credentialField", {type: "text", id: "usernameField", placeholder: "Enter Username", fieldLabel: "Username <span class='text-red-400'>*</span>"}) %>
+        <%- include("./templates/credentialField", {type: "text", id: "emailField", placeholder: "Enter Email", fieldLabel: "Email <span class='text-red-400'>*</span>"}) %>
+        <%- include("./templates/credentialField", {type: "password", id: "passwordField", placeholder: "Enter Password", fieldLabel: "Password <span class='text-red-400'>*</span>"}) %>
+        <%- include("./templates/credentialField", {type: "password", id: "repeatPasswordField", placeholder: "Enter Password", fieldLabel: "Confirm Password <span class='text-red-400'>*</span>"}) %>
+        <label for="privacy" class="">
+            <input type="checkbox" id="privacy" name="privacy" class="m-2 bg-gray-300" required>
+            I have read and agree to the <a href="privacy" class="underline text-blue-500">Privacy Policy</a> <span class='text-red-400'>*</span>
+        </label>
         <%- include("./templates/formSubmitButton", {buttonText: "Create Account"}) %>
     </form>
 </div>

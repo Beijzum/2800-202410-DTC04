@@ -4,69 +4,124 @@ const router = express.Router();
 const database = require("./database");
 
 router.get("/", async (req, res) => {
-    let top10Players = await database.getLeaderboard();
     if (req.session.username) {
-        let userData = await database.findUser({ username: req.session.username });
-        res.render("index", { authenticated: true, data: { winCount: userData.winCount, loseCount: userData.loseCount }, topUsers: top10Players, userExist: { isTrue : true } });
-    } else { res.render("index", { authenticated: req.session.username !== undefined, topUsers: top10Players, data: { winCount: 0 , loseCount: 0 }, userExist: { isTrue : false  }  }) };
+        res.render("index", { authenticated: true, sessionData: req.session });
+    } else res.render("index", { authenticated: false });
 });
 
 router.get("/game", (req, res) => {
     // redirect to login if unauthenticated
-    if (req.session.username) res.render("game", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("game", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/victory", (req, res) => {
-    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin }) // Pass authentication and url to view
+    if (req.session.username) res.render("victory", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/defeat", (req, res) => {
-    if (req.session.username) res.render("defeat", { authenticated: true, url: req.origin }); // Pass authentication and url to view
+    if (req.session.username) res.render("defeat", { authenticated: true, url: req.origin, sessionData: req.session}); // Pass authentication and url to view
     else res.redirect("/login");
 });
 
 router.get("/lobby", (req, res) => {
-    if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin }); // Pass authentication and url to view
+    if (req.session.username) res.render("lobby", { authenticated: true, url: req.origin, sessionData: req.session }); // Pass authentication and url to view
     else res.redirect("/login");
+});
+
+router.get("/leaderboard", async (req, res) => {
+    let top10Players = await database.getLeaderboard();
+    if (req.session.username)
+        res.render("leaderboard", { authenticated: true, topUsers: top10Players, sessionData: req.session });
+    else 
+        res.render("leaderboard", { authenticated: false, topUsers: top10Players });
 });
 
 
 router.get("/login", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("login", { authenticated: false });
-})
+});
 
 router.get("/forgotpass", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("forgotpass", {authenticated: false})
 });
 
 router.get("/reset", async (req, res) => {
-    const user = await database.getResetDoc(req.query.id);
+    const { id } = req.query;
+
+    if (!id) {
+        res.redirect("/");
+        return;
+    }
+
+    let user;
+    try {   
+        user = await database.getResetDoc(id);
+    } catch (error) {
+        res.status(404).render("error", {authenticated: false,
+            errorTitle: "Reset  password error",
+            errorCode: 404,
+            errorMessage: "Could not find a user to reset password."
+        });
+        return;
+    }
 
     if (!user) {
         res.redirect("/");
         return;
     }
 
-    res.render("reset", {authenticated: false, hash: req.query.id});
+    res.render("reset", {authenticated: false, hash: id});
 });
 
 router.get("/verify", async (req, res) => {
     const { v } = req.query;
-    const user = await database.client.db(process.env.MONGODB_DATABASE)
-    .collection("unverifiedUsers").findOne({ "hash": v });
+
+    if (!v) {
+        res.redirect("/");
+    }
+
+    let user;
+    try {
+        user = await database.client.db(process.env.MONGODB_DATABASE)
+        .collection("unverifiedUsers").findOne({ "hash": v });
+    } catch (error) {
+        res.status(500).render("error", {authenticated: false,
+            errorTitle: "Database error",
+            errorCode: 500,
+            errorMessage: "An error occurred while trying to validate your account. Please try again later."
+        });
+        return;
+    }
     
     if (!user) {
-        res.redirect("/");
+        res.status(404).render("error", {authenticated: false,
+            errorTitle: "Validation error",
+            errorCode: 404,
+            errorMessage: "Could not find a user to validate."
+        });
         return;
     }
 
-    if (await database.promoteUnverifiedUser(user)) {
+    let promotionWasSuccessful;
+
+    try {
+        promotionWasSuccessful = await database.promoteUnverifiedUser(user);
+    } catch (error) {
+        res.status(500).render("error", {authenticated: false,
+            errorTitle: "Database error",
+            errorCode: 500,
+            errorMessage: "An error occurred while trying to validate your account. Please contact support at bcit.deadnet@gmail.com."
+        });
+    }
+
+    if (promotionWasSuccessful) {
+        database.updateSessionID(user.username, req.session.id);
         req.session.username = user.username;
-        res.render("verify", {authenticated: true});
+        res.render("verify", {authenticated: true, sessionData: req.session});
     } else {
         /* 
          * Should render an error page, but I'm assuming at this point
@@ -87,9 +142,9 @@ router.get("/registerSuccess", (req, res) => {
 });
 
 router.get("/signUp", (req, res) => {
-    if (req.session.username) res.redirect("/index");
+    if (req.session.username) res.redirect("/");
     else res.render("signUp", { authenticated: false });
-})
+});
 
 router.get("/profile", async (req, res) => {
     if (!req.session.username) {
@@ -97,32 +152,51 @@ router.get("/profile", async (req, res) => {
         return;
     }
     let userData = await database.findUser({ username: req.session.username });
-    res.render("profile", { authenticated: true, session: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl } });
+    res.render("profile", { authenticated: true, sessionData: req.session, data: { winCount: userData.winCount, loseCount: userData.loseCount, profilePictureUrl: userData.profilePictureUrl, email: userData.email } });
 
-})
+});
 
-router.get("/logout", (req, res) => {
-    req.session.destroy();
-    req.session = null;
-    res.redirect("/");
-})
+router.get("/logout", async (req, res) => {
+    console.log(`Logging out user: ${req.session.username}`);
+    try {
+        if (req.session.username) { // make sure session still exists
+            const user = await database.findUser({ "username": req.session.username }); // get user object
+            
+            await database.setLoggedInStatus(user, false); // set user's logged in status to false
 
-router.get("/changePass", (req, res) => {
-    if (!req.session.username) {
-        res.redirect("/");
-        return;
+            req.session.destroy(err => { // destroy the session
+                if (err) {
+                    console.error('Error destroying session:', err);
+                    return res.status(500).send("Internal Server Error");
+                }
+                console.log('Session destroyed');
+                res.redirect("/"); // redirect to home page
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).send("Internal Server Error");
     }
-
-    res.render("changePassModal", {name: req.session.username});
 });
 
 router.get("/memes", (req, res) => {
-    if (req.session.username) res.render("memes", { authenticated: true });
+    if (req.session.username) res.render("memes", { authenticated: true, sessionData: req.session });
     else res.render("memes", { authenticated: false });
 });
 
+router.get("/howToPlay", (req, res) => {
+    if (req.session.username) res.render("howToPlay", { authenticated: true, sessionData: req.session });
+    else res.render("howToPlay", { authenticated: false });
+});
+
+router.get("/privacy", async (req, res) => {
+    res.render("privacy", { authenticated: req.session.username !== undefined, sessionData: req.session });
+});
+
 router.get("*", (req, res) => {
-    res.status(404).render("404", { authenticated: req.session.username !== undefined });
-})
+    res.status(404).render("404", { authenticated: req.session.username !== undefined, sessionData: req.session });
+});
 
 module.exports = router;

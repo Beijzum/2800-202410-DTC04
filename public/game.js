@@ -1,6 +1,11 @@
 let gameMenu = document.getElementById("gameMenu");
+let winSound = new Audio("sfx/gameWin.mp3");
+let loseSound = new Audio("sfx/gameLose.mp3");
+winSound.volume = 0.1;
+loseSound.volume = 0.1;
 
 socket.on("changeView", () => {
+    if (!playing) return;
     let currentView = gameMenu.children[0];
     switch (currentView.id) {
         case "writeView":
@@ -9,34 +14,41 @@ socket.on("changeView", () => {
         case "voteView":
             handleVoteView();
             break;
-        case "resultView":
-            handleResultView();
-            break;
-        case "waitView":
-            handleWaitView();
-            break;
         default:
-            // transitional screen, dont need to do anything
+            // transition, resultView, and waitView do not have logic
             break;
     }
 });
 
-socket.on("gameOver", () => {
-    window.location.href = "/lobby";
+socket.on('gameWin', () => {
+    winSound.play();
+    document.getElementById('dialogBoxWin').showModal();
 });
 
-socket.on('gameResult', (data) => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.showModal();
+socket.on('gameLose', () => {
+    loseSound.play();
+    document.getElementById('dialogBoxLose').showModal();
 });
 
-document.getElementById('closeDialog').onclick = () => {
-    const dialogBox = document.getElementById('dialogBox');
-    dialogBox.close();
+document.getElementsByClassName('closeDialog')[0].onclick = () => {
+    document.getElementById('dialogBoxWin').close();
     window.location.href = "/lobby";
-}
+};
 
+document.getElementsByClassName('closeDialog')[1].onclick = () => {
+    document.getElementById('dialogBoxLose').close();
+    window.location.href = "/lobby";
+};
+
+/**
+ * Handles the game view for the write phase.
+ */
 function handleWriteView() {
+    /**
+     * Handles disabling the response text area and submit button.
+     *
+     * @param {String} buttonMessage Message to display on the submit button
+     */
     function disableInputs(buttonMessage) {
         let responseArea = document.getElementById("promptResponse");
         let submitButton = document.getElementById("submitResponse");
@@ -58,8 +70,11 @@ function handleWriteView() {
         submitButton.value = buttonMessage;
     }
 
+    // check to see if client already sent a response
+    socket.emit("checkResponse");
+
     if (!playing) {
-        disableInputs("You Are Spectating")
+        disableInputs("You Are Spectating");
         return;
     }
 
@@ -70,14 +85,27 @@ function handleWriteView() {
         e.preventDefault();
         disableInputs("Response Received");
         socket.emit("submitResponse", responseArea.value);
-    })
-
-    socket.on("retrieveResponse", () => {
-        if (!playing) return;
-        socket.emit("submitResponse", responseArea.value);
-    })
+    });
+    
+    // runs when client has already sent a response
+    socket.once("disableResponse", (originalResponse) => {
+        let responseArea = document.getElementById("promptResponse");
+        responseArea.value = originalResponse;
+        disableInputs("Response Received");
+    });
 }
 
+// SOCKET LISTENERS ON WRITE SCREEN
+
+socket.on("retrieveResponse", () => {
+    if (!playing) return;
+    let responseArea = document.getElementById("promptResponse");
+    socket.emit("submitResponse", responseArea.value);
+});
+
+/**
+ * Handles the game view for the vote phase.
+ */
 function handleVoteView() {
     if (!playing) return;
 
@@ -85,12 +113,20 @@ function handleVoteView() {
     let selected = false;
     let responseCards = document.querySelectorAll(".responseCard");
 
+    // check if player previously voted
+    socket.emit("checkVote");
+
     responseCards.forEach((card) => {
 
         let buttonsDiv = card.children[0].children[1];
         let voteButton = buttonsDiv.children[0];
         let cancelButton = buttonsDiv.children[1];
 
+        /**
+         * Handles hiding the vote and cancel buttons.
+         * 
+         * @param {Boolean} boolean whether to hide the buttons or not 
+         */
         function hideButtons(boolean) {
             if (boolean)
                 buttonsDiv.className = buttonsDiv.className.replace("opacity-100", "opacity-0");
@@ -113,7 +149,7 @@ function handleVoteView() {
         cancelButton.addEventListener("click", () => {
             selected = false;
             hideButtons(true);
-        })
+        });
 
         card.addEventListener("click", function (e) {
             if (voted || e.target === cancelButton || selected) return;
@@ -121,12 +157,12 @@ function handleVoteView() {
             selected = true;
         });
     });
-}
-
-function handleResultView() {
-    // for now empty, reserved for roles where there could be an veto role
-}
-
-function handleWaitView() {
-    // for now empty, reserved for roles where dead players can choose someone to take down with them
+    
+    socket.once("disableVote", (voteTarget) => {
+        let votedCard = document.getElementById(voteTarget);
+        if (!votedCard) return;
+        voted = true;
+        votedCard.className = votedCard.className.replace("bg-white", "bg-gray-200");
+        votedCard.className += " opacity-75";
+    });
 }

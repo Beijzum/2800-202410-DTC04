@@ -4,13 +4,15 @@ const pool = require("./socketConstants");
 const EventEmitter = require("events").EventEmitter;
 const ee = new EventEmitter(); // used for passing control from server to self
 const aiModel = require("./geminiAI.js");
+const { Socket, Server } = require("socket.io");
+const database = require("./database");
 
-// PHASES: WRITE, VOTE, RESULT, WAIT
-var currentPhase, gameRunning = false, promptIndex, phaseDuration, round, AIs = [];
+// PHASES: WRITE, VOTE, RESULT, WAIT, TRANSITION
+var currentPhase, gameRunning = false, promptIndex, round, playerCount = 0;
+var connectedClients = 0, timer = null;
 
-// CHECK TO SEE IF REDIRECTING TO NEW PAGE CAUSES A NEW SOCKET SESSION TO BE CREATE ---> DIFFERENT ID SO PLAYERS WONT BE COUNTED AS "IN-GAME"
-
-// CURRENT SETUP ASSUMES THAT EVERY USER REDIRECTING TO THIS PAGE IS A PLAYER AND NO ONE HAS JOINED LATE, THIS HAS TO BE CHANGED LATER ON
+// AIs = list of AIs, players = list of players, combinedList = list of both players and AIs, remove players from combinedList
+const AIs = [], playerList = [], combinedList = [];
 
 // ejs templates for game windows
 const writeTemplate = fs.readFileSync("./socketTemplates/write.ejs", "utf8");
@@ -20,346 +22,442 @@ const waitTemplate = fs.readFileSync("./socketTemplates/wait.ejs", "utf8");
 const resultTemplate = fs.readFileSync("./socketTemplates/result.ejs", "utf8");
 const transitionTemplate = fs.readFileSync("./socketTemplates/transition.ejs", "utf8");
 const statusBarTemplate = fs.readFileSync("./socketTemplates/statusBar.ejs", "utf8"); // pass status: "alive" OR "dead" OR "spectate"
+const postGameModalWin = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8");
+const postGameModalLose = fs.readFileSync("./views/templates/postGameModalWin.ejs", "utf8");
 
+/**
+ * Handles the game logic.
+ * 
+ * @param {Server} io the server for handling socketing
+ */
 function runGame(io) {
 
     const game = io.of("/game");
 
     game.on("connection", (socket) => {
 
+        connectedClients++;
+
+        // if game running, tell client game is ready
+        if (gameRunning) socket.emit("gameReady");
+        // if game isn't running, and client doesnt have game, then show no game
+        else if (!gameRunning && !socket.request.session.game) renderCurrentPhase();
+
+        // first person to join the lobby before game has started signals to server to start game
+        if (socket.request.session.game && !gameRunning) startGame();
+
+        // assign new socket to old id if they were originally a player
+        let gameSession = playerList.find(session => session.username === socket.request.session.username);
+        if (gameSession) {
+            socket.id = gameSession.originalSocketId;
+            socket.request.session.game = true;
+        }
+        socket.emit("idAssigned");
+
         // player connects to game lobby
-        socket.on("joinGame", async () => {
+        socket.on("joinGame", () => {
 
-            // joining game indicates you are a player
-            if (socket.request.session.game) socket.join("alive");
-
-            // user has joined, but no game is running
-            if (getTotalPlayerCount() === 0) {
-                let renderedNoGameTemplate = ejs.render(noGameTemplate);
-                socket.emit("noGameRunning", renderedNoGameTemplate);
+            // if no game running then do nothing
+            if (!gameRunning) {
+                renderCurrentPhase();
                 return;
             }
 
-            // joining dead indicates you are dead
-            if (socket.request.session.game?.dead) {
-                socket.join("dead");
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "dead" });
-                socket.emit("updateStatus", renderedStatusBarTemplate);
-                socket.emit("notPlaying");
+            // navigated to screen but not part of game
+            if (!socket.request.session.game) {
+                renderUI("spectate");
+                renderCurrentPhase();
                 return;
             }
 
-            // user has joined and is part of the game, and is the first to join
-            if (gameRunning === false) {
-                gameRunning = true;
-                createAIs(Math.ceil(getTotalPlayerCount() / 3));
-                round = 1;
+            // no game session means first time joining, meaning start of the game
+            if (!gameSession) {
+                gameSession = createGameSession(socket);
+                playerList.push(gameSession);
+                combinedList.push(gameSession);
+                if (playerCount === playerList.length) shuffleArray(combinedList);
+                updatePlayerList();
             }
-
-            // send round number to frontend
-            socket.emit("roundUpdate", round);
-
-            // CURRENT SET UP DOESN'T ALLOW DEAD PEOPLE TO LEAVE THE GAME, OTHERWISE THE UI WILL MESS UP SINCE IT FULFILLS THE CONDITIONAL CHECK BELOW
-
-            // user has joined, and is part of the game
-            if (socket.request.session.game) {
-                assignClientAlias(socket);
-
-                // send alias to frontend
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "alive", socket: socket });
-                socket.emit("updateStatus", renderedStatusBarTemplate);
-
-                ee.emit("runWrite");
-            } else {
-                // user has joined, but is not part of the game
-                let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "spectate" });
-                socket.emit("updateStatus", renderedStatusBarTemplate);
-                socket.emit("notPlaying");
-
-                switch (currentPhase) {
-                    // jump to whatever screen the game is currently on
-                    case "WRITE":
-                        ee.emit("runWrite");
-                        break;
-                    case "VOTE":
-                        ee.emit("runVote");
-                        break;
-                    case "RESULT":
-                        ee.emit("runResult");
-                        break;
-                    case "WAIT":
-                        ee.emit("runWait");
-                        break;
-                    case "TRANSITION":
-                        ee.emit("runTransition");
-                        break;
-                    default:
-                        let renderedNoGameTemplate = ejs.render(noGameTemplate);
-                        socket.emit("noGameRunning", renderedNoGameTemplate);
-                }
-            }
+            if (gameSession.dead) renderUI("dead");
+            else renderUI("alive");
+            renderCurrentPhase();
         });
 
         // CLIENT LISTENER SECTION
 
+        // checks if response has already been sent
+        socket.on("checkResponse", () => {
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession || playerSession.response === null) return;
+            socket.emit("disableResponse", playerSession.response);
+        });
+
+        // checks if client has already voted
+        socket.on("checkVote", () => {
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
+            if (playerSession.voteTarget) socket.emit("disableVote", playerSession.voteTarget);
+        });
+
         // when player submit response
         socket.on("submitResponse", (response) => {
-            socket.request.session.game.response = response;
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
+            if (playerSession.response === null) playerSession.response = response;
         });
 
+        // when player submits vote
         socket.on("submitVote", (socketId) => {
-
-            // handle AI voted
-            let isAI = false;
-            AIs.forEach(AI => {
-                if (AI.id !== socketId) return;
-                AI.request.session.game.votes += 1;
-                isAI = true;
-            })
-            if (isAI) return;
-
-            // handle players voted
-            let votedPlayerSocket = game.sockets.get(socketId);
-            let votedPlayerSession = votedPlayerSocket.request.session;
-
-            if (!votedPlayerSession.game.votes) votedPlayerSession.game.votes = 1;
-            else votedPlayerSession.game.votes += 1;
+            let playerSession = playerList.find(player => player.originalSocketId === socket.id);
+            if (!playerSession) return;
+            let votedPlayer = combinedList.find(player => player.originalSocketId === socketId || player.id === socketId);
+            votedPlayer.votes += 1;
+            playerSession.voteTarget = votedPlayer.id || votedPlayer.originalSocketId;
         });
 
-        socket.on("disconnect", () => {
-            // if you are part of the game, stop the entire game, need to implement logic later
-            if (socket.rooms.has("alive") || socket.rooms.has("dead")) {
+        socket.on("disconnect", async () => {
+            connectedClients--;
+            reloadSession(socket);
+            socket.request.session.game = false;
+            socket.request.session.save();
+        });
 
+        // FUNCTION DEFINITIONS THAT REQUIRE INDIVIDUAL SOCKETS
+
+        // status can only be "alive", "dead", "spectate"
+        function renderUI(status) {
+            if (!gameRunning) return;
+
+            let statusBarHTML;
+            if (status === "alive")
+                statusBarHTML = ejs.render(statusBarTemplate, { status: "alive", player: gameSession });
+            else
+                statusBarHTML = ejs.render(statusBarTemplate, { status: status });
+
+            socket.emit("updateStatus", statusBarHTML);
+            socket.emit("roundUpdate", round);
+            if (status === "dead" || status === "spectate")
+                socket.emit("notPlaying");
+        }
+
+        function renderCurrentPhase() {
+            if (currentPhase === "WRITE") {
+                let writeHTML = ejs.render(writeTemplate, { prompt: pool.prompts[promptIndex] });
+                socket.emit("changeView", writeHTML);
+
+            } else if (currentPhase === "TRANSITION") {
+                let transitionHTML = ejs.render(transitionTemplate, { transitionMessage: "Get Ready to Vote!" });
+                socket.emit("changeView", transitionHTML);
+
+            } else if (currentPhase === "VOTE") {
+                let voteHTML = ejs.render(voteTemplate, { players: combinedList, prompt: pool.prompts[promptIndex] });
+                socket.emit("changeView", voteHTML);
+
+            } else if (currentPhase === "RESULT") {
+                let eliminatedPlayer = getMajorityVotedPlayer();
+                let resultHTML = ejs.render(resultTemplate, { eliminatedPlayer: eliminatedPlayer, remainingPlayers: combinedList });
+                socket.emit("changeView", resultHTML);
+
+            } else if (currentPhase === "WAIT") {
+                let waitHTML = ejs.render(waitTemplate);
+                socket.emit("changeView", waitHTML);
+
+            } else {
+                let noGameHTML = ejs.render(noGameTemplate);
+                socket.emit("changeView", noGameHTML);
             }
-        })
+        }
+    });
+
+    // CROSS NAMESPACE UPDATERS
+    ee.on("updatePlayerCount", (updateValue) => {
+        if (gameRunning) return;
+        playerCount += updateValue;
     });
 
     // GAME CONTROL FLOW SECTION
 
-    // handle logic for write screen
+    // write screen logic
     ee.on("runWrite", async () => {
         currentPhase = "WRITE";
+        if (!gameRunning) return;
+        game.emit("roundUpdate", round);
 
-        // only generate new prompt when first person joins
-        if (!promptIndex) promptIndex = Math.floor(Math.random() * pool.prompts.length);
+        // clear everyones response field
+        playerList.forEach(player => { player.response = null; });
 
-        // update frontend UI for alive players
-        let renderedWriteTemplate = ejs.render(writeTemplate, { prompt: pool.prompts[promptIndex] });
-        game.emit("changeView", renderedWriteTemplate);
+        // render prompt and screen to connected clients
+        promptIndex = Math.floor(Math.random() * pool.prompts.length);
+        let writeHTML = ejs.render(writeTemplate, { prompt: pool.prompts[promptIndex] });
+        game.emit("changeView", writeHTML);
+        prepareNextPhase(61, "runTransition"); // Original duration: 61
 
-        // only run when the first user connects
-        if (!phaseDuration || phaseDuration <= 0) {
-            phaseDuration = 61;
-            let timer = setInterval(updateClientTimers, 1000);
-
-            for (let i = 0; i < AIs.length; i++) {
-                // ai gets chat prompt
-                let aiGetPrompt = await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex]);
-                let aiResponse = aiGetPrompt.response;
-                let aiText = aiResponse.text();
-
-                AIs[i].request.session.game.response = aiText;
+        // get AIs response
+        for (let i = 0; i < AIs.length; i++) {
+            if (AIs[i].dead === true) continue;
+            try {
+                let AIResponse = (await AIs[i].chatBot.sendMessage(pool.prompts[promptIndex])).response.text();
+                AIs[i].response = AIResponse;
+            } catch(e) {
+                AIs[i].response = pool.stockResponses[Math.floor(Math.random() * pool.stockResponses.length)];
             }
-
-            // need a transition screen to be able to receive all players input, even if they havent pressed submit
-            createDelayedRedirect(phaseDuration + 1, timer, "runTransition");
         }
     });
 
-    // handle transition between write and vote
+    // transition screen logic
     ee.on("runTransition", () => {
-        currentPhase = "TRANSITION"
+        currentPhase = "TRANSITION";
+        if (!gameRunning) return;
 
         // retrieve inputs from players that did not press submit
         game.emit("retrieveResponse");
 
-        let renderedTransitionTemplate = ejs.render(transitionTemplate, { transitionMessage: "Get Ready To Vote!" });
-        game.emit("changeView", renderedTransitionTemplate);
-
-        if (phaseDuration <= 0) {
-            phaseDuration = 6;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runVote");
-        }
+        let transitionHTML = ejs.render(transitionTemplate, { transitionMessage: "Get Ready To Vote!" });
+        game.emit("changeView", transitionHTML);
+        prepareNextPhase(6, "runVote"); // Original duration: 6
     });
 
-    // handle logic for vote screen
-    // BUG, THE CSS RIGHT NOW PUSHES THE VOTE BUTTON OFF SCREEN INSTEAD OF WRAPPING, NEED TO FIX IT
+    // vote screen logic
     ee.on("runVote", async () => {
         currentPhase = "VOTE";
-
-        let playerList = await game.in("alive").fetchSockets();
-
-        // add AI to player list to populate vote page
-        AIs.forEach(AI => {
-            playerList.push(AI);
-        });
-
-        // shuffle list so AI is not always at bottom of the list
-        shuffleArray(playerList);
-
-        let renderedVoteTemplate = ejs.render(voteTemplate, { players: playerList, prompt: pool.prompts[promptIndex] });
-        game.emit("changeView", renderedVoteTemplate);
-
-        if (phaseDuration <= 0) {
-
-            phaseDuration = 61;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runResult");
-        }
+        if (!gameRunning) return;
+        playerList.forEach(player => { player.voteTarget = null; });
+        let voteHTML = ejs.render(voteTemplate, { players: combinedList, prompt: pool.prompts[promptIndex] });
+        game.emit("changeView", voteHTML);
+        prepareNextPhase(61, "runResult"); // Original duration: 61
     });
 
-    // handle logic for result screen
+    // result screen logic
     ee.on("runResult", async () => {
         currentPhase = "RESULT";
+        if (!gameRunning) return;
 
         // get the player with the most votes
-        let playerSocketList = await game.in("alive").fetchSockets();
-
-        // add AI to player list to populate vote page
-        AIs.forEach(AI => {
-            playerSocketList.push(AI);
+        let majorityVotedPlayer = getMajorityVotedPlayer();
+        killPlayer(majorityVotedPlayer); // will do nothing if no majority
+        updatePlayerList();
+        let resultHTML = ejs.render(resultTemplate, {
+            eliminatedPlayer: majorityVotedPlayer, remainingPlayers: combinedList,
+            voteCount: majorityVotedPlayer?.votes
         });
-        // shuffle list so AI is not always at bottom of the list
-        shuffleArray(playerSocketList);
-
-        let mostVotedSocket = playerSocketList[0];
-        playerSocketList.forEach(socket => {
-            if (socket.request.session.game.votes > mostVotedSocket.request.session.game.votes)
-                mostVotedSocket = socket;
-        });
-
-        // if voted player has majority votes
-        if (mostVotedSocket.request.session.game.votes / getAlivePlayerCount() > 0.5) {
-            killPlayer(mostVotedSocket);
-
-            playerSocketList.splice(playerSocketList.indexOf(mostVotedSocket), 1);
-            let renderedResultTemplate = ejs.render(resultTemplate, {
-                eliminatedPlayer: mostVotedSocket,
-                remainingPlayers: playerSocketList, voteCount: mostVotedSocket.request.session.game.votes
-            });
-            game.emit("changeView", renderedResultTemplate);
-        } else {
-            // if no majority vote
-            let renderedResultTemplate = ejs.render(resultTemplate, { eliminatedPlayer: null, remainingPlayers: playerSocketList });
-            game.emit("changeView", renderedResultTemplate);
-        }
-
-        // reset vote counter after results have been calculated
-        playerSocketList.forEach(player => { player.request.session.game.votes = 0; });
-
-        if (phaseDuration <= 0) {
-
-            phaseDuration = 11;
-            let timer = setInterval(updateClientTimers, 1000);
-            createDelayedRedirect(phaseDuration + 1, timer, "runWait");
-        }
+        game.emit("changeView", resultHTML);
+        prepareNextPhase(11, "runWait"); // Original duration: 11
     });
 
-    // handle logic for wait screen
+    // wait screen logic
     ee.on("runWait", async () => {
         currentPhase = "WAIT";
 
-        // move onto rendering page if game has not ended
-        let renderedWaitTemplate = ejs.render(waitTemplate);
-        game.emit("changeView", renderedWaitTemplate);
-        game.emit("roundUpdate", round);
+        let waitHTML = ejs.render(waitTemplate);
+        game.emit("changeView", waitHTML);
 
-        // randomly remove 1 player
-        let playerSocketList = await game.in("alive").fetchSockets();
-        let randomSocket = playerSocketList[Math.floor(Math.random() * playerSocketList.length)];
-        killPlayer(randomSocket);
+        // check if win or lose conditions have been met, early return if met
+        handleGameEnd();
+        if (!gameRunning) return;
+        killRandomPlayer();
+        handleGameEnd();
+        if (!gameRunning) return;
 
-        // checks for if players win or lose, NEED TO ADD MORE CHECKS LATER ON WHEN AI IS ADDED
-        if (getAlivePlayerCount() === 0) {
-            console.log("Defeat")
-            game.emit("gameResult", {
-                winOrLose: "Defeat!",
-                color: "red",
-                imageUrl: "/images/defeat.jpg"
-            });
-            stopGame();
-        } else if (AIs.length === 0) {
-            console.log("Victory")
-            game.emit("gameResult", {
-                winOrLose: "Victory!",
-                color: "green",
-                imageUrl: "/images/victory.jpg"
-            });
-            stopGame();
-        }
+        updatePlayerList();
+        // reset vote counts
+        combinedList.forEach(player => { player.votes = 0; });
 
-        // move onto next round
-        if (phaseDuration <= 0) {
-            phaseDuration = 6;
-            if (round) round++;
-            let timer = setInterval(updateClientTimers, 1000);
-            setTimeout(() => {
-                clearInterval(timer);
-                if (gameRunning)
-                    ee.emit("runWrite");
-                else
-                    game.emit("gameOver");
-            }, (phaseDuration + 1) * 1000);
-        }
+        // handle next round if game has not ended
+        prepareNextPhase(6, "runWrite"); // Original duration: 6
     });
-
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
 
-    function killPlayer(socket) {
-        if (!socket) return;
-        // if most voted socket was AI, then remove from AI list
-        if (socket.bot) {
-            let index = AIs.indexOf(socket);
-            AIs.splice(index, 1);
-            return;
-        }
-        // otherwise edit which room they are in
-        socket.leave("alive");
-        socket.join("dead");
-
-        let renderedStatusBarTemplate = ejs.render(statusBarTemplate, { status: "dead" });
-        socket.emit("updateStatus", renderedStatusBarTemplate);
-        socket.emit("notPlaying");
-        socket.request.session.game.dead = true;
+    // begins the event loop to start a game instance
+    function startGame() {
+        gameRunning = true;
+        round = 1;
+        createAIs(Math.ceil(playerCount / 3));
+        ee.emit("runWrite");
+        console.log("A game session has started");
+        game.emit("gameReady");
     }
 
-    function createDelayedRedirect(delayTimeInSeconds, timer, nextRoute) {
-        setTimeout(async () => {
-            clearInterval(timer);
+    // stops the event loop and resets game state back to no game state
+    function stopGame(outcome) {
+        // reset global variables
+        currentPhase = null;
+        gameRunning = false;
+        promptIndex = null;
+        round = null;
+        playerCount = 0;
+        AIs.length = 0;
+        combinedList.length = 0;
+        clearInterval(timer);
+        timer = null;
 
+        if (outcome) {
+            playerList.forEach(player => {
+                let userID = player.username;
+                if (outcome === "win") {
+                    database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { winCount: 1 } });
+                    console.log(`User: ${userID} +1 win`);
+                }
+                else if (outcome === "lose") {
+                    database.client.db(process.env.MONGODB_DATABASE).collection("users").updateOne({ username: userID }, { $inc: { loseCount: 1 } });
+                    console.log(`User: ${userID} +1 lose`);
+                }
+            });
+        }
+
+        // clear everyones game session at end of game
+        playerList.forEach(player => {
+            let socket = game.sockets.get(player.originalSocketId);
+            if (!socket) return;
+            reloadSession(socket);
+            socket.request.session.game = false;
+            socket.request.session.save();
+
+        });
+        playerList.length = 0;
+        console.log("A game session has ended");
+    }
+
+    // fire an update to the player list on the client side
+    function updatePlayerList() {
+        let deadPlayers = getDeadPlayers();
+        let combinedListPlusDeadPlayers = combinedList.concat(deadPlayers);
+        game.emit("updatePlayerList", combinedListPlusDeadPlayers);
+    }
+
+    // gets a list of all dead players (AIs and players)
+    function getDeadPlayers() {
+        let deadPlayers = [];
+        playerList.forEach(player => { if (player.dead) deadPlayers.push(player); });
+        AIs.forEach(AI => { if (AI.dead) deadPlayers.push(AI); });
+        return deadPlayers;
+    }
+
+    // checks if game state fulfills end state, and then handles it
+    function handleGameEnd() {
+        if (getAlivePlayerCount() < getAliveAICount()) {
+            stopGame("lose");
+            let postModalHTML = ejs.render(postGameModalLose);
+            game.emit("gameLose", postModalHTML);
+        } else if (getAliveAICount() === 0) {
+            stopGame("win");
+            let postModalHTML = ejs.render(postGameModalWin);
+            game.emit("gameWin", postModalHTML);
+        }
+    }
+
+    // choose a random player in player list and kill them
+    function killRandomPlayer() {
+        let playerListCopy = [...playerList], killedPlayer = false;
+        while (!killedPlayer) {
+            let randomIndex = Math.floor(Math.random() * playerListCopy.length);
+            if (playerListCopy[randomIndex].dead)
+                playerListCopy.splice(randomIndex, 1);
+            else {
+                killPlayer(playerListCopy[randomIndex]);
+                killedPlayer = true;
+            }
+        }
+    }
+
+    // removes player from game and updates their information to reflect their elimination
+    function killPlayer(player) {
+        if (!player) return;
+
+        player.dead = true;
+        combinedList.splice(combinedList.indexOf(player), 1);
+
+        // early return when voted is bot
+        if (player.bot) return;
+
+        let playerSocket = game.sockets.get(player.originalSocketId);
+        if (!playerSocket) return;
+        let statusBarHTML = ejs.render(statusBarTemplate, { status: "dead" });
+        playerSocket.emit("updateStatus", statusBarHTML);
+        playerSocket.emit("notPlaying");
+        if (currentPhase === "WAIT") playerSocket.emit("killedByAI");
+    }
+
+    // gets the majority voted player, if no majority votes then returns null
+    function getMajorityVotedPlayer() {
+        let mostVotedPlayer = combinedList[0];
+
+        // find most voted
+        combinedList.forEach(player => {
+            if (player.votes > mostVotedPlayer.votes)
+                mostVotedPlayer = player;
+        });
+        if (mostVotedPlayer.votes / getAlivePlayerCount() > 0.5) return mostVotedPlayer;
+        else return null;
+    }
+
+    /**
+     * Creates a delayed redirect to the next phase.
+     * 
+     * @param {Number} delayTimeInSeconds time used to delay redirect
+     * @param {String} nextRoute the next phase to redirect to
+     */
+    function prepareNextPhase(length, nextPhase) {
+        console.log(`Current Phase: ${currentPhase}`);
+        if (timer) clearInterval(timer);
+        let timeout = createDelayedRedirect(length + 1, nextPhase);
+        let countdown = length;
+        timer = setInterval(() => {
+            countdown--;
+            handleGameTick(timeout, countdown);
+        }, 1000);
+    }
+
+    /**
+     * Creates a delayed redirect to the next phase.
+     * 
+     * @param {Number} delayTimeInSeconds time used to delay redirect
+     * @param {String} nextRoute the next phase to redirect to
+     */
+    function createDelayedRedirect(delayTimeInSeconds, nextRoute) {
+        return setTimeout(() => {
             // set up next round if one last phase
             if (nextRoute === "runWrite") setupNextRound();
             ee.emit(nextRoute);
         }, delayTimeInSeconds * 1000);
     }
 
-    function updateClientTimers() {
-        if (phaseDuration > 0) {
-            phaseDuration--;
-            game.emit("timerUpdate", convertFormat(phaseDuration));
+    // logic to run every game tick (every second)
+    function handleGameTick(timeout, length) {
+        if (!gameRunning) {
+            clearTimeout(timeout);
+            return;
         }
-    }
-
-    function getTotalPlayerCount() {
-        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
-        let deadPlayers = game.adapter.rooms.get("dead")?.size ? game.adapter.rooms.get("dead").size : 0;
-        return alivePlayers - deadPlayers;
-    }
-
-
-    function getAlivePlayerCount() {
-        let alivePlayers = game.adapter.rooms.get("alive")?.size ? game.adapter.rooms.get("alive").size : 0;
-        return alivePlayers;
+        if (length >= 0) {
+            if (connectedClients <= 0) stopGame();
+            game.emit("timerUpdate", convertFormat(length));
+        } else clearInterval(timer);
     }
 }
 
 // GENERAL FUNCTION DEFINITIONS
 
+// gets the number of alive players in the game
+function getAlivePlayerCount() {
+    let count = 0;
+    playerList.forEach(player => {
+        if (!player.dead) count++;
+    });
+    return count;
+}
+
+// gets the number of AIs still alive in the game
+function getAliveAICount() {
+    let count = 0;
+    AIs.forEach(AI => {
+        if (!AI.dead) count++;
+    });
+    return count;
+}
+
+// Taken from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array, based on the Fisher-Yates shuffling algorithm
 function shuffleArray(array) {
     let currentIndex = array.length;
-
     while (currentIndex !== 0) {
         let swapIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
@@ -367,10 +465,17 @@ function shuffleArray(array) {
     }
 }
 
+/**
+ * Creates a number of AI players.
+ * 
+ * Pushes the AI into the global AI list.
+ * 
+ * @param {Number} numberToMake the number of AI to create
+ */
 function createAIs(numberToMake) {
     for (let i = 0; i < numberToMake; i++) {
         const aiPersonalities = Object.values(aiModel.personalities);
-        const randomPersonality = aiPersonalities[Math.floor(Math.random() * aiPersonalities.length)];
+        let randomPersonality = aiPersonalities[Math.floor(Math.random() * aiPersonalities.length)];
         let chatBot = aiModel.createChatbot(randomPersonality).startChat();
 
         let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
@@ -378,64 +483,64 @@ function createAIs(numberToMake) {
         let randomNumber = Math.floor(Math.random() * 10000);
         let randomAvatar = pool.avatars[Math.floor(Math.random() * pool.avatars.length)];
 
-        let AI = {};
-        AI.chatBot = chatBot;
-        AI.id = randomFirstName + randomLastName + randomNumber;
-        AI.bot = true;
-        AI.request = {
-            session: {
-                game: {
-                    alias: randomFirstName + randomLastName + randomNumber,
-                    aliasPicture: randomAvatar,
-                    votes: 0
-                }
-            }
+        let name = randomFirstName + randomLastName + randomNumber;
+        let AI = {
+            chatBot: chatBot, id: name, alias: name, bot: true,
+            aliasPicture: randomAvatar, votes: 0, dead: false
         };
 
         AIs.push(AI);
+        combinedList.push(AI);
     }
 }
 
-function assignClientAlias(socket) {
-    let req = socket.request;
-
+// creates a game session for an associated socket, saves the socket id for reassignment if socket disconnects
+function createGameSession(socket) {
     let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
     let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];
     let randomNumber = Math.floor(Math.random() * 10000);
     let randomAvatar = pool.avatars[Math.floor(Math.random() * pool.avatars.length)];
 
-    req.session.game = {
+    let session = {
+        originalSocketId: socket.id,
+        username: socket.request.session.username,
         alias: randomFirstName + randomLastName + randomNumber,
         aliasPicture: randomAvatar,
-        votes: 0
-    }
-
+        votes: 0,
+        dead: false,
+        response: null,
+        voteTarget: null
+    };
+    return session;
 }
 
-async function reloadSession(socket) {
+// reload socket session
+function reloadSession(socket) {
     socket.request.session.reload((err) => {
         if (err) return socket.disconnect();
-    })
+    });
 }
 
+/**
+ * Converts a time in seconds to a string in the format of "mm:ss".
+ * 
+ * @param {Number} seconds time in seconds to convert
+ * @returns string in the format of "mm:ss"
+ */
 function convertFormat(seconds) {
     return `${Math.floor(seconds / 60)}:${seconds % 60 < 10 ? "0" + seconds % 60 : seconds % 60}`;
 }
 
+/**
+ * Clears the prompt index and phase duration for the next round.
+ */
 function setupNextRound() {
+    round++;
     promptIndex = null;
-    phaseDuration = null;
-}
-
-function stopGame() {
-    currentPhase = null;
-    gameRunning = false;
-    promptIndex = null;
-    phaseDuration = null;
-    round = null;
 }
 
 module.exports = {
     runGame: runGame,
-    reloadSession: reloadSession
-}
+    reloadSession: reloadSession,
+    eventEmitter: ee
+};

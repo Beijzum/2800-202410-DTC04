@@ -1,47 +1,25 @@
 <%- include("./templates/header", {pageName: "Home"}) %>
-<%- include("./templates/navbar", {currentPage: "/"}) %>
-<div class="flex flex-col">
+<div class="background-animation">
     <% if (authenticated) { %>
-        <a href="lobby" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 px-20">Play</a>
+        <%- include("./templates/navbar", {currentPage: "/"}) %>
+        <img src="images/logo.png" class="w-1/2 md:w-64 mx-auto mt-28 mb-8">
+        <div class="flex flex-col mt-16">
+            <p class="text-2xl font-bold text-gray-200 text-center">Get in Game Now!</p>
+            <a href="lobby" class="text-xl block font-bold text-gray-200 bg-gradient-to-t from-sky-400 to-sky-700 intense-shadow text-center p-2 px-10 mt-3 rounded-lg mx-auto border-2 border-sky-400 hover:border-sky-200">Play</a>
+            <p class="text-2xl mt-8 font-bold text-gray-200 text-center">Don't Know How to Play?</p>
+            <a href="howToPlay" class="text-xl block font-bold text-gray-200 bg-gradient-to-t from-sky-400 to-sky-700 intense-shadow text-center p-2 px-5 mt-3 rounded-lg mx-auto border-2 border-sky-400 hover:border-sky-200">Find Out</a>
+        </div>
     <% } else { %>
-        <a href="login" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Login</a>
-        <a href="signUp" class="text-white text-center bg-zinc-800 hover:bg-zinc-700 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg py-2.5 focus:outline-none dark:focus:ring-zinc-500 mx-auto my-5 p-5 w-64">Sign Up</a>
+    <img src="images/logo.png" class="w-40 md:w-64 mx-auto mt-10 mb-8">
+    <div class="flex flex-col">
+        <p class="text-center px-2 font-semibold text-gray-200">Dead Net is a social deducation chat room game where you must identify who is AI <br><a href="howToPlay" class="font-bold underline text-white text-lg">Read More</a></p>
+        <p class="text-2xl font-bold mt-8 text-gray-200 text-center">Want to Play?</p>
+        <a href="signUp" class="text-xl mt-3 font-bold text-gray-200 bg-gradient-to-t from-sky-400 to-sky-700 intense-shadow text-center p-2 px-4 mt-3 rounded-lg mx-auto border-2 border-sky-400 hover:border-sky-200">Start Now</a>
+        <p class="text-2xl mt-8 font-bold text-gray-200 text-center">Have an Account?</p>
+        <a href="login" class="text-xl mt-3 font-bold text-gray-200 bg-gradient-to-t from-sky-400 to-sky-700 intense-shadow text-center p-2 px-4 mt-3 rounded-lg mx-auto border-2 border-sky-400 hover:border-sky-200">Login Now</a>
+        <p class="text-2xl font-bold mt-8 text-gray-200 text-center">See Our Top Players</p>
+        <a href="leaderboard" class="text-xl mt-3 font-bold text-gray-200 bg-gradient-to-t from-sky-400 to-sky-700 intense-shadow text-center p-2 px-4 mt-3 rounded-lg mx-auto border-2 border-sky-400 hover:border-sky-200">Leaderboard</a>
+    </div>
     <% } %>
-</div>
-
-<div class="flex" id="userScores">
-    <p style="display: none;" id="userExist"><%= authenticated %></p>
-    <div
-        class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-        <p class="font-semibold mb-5">Wins</p>
-        <p class="font-semibold" id="wins">
-            <%= data.winCount %>
-        </p>
-    </div>
-    <div
-        class="flex-1 bg-zinc-400 text-center m-3 rounded-lg p-1 py-6 drop-shadow-lg intense-shadow flex flex-col justify-between">
-        <p class="font-semibold mb-5">Games Played</p>
-        <p class="font-semibold" id="gamesPlayed">
-            <%= data.winCount + data.loseCount %>
-        </p>
-    </div>
-</div>
-
-<p class="text-center font-bold text-xl p-2">Top Players</p>
-<div id="leaderboard" class="relative overflow-x-auto shadow-md rounded-lg bg-zinc-900 m-2">
-    <table class="w-full text-sm text-zinc-300">
-        <thead class="text-xs text-gray-400 uppercase bg-zinc-700">
-            <tr>
-                <th scope="col" class="px-3 py-2">Player</th>
-                <th scope="col" class="px-3 py-2">Win Rate</th>
-                <th scope="col" class="px-3 py-2">Games Played</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < topUsers.length; i++) { %>
-                <%- include("./templates/leaderboardEntry", {userEntry: topUsers[i]}) %>
-            <% } %>
-        </tbody>
-    </table>
-</div>
+</div>  
 <%- include("./templates/footer", {pageScript: "index.js"}) %>

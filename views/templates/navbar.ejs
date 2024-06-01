@@ -1,11 +1,31 @@
 <!-- Parts of class options taken from https://flowbite.com/docs/components/navbar/ -->
 <div class="fixed top-0 w-full z-10">
-    <nav class="border-gray-200 bg-gray-900 shadow-inner w-full">
+    <% if (currentPage === "/") { %>
+        <nav class="border-gray-200 shadow-inner w-full">
+    <% } else { %>
+        <nav class="border-gray-200 bg-gray-900 shadow-inner w-full">
+    <% } %>
         <div class="max-w-screen-x1 flex flex-wrap items-center justify-between mx-auto ">
-            <a href="/" class="flex items-center">
-                <img src="/images/logo.png" class="h-14 m-3", alt="Dead Net Logo">
-            </a>
-                
+            <% if (currentPage !== "/") { %>
+                <a href="/" class="flex items-center">
+                    <img src="/images/logo.png" class="h-14 m-3", alt="Dead Net Logo">
+                </a>
+            <% } %>
+
+            <% if (authenticated) { %>
+                <% if (currentPage === "/") { %>
+                <a href="/profile" class="flex items-center">
+                    <img class="w-10 h-10 rounded-full m-3" src="<%= sessionData.profilePic || "images/defaultProfilePicture.webp" %>">
+                    <p class="font-semibold text-gray-200"><%= sessionData.username %></p>
+                </a>
+                <% } else { %>
+                <a href="/profile" class="flex flex-col items-center md:hidden">
+                    <img class="w-8 h-8 rounded-full" src="<%= sessionData.profilePic || "images/defaultProfilePicture.webp" %>">
+                    <p class="font-semibold text-sm text-gray-200"><%= sessionData.username %></p>
+                </a>
+                <% } %>
+            <% } %>
+            
             <div class="flex">
                 <% if (currentPage === "game" || currentPage === "lobby") { %>
                 <script src="chatModal.js" defer></script>
@@ -15,7 +35,11 @@
                 </div>
                 <% } %>
             
-                <button id="hamburgerButton" type="button" class="inline-flex items-center p-2 w-10 h-10 m-3 justify-center text-sm text-white rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+                <% if (currentPage === "/") { %>
+                    <button id="hamburgerButton" type="button" class="inline-flex items-center p-2 w-10 h-10 m-3 justify-center text-sm text-white md:hidden border-gray-600 focus:outline-none homepage-hamburger-button" aria-controls="navbar-default" aria-expanded="false">
+                <% } else { %>
+                    <button id="hamburgerButton" type="button" class="inline-flex items-center p-2 w-10 h-10 m-3 justify-center text-sm text-white rounded-lg md:hidden focus:outline-none focus:ring-2 hover:bg-gray-700 focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+                <% } %>
                     <span class="sr-only">Open main menu</span>
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
@@ -24,21 +48,26 @@
             </div>
 
             <div class="hidden w-full md:block md:w-auto " id="navbarItems">
-
-                <ul class="font-medium flex flex-col p-4 md:p-0 lg:mr-4 border border-gray-100 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                    <%- include("navbarItem", {label: "Home", pageLink: "/", currentPage: currentPage}) %>
-                    <% if (authenticated) { %>
-                        <%- include("navbarItem", {label: "Profile", pageLink: "profile", currentPage: currentPage}) %>
-                        <%- include("navbarItem", {label: "Play", pageLink: "lobby", currentPage: currentPage}) %>
-                        <%- include("navbarItem", {label: "Logout", pageLink: "/logout", currentPage: currentPage}) %>
-                    <% } else { %>
-                        <%- include("navbarItem", {label: "Login", pageLink: "login", currentPage: currentPage}) %>
-                        <%- include("navbarItem", {label: "Sign Up", pageLink: "signUp", currentPage: currentPage}) %>
-                    <% } %>
-                </ul>
-
+            <% if (currentPage === "/") { %>
+                <ul class="font-medium flex flex-col p-4 md:p-0 lg:mr-4 border-2 border-gray-600 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 homepage-navlist light-opacity-background">
+            <% } else { %>          
+                <ul class="font-medium flex flex-col p-4 md:p-0 lg:mr-4 border border-gray-700 bg-gray-900 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
+            <% } %>
+                <%- include("navbarItem", {label: "Home", pageLink: "/", currentPage: currentPage}) %>
+                <% if (authenticated) { %>
+                    <%- include("navbarItem", {label: "Play", pageLink: "lobby", currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Profile", pageLink: "profile", currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Tutorial" , pageLink: "howToPlay" , currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Leaderboards" , pageLink: "Leaderboard" , currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Logout", pageLink: "/logout", currentPage: currentPage}) %>
+                <% } else { %>
+                    <%- include("navbarItem", {label: "Login", pageLink: "login", currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Sign Up", pageLink: "signUp", currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "About" , pageLink: "howToPlay" , currentPage: currentPage}) %>
+                    <%- include("navbarItem", {label: "Leaderboard" , pageLink: "Leaderboard" , currentPage: currentPage}) %>
+                <% } %>
+            </ul>
             </div>
-
         </div>
     </nav>
 </div>

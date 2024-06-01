@@ -4,11 +4,12 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
+const session = require("express-session");
 
 const storage = MongoStore.create({
     mongoUrl: databaseLink,
     crypto: { secret: process.env.MONGODB_SESSION_SECRET }
-})
+});
 
 const client = new MongoClient(databaseLink, {
     serverApi: {
@@ -18,6 +19,26 @@ const client = new MongoClient(databaseLink, {
     }
 });
 
+const sessionConfig = session({
+    secret: process.env.NODE_SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        maxAge:  12 * 60 * 60 * 1000 // 12 hours
+    },
+    store: storage,
+    unset: "destroy"
+});
+
+
+
+/**
+ * Registers an unverified user to the database.
+ * 
+ * @param {Object} requestBody the request body from the client
+ * @returns an array of errors if any, or null if successful
+ */
 async function signUpUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
@@ -26,11 +47,11 @@ async function signUpUser(requestBody) {
             // check if email and username are taken
             let existingUserWithSameName = await findUser({username: requestBody.username});
             if (existingUserWithSameName){
-                errorList.push({usernameField: `Username "${existingUserWithSameName.username}" is taken`});
+                errorList.push({usernameField: `Username "${existingUserWithSameName.username}" is taken.`});
             }
             let existingUserWithSameEmail = await findUser({email: requestBody.email});
             if (existingUserWithSameEmail) {
-                errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account`});
+                errorList.push({emailField: `Email "${existingUserWithSameEmail.email}" is already associated with an account.`});
             }
             if (errorList.length !== 0) {
                 res(errorList);
@@ -51,7 +72,7 @@ async function signUpUser(requestBody) {
                 loseCount: 0,
                 dateCreated: new Date(),
                 hash: requestBody.hash
-            }
+            };
 
             await users.insertOne(writeQuery);
             console.log(`${requestBody.username} has successfully been registered`);
@@ -63,11 +84,22 @@ async function signUpUser(requestBody) {
     });
 }
 
+/**
+ * Logs in a user.
+ * 
+ * @param {Object} requestBody the request body from the client
+ * @returns user document if successful, or an error message if not
+ */
 async function loginUser(requestBody) {
     return new Promise(async (res, rej) => {
         try {
             let result = await findUser({ email: requestBody.email });
             if (result) {
+                let sessionResult = await checkSessionExists(result);
+                if (sessionResult) {
+                    res({ message: "User is already logged in" });
+                    return;
+                }
                 let passwordMatches = await bcrypt.compare(requestBody.password, result.password);
                 if (passwordMatches) {
                     res({ user: result });
@@ -86,6 +118,55 @@ async function loginUser(requestBody) {
 }
 
 
+/**
+ * Updates the sessionID of the specified user.
+ * 
+ * @param {Object} user user document to update
+ * @param {String} sessionID sessionID to set
+ * @returns true if successful, or false if not
+ */
+async function updateSessionID(user, sessionID) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let users = database.collection("users");
+        console.log("database.js user: ", user)
+        console.log("database.js sessionID: ", sessionID);
+        await users.updateOne({ username: user }, { $set: { sessionID: sessionID } });
+    }
+    catch (e) {
+        console.error("Set Session ID Error: ", e);
+    }
+}
+
+/**
+ * Checks if a session exists in the database.
+ * 
+ * @param {Object} user user document to check
+ * @returns true if session exists, or false if not
+ * @throws error if an error occurs
+ * 
+ */
+async function checkSessionExists(user) {
+    try {
+        let database = client.db(process.env.MONGODB_DATABASE);
+        let sessions = database.collection("sessions");
+
+        let result = await sessions.findOne({ _id: user.sessionID });
+        if (result) {
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error("Check Session ID Error: ", e);
+    }
+}
+
+/**
+ * Finds a user in the database.
+ * 
+ * @param {Object} searchParams search parameters for the query
+ * @returns query result from users collection
+ */
 async function findUser(searchParams) {
     return new Promise(async (res, rej) => {
         try {
@@ -101,6 +182,11 @@ async function findUser(searchParams) {
     });
 }
 
+/**
+ * Gets the top 10 users in the database.
+ * 
+ * @returns the top 10 users in the database sorted by winCount
+ */
 async function getLeaderboard() {
     return new Promise(async (res, rej) => {
         try {
@@ -223,7 +309,8 @@ async function promoteUnverifiedUser(doc) {
             email: doc.email,
             password: doc.password,
             winCount: doc.winCount,
-            loseCount: doc.loseCount
+            loseCount: doc.loseCount,
+            sessionID: doc.sessionID
         };
 
         await userCollection.insertOne(write);
@@ -247,5 +334,7 @@ module.exports = {
     writeResetDoc: writeResetDoc,
     getResetDoc: getResetDoc,
     deleteResetDoc: deleteResetDoc,
-    promoteUnverifiedUser: promoteUnverifiedUser
-}
+    promoteUnverifiedUser: promoteUnverifiedUser,
+    sessionConfig: sessionConfig,
+    updateSessionID: updateSessionID
+};

@@ -1,0 +1,100 @@
+<%- include("./templates/header", {pageName: "How to play"}) %>
+<%- include("./templates/navbar", {currentPage: "howToPlay"}) %>
+
+<!-- about the game -->
+<div class="mx-3 mt-3 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">THE GOAL</p>
+    <div class="py-2 px-5">
+        <p>
+            <span class="font-bold">Dead Net</span> is a game where players must distinguish between
+            human and AI chat bots. The aim of this game is to learn the difference between human and AI behaviour, so that it can help
+            you detect AI-generated content in your daily life.
+        </p>
+    </div>
+</div>
+
+<!-- about the game -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">ABOUT THE GAME</p>
+    <div class="py-2 px-5">
+        <p>
+            <span class="font-bold">Dead Net</span> is split into <span class="font-bold">4 phases</span>. These are the <span class="font-bold">write</span>
+            phase, the <span class="font-bold">vote</span> phase, the <span class="font-bold">result</span> phase, and the <span class="font-bold">wait</span> phase.
+            What each phase entails will be outlined below.
+        </p>
+    </div>
+</div>
+
+<!-- join a Game -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">JOINING A GAME</p>
+    <div class="py-2 px-5">
+        <p>
+            To get started, press the <span class="font-bold">Ready</span> button in the pre-game chat lobby. You will need at least <span class="font-bold">3 Players</span> 
+            to start the game, this is a party game after all. You will automatically be redirected to the game page once the majority is ready.
+        </p>
+    </div>
+</div>
+
+<!-- start of game -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">START OF GAME</p>
+    <div class="py-2 px-5">
+        <p>
+            Everyone will be assigned a <span class="font-bold">random</span> name and picture. AI chat bots will generated and populate the game. 
+            The amount of players will determine how many chat bots you and your group will need to identify, the more players, the more bots.
+        </p>
+    </div>
+</div>
+
+<!-- write phase -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">WRITE PHASE</p>
+    <div class="py-2 px-5">
+        <p>
+            During the write phase, a random prompt will show up. You will have <span class="font-bold">1 minute</span> to type your own response to that prompt.
+            You can only send <span class="font-bold">ONE</span> response. Think carefully!
+        </p>
+    </div>
+</div>
+
+<!-- vote phase -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">VOTE PHASE</p>
+    <div class="py-2 px-5">
+        <p>
+            During the vote phase, click/tap on a player's response to show the <span class="font-bold">vote</span> buttons for that player.
+            Press the <span class="font-bold text-green-600">checkmark</span> button if you think they are suspicious. Or press the 
+            <span class="font-bold text-red-600">X mark</span> if you want to reconsider. Think carefully about who you vote for, you can only
+            submit one vote per round!
+        </p>
+    </div>
+</div>
+
+<!-- result phase -->
+<div class="mx-3 mt-6 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">RESULT PHASE</p>
+    <div class="py-2 px-5">
+        <p>
+            During the result phase, the most voted player will be shown here, with each <span class="text-green-600 font-bold">checkmark</span>
+            corresponding to one vote from another player. If the <span class="font-bold">majority</span> has voted for one player, then that
+            player will be <span class="font-bold">eliminated</span>. Careful not to be eliminated yourself!
+        </p>
+    </div>
+</div>
+
+<!-- wait phase -->
+<div class="mx-3 mt-6 mb-3 intense-shadow rounded-lg">
+    <p class="bg-gradient-to-t from-sky-400 to-sky-700 text-gray-200 p-2 text-xl font-bold about-box-header tracking-wider">WAIT PHASE</p>
+    <div class="py-2 px-5">
+        <p>
+            During the wait phase, if your group has not voted out the AI(s), then one random player will be <span class="font-bold text-red-600">eliminated</span>
+            from the game and the next round will begin. This will continue until either the AI(s) outnumber the players in the game
+            <span class="font-bold text-red-600">(defeat)</span> <span class="font-bold">OR</span>
+             until every AI has been removed <span class="font-bold text-green-600">(victory)</span>.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -6,7 +6,7 @@ let joi = require("joi");
  * one of the following characters: @#$%^&+!.=
  * a number
 */
-const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+!.=])(?=.*\d).*/;
+const regex = /^(?!.*\s)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+!.=])(?=.*\d).*/;
 
 const passwordSchema = joi.string().required().min(5).pattern(regex);
 const emailSchema = joi.string().required().email({ tlds: { allow: false }});
@@ -20,11 +20,11 @@ const signUpSchema = joi.object({
 const loginSchema = joi.object({
     email: emailSchema,
     password: joi.string().required()
-})
+});
 
 module.exports = {
     signUpSchema: signUpSchema,
     loginSchema: loginSchema,
     emailSchema: emailSchema,
     passwordSchema: passwordSchema
-}
+};
