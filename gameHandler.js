@@ -268,6 +268,7 @@ function runGame(io) {
 
     // FUNCTION DEFINITIONS THAT REQUIRE IO 
 
+    // begins the event loop to start a game instance
     function startGame() {
         gameRunning = true;
         round = 1;
@@ -277,6 +278,7 @@ function runGame(io) {
         game.emit("gameReady");
     }
 
+    // stops the event loop and resets game state back to no game state
     function stopGame(outcome) {
         // reset global variables
         currentPhase = null;
@@ -316,12 +318,14 @@ function runGame(io) {
         console.log("A game session has ended");
     }
 
+    // fire an update to the player list on the client side
     function updatePlayerList() {
         let deadPlayers = getDeadPlayers();
         let combinedListPlusDeadPlayers = combinedList.concat(deadPlayers);
         game.emit("updatePlayerList", combinedListPlusDeadPlayers);
     }
 
+    // gets a list of all dead players (AIs and players)
     function getDeadPlayers() {
         let deadPlayers = [];
         playerList.forEach(player => { if (player.dead) deadPlayers.push(player); });
@@ -329,6 +333,7 @@ function runGame(io) {
         return deadPlayers;
     }
 
+    // checks if game state fulfills end state, and then handles it
     function handleGameEnd() {
         if (getAlivePlayerCount() < getAliveAICount()) {
             stopGame("lose");
@@ -341,6 +346,7 @@ function runGame(io) {
         }
     }
 
+    // choose a random player in player list and kill them
     function killRandomPlayer() {
         let playerListCopy = [...playerList], killedPlayer = false;
         while (!killedPlayer) {
@@ -354,6 +360,7 @@ function runGame(io) {
         }
     }
 
+    // removes player from game and updates their information to reflect their elimination
     function killPlayer(player) {
         if (!player) return;
 
@@ -371,6 +378,7 @@ function runGame(io) {
         if (currentPhase === "WAIT") playerSocket.emit("killedByAI");
     }
 
+    // gets the majority voted player, if no majority votes then returns null
     function getMajorityVotedPlayer() {
         let mostVotedPlayer = combinedList[0];
 
@@ -414,6 +422,7 @@ function runGame(io) {
         }, delayTimeInSeconds * 1000);
     }
 
+    // logic to run every game tick (every second)
     function handleGameTick(timeout, length) {
         if (!gameRunning) {
             clearTimeout(timeout);
@@ -428,6 +437,7 @@ function runGame(io) {
 
 // GENERAL FUNCTION DEFINITIONS
 
+// gets the number of alive players in the game
 function getAlivePlayerCount() {
     let count = 0;
     playerList.forEach(player => {
@@ -436,6 +446,7 @@ function getAlivePlayerCount() {
     return count;
 }
 
+// gets the number of AIs still alive in the game
 function getAliveAICount() {
     let count = 0;
     AIs.forEach(AI => {
@@ -483,6 +494,7 @@ function createAIs(numberToMake) {
     }
 }
 
+// creates a game session for an associated socket, saves the socket id for reassignment if socket disconnects
 function createGameSession(socket) {
     let randomFirstName = pool.firstNames[Math.floor(Math.random() * pool.firstNames.length)];
     let randomLastName = pool.lastNames[Math.floor(Math.random() * pool.lastNames.length)];
@@ -502,6 +514,7 @@ function createGameSession(socket) {
     return session;
 }
 
+// reload socket session
 function reloadSession(socket) {
     socket.request.session.reload((err) => {
         if (err) return socket.disconnect();
